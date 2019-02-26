@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Spring email with Thymeleaf</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Raleway:400,300,600" />
+         <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.2/normalize.min.css" />
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" />
+        <!-- <link rel="stylesheet" href="../../css/main.css" th:href="@{/css/main.css}" /> -->
+    </head>
+    <body>
+        <div class="container">
+            
+    
+       <center>   <img src="https://image.ibb.co/dJDKE9/eha_image.png" style="display: block; height: " /></center> <br>
+      
+    
+    
+   
+            
+             <div th:if="${success}">
+                                <div class="alert alert-info">
+                                    <h6 style="background-color:#e6ffec ; color: red;">You've successfully requested a new password reset!</h6>
+                                </div>
+                            </div>
+                               <div th:if="${error}">
+                                <div class="alert alert-info">
+                                   <h6 style="color: red; background-color:#e6ffec "> Passwords not matching!</h6>
+                                </div>
+                            </div>
+                               <div th:if="${error1}">
+                                <div class="alert alert-info">
+                                  <h6 style="color: red; background-color:#e6ffec"> your link is expired!</h6>  
+                                </div>
+                            </div>
+                            
+                            
+            <form action="resettoken.html" th:action="@{/v1/resettoken1}" method="post">
+                <fieldset style="height: 175px; ">
+                	<input type="hidden" name="email" th:value="${email}">
+                    <label for="Password" style="text-align: left;">NEW PASSWORD:</label>
+                    <input type="password" id="password" name="pass" placeholder="NEW PASSWORD" required="required" size="60" /> <br />
+                    <label for="ConfirmPassword">RE-ENTER PASSWORD:</label>
+                    <input type="password" id="confirmPassword" name="newpass" placeholder="RE-ENTER PASSWORD" required="required" size="60" /> <br />
+                    <input type="submit" value="SUBMIT" class="button-primary" style="background-color: #4d0000; color: white;" />
+                </fieldset>
+            </form><br>
+            <p>
+                <a href="index.html" th:href="@{/index.html}" class="button">Back to home page</a>
+            </p>
+        </div>
+    </body>
+</html>
