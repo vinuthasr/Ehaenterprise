@@ -27,7 +27,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/cartitem")
-@CrossOrigin(origins="https://sheltered-fortress-53647.herokuapp.com",allowedHeaders="*")
+@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class CartItemController {
 
 	@Autowired

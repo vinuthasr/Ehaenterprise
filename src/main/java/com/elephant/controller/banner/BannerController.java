@@ -26,7 +26,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/banner")
-@CrossOrigin(origins="https://sheltered-fortress-53647.herokuapp.com",allowedHeaders="*")
+@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class BannerController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BannerController.class);

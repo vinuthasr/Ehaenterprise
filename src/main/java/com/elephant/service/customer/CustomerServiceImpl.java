@@ -146,6 +146,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 			
 				
 				customer.setRoles(roles);
+	
 				
 			    
 			    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
