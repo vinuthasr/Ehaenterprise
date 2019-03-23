@@ -18,8 +18,17 @@ public class BannerModel implements Serializable{
 	private String bannerArea;
 	private Date createdDate;
 	private Date ModifiedDate;
+	private String categoryName;
   
-    private List<ImageModel> image;
+    public String getCategoryName() {
+		return categoryName;
+	}
+
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
+
+	private List<ImageModel> image;
     
     
     public List<ImageModel> getImage() {

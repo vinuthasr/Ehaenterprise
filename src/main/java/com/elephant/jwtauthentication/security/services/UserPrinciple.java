@@ -21,6 +21,9 @@ public class UserPrinciple implements UserDetails {
     private String username;
 
     private String email;
+    
+    @SuppressWarnings("unused")
+	private boolean isEnabled;
 
     @JsonIgnore
     private String password;
@@ -28,26 +31,32 @@ public class UserPrinciple implements UserDetails {
     private Collection<? extends GrantedAuthority> authorities;
 
     public UserPrinciple(Long id, 
-			    		String name, String email, String password, 
+			    		String name, String email, String password, boolean isActive,
 			    		Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
        
         this.username = email;
         this.email = email;
         this.password = password;
+        this.isEnabled=isActive;
         this.authorities = authorities;
+       
+
     }
 
     public static UserPrinciple build(CustomerDomain user) {
         List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
                 new SimpleGrantedAuthority(role.getName())
         ).collect(Collectors.toList());
+        
+       
 
         return new UserPrinciple(
                 user.getCustomersId(),
                 user.getCustomerName(),
                 user.getEmail(),
                 user.getPassword(),
+                user.isActive(),
                 authorities
         );
     }

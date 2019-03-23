@@ -25,7 +25,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/invoice")
-public class InvoiceController {
+public class InvoiceController{
 
 	
 	@Autowired

@@ -36,7 +36,7 @@ public class CustomerController1 {
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		System.out.println(validate);
 		
-		if(cr.findByEmail(email).isActive()==false) {
+		if(cr.findByEmail(email).isActive()==true) {
 		if((cr.findByEmail(email).getValitateCode().equals(validate))) {
 		
 		
@@ -56,7 +56,7 @@ public class CustomerController1 {
 		logger.info("getConfirm: Received request: " + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		System.out.println(validate);
-		if(cr.findByEmail(email).getValitateCode().equals(validate) && (cr.findByEmail(email).isActive()==true)) {
+		if(cr.findByEmail(email).getValitateCode().equals(validate)) {
 			cr.findByEmail(email).setValitateCode(null);
 			model.addAttribute("email", email);
 			return "resettoken";
@@ -74,19 +74,20 @@ public class CustomerController1 {
 		
 		model.addAttribute("email", email);
 		
-		if(pass.equals(newpass)) {
+			if (cr.findByEmail(email).isExpired()) {
+			
+				model.addAttribute("error1", "error1");
+		    
+			}
+		
+		else if(pass.equals(newpass)) {
 			customerService.resetPass(email,pass);
 			 
 			model.addAttribute("success", "success");
 		
 			
 			}
-		else if (cr.findByEmail(email).isExpired()) {
-			
-		    model.addAttribute("error1", "error1");
-		    
-			
-		}
+		  
 		else {
 			model.addAttribute("error", "error");
 		

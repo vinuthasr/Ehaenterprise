@@ -13,7 +13,7 @@ import com.elephant.response.Response;
 
 public interface CustomerService {
 	
-	public Response addCustomer(CustomerModel customerModel, HttpServletRequest request) throws Exception;
+	public Response addCustomer(CustomerModel customerModel) throws Exception;
 
 	public Response updateCustomer(CustomerModel customerModel, Principal pr) throws Exception;
 
@@ -43,6 +43,10 @@ public interface CustomerService {
 	public void createAdmin(CustomerDomain newAdmin);
 
 	public Response addCustomer1(CustomerModel customerModel, Model model1);
+
+	public void addAdmin(String email, String password);
+
+	public void addRole(String role);
 
 
 

@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.customer.CustomerDao;
+import com.elephant.dao.customer.CustomerRepository;
 import com.elephant.jwtauthentication.message.response.JwtResponse;
 import com.elephant.jwtauthentication.security.jwt.JwtProvider;
 import com.elephant.model.customer.CustomerModel;
@@ -62,6 +63,9 @@ public class CustomerController {
     
     @Autowired
     JwtProvider jwtProvider;
+    
+    @Autowired
+    CustomerRepository cr;
 	
 	
 	//---------- post---------------//
@@ -72,7 +76,8 @@ public class CustomerController {
 		logger.info("addCustomers: Received request URL:" + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		logger.info("addCustomers: Received Request: " + CommonUtils.getJson(customerModel));
-	return customerService.addCustomer(customerModel,request);
+		
+	return customerService.addCustomer(customerModel);
 	
 	
 	}
@@ -229,7 +234,7 @@ public class CustomerController {
 	
 	 @PostMapping(value="/signin",produces="application/json")
 	    public ResponseEntity<?> authenticateUser(@Valid @RequestBody CustomerModel loginRequest) {
-
+            if(cr.findByEmail(loginRequest.getEmail()).isActive()==false) {
 	        Authentication authentication = authenticationManager.authenticate(
 	                new UsernamePasswordAuthenticationToken(
 	                        loginRequest.getEmail(),
@@ -240,9 +245,14 @@ public class CustomerController {
 	        SecurityContextHolder.getContext().setAuthentication(authentication);
 
 	        String jwt = jwtProvider.generateJwtToken(authentication);
-	        String userName=jwtProvider.getUserNameFromJwtToken(jwt);
+	        //String userName=jwtProvider.getUserNameFromJwtToken(jwt);
 	       
 	        return ResponseEntity.ok(new JwtResponse(jwt));
+	        }
+	        
+            else 
+	        return ResponseEntity.ok("status : Email not verified");
+            
 	    }
 
 

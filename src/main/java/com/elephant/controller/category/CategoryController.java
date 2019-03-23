@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -45,6 +46,7 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryController.
 	CategoryDao categoryDao;
 	
 	//----------------------------Add Categories----------------------------------	
+	@PreAuthorize("hasRole('ROLE_ADMIN')" )
 	@RequestMapping(value="/categories",method=RequestMethod.POST,produces="application/json" )
 	public Response  addCategories(@Valid @RequestBody CategoryModel model,HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) 
 			throws Exception {

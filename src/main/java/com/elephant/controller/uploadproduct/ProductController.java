@@ -36,6 +36,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.http.HttpHeaders;
@@ -81,6 +82,7 @@ public class ProductController {
 	ProductDao 	productDao;
 	
 	//------------------------------Add Products--------------------------------------
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/addproduct",method=RequestMethod.POST,produces="application/json" )
 	public Response  addproduct(@Valid @RequestBody ProductModel model,@RequestParam(value="categoryName") String categoryName,HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) 
 			throws Exception {
@@ -130,6 +132,7 @@ public class ProductController {
 	}
 	
 	//------------------------------Update Products--------------------------------------
+	@PreAuthorize("hasRole('ROLE_ADMIN')" )
 	@RequestMapping(value = "/updateproduct", method = RequestMethod.PUT, produces = "application/json")
 	public Response updateProduct(@RequestBody ProductModel updateproduct, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
@@ -140,6 +143,7 @@ public class ProductController {
 	}
 	
 	//------------------------------Delete Product By Id--------------------------------------
+	@PreAuthorize("hasRole('ROLE_ADMIN')" )
 	@RequestMapping(value = "/deleteproduct/{ProductId}", method = RequestMethod.DELETE, produces = "application/json")
 	public @ResponseBody Response deleteproduct(@PathVariable("ProductId") String productId, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -149,6 +153,7 @@ public class ProductController {
 	}
 	
 	//-------------------------------Product Soft Delete By Id-------------------------------------
+	@PreAuthorize("hasRole('ROLE_ADMIN')" )
 	@RequestMapping(value="/deleteproduct/{productId}/{isActive}", method=RequestMethod.DELETE, produces="application/json")
 	public @ResponseBody Response deleteProduct(@PathVariable("productId") String productId,@PathVariable boolean isActive, HttpServletRequest request,
 			HttpServletResponse response)throws Exception{
@@ -159,6 +164,7 @@ public class ProductController {
 	}
 
 	//-------------------------------- Get Product By Id------------------------------------
+	@PreAuthorize("hasRole('ROLE_ADMIN')" )
 	@RequestMapping(value="/productbyId/{productId}",method=RequestMethod.GET,produces="application/json")
 	public @ResponseBody String  getProductById(@PathVariable ("productId") String productId,HttpServletRequest request,HttpServletResponse responce)throws Exception{
 		logger.info("getProductById: Received request: " + request.getRequestURL().toString()

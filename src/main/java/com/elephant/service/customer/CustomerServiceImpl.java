@@ -91,6 +91,7 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	EntityManager em;
 	
+	
 	@Autowired
     private JavaMailSender emailSender;
 	
@@ -122,7 +123,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Response addCustomer(CustomerModel customerModel,HttpServletRequest request) throws Exception {
+	public Response addCustomer(CustomerModel customerModel) throws Exception {
 		
 		
 		
@@ -134,7 +135,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 			 customer.setValitateCode(CommonUtils.generateRandomId());
 			    customer.setActive(false);
 			    //customer.setActiveUser(false);
-			    customer.setPassword(CommonUtils.encriptString(customerModel.getPassword()));
+			   // customer.setPassword(CommonUtils.encriptString(customerModel.getPassword()));
 			   // customer.setPassword(CommonUtils.encriptString(customerModel.getConfirmPassword()));
 			   		    
 			    Role userRole=rr.findByName("ROLE_USER");
@@ -510,6 +511,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 		user.setActive(true);
 		cr.save(user);
 		
+		
 	}
 
 
@@ -535,5 +537,50 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 			
 		}
 		return response;
+	}
+
+
+
+
+	@Override
+	public void addAdmin(String email, String password) {
+		// TODO Auto-generated method stub
+		CustomerDomain customerDomain=cr.findByEmail(email);
+		if(customerDomain==null) {
+	    
+		CustomerDomain cd=new CustomerDomain();
+		
+		 Role userRole=rr.findByName("ROLE_ADMIN");
+		    
+		    
+		    List<Role> roles = new ArrayList<>();
+		    roles.add(userRole);
+		    cd.setRoles(roles);
+			cd.setEmail(email);
+			 BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+				String hashedPassword = passwordEncoder.encode(password);
+//			String hashedPassword1 = passwordEncoder.encode(customerModel.getConfirmPassword( ));
+			
+			 cd.setPassword(hashedPassword);
+			//cd.setPassword(password);
+			cr.save(cd);
+		}
+		
+	}
+
+
+
+
+	@Override
+	public void addRole(String role) {
+		// TODO Auto-generated method stub
+		
+		Role rl=rr.findByName(role);
+		if(rl==null) {
+		Role ro=new Role();
+		ro.setName(role);
+		rr.save(ro);
+		}
+		
 	}
 	}

@@ -23,12 +23,13 @@ public class JwtProvider {
     private int jwtExpiration;
 
     public String generateJwtToken(Authentication authentication) {
+    	System.out.println(authentication.getPrincipal());
+    	System.out.println(authentication.getPrincipal());
+    	System.out.println(authentication.getPrincipal());
+    	System.out.println(authentication.getPrincipal());
 
         UserPrinciple userPrincipal = (UserPrinciple) authentication.getPrincipal();
-        System.out.println(authentication.getPrincipal());
-        System.out.println(authentication.getPrincipal());
-        System.out.println(authentication.getPrincipal());
-        System.out.println(authentication.getPrincipal());
+      
 
         return Jwts.builder()
 		                .setSubject((userPrincipal.getEmail()))

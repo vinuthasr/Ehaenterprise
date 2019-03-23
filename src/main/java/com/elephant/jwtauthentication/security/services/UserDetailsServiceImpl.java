@@ -19,13 +19,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
-    	if(userRepository.findByEmail(email).isActive()==false) {
+         throws UsernameNotFoundException {
+    	//if(userRepository.findByEmail(email).isActive()==false) {
         CustomerDomain user = userRepository.findByEmail(email);
     	        	
         return UserPrinciple.build(user);
-    }
-    	else
-    		return UserPrinciple.build(null);
+   // }
+    	//else
+    		//return UserPrinciple.build(null);
+    
     }
 }
