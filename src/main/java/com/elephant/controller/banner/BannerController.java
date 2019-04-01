@@ -25,7 +25,7 @@ import com.elephant.utils.CommonUtils;
 
 
 @RestController
-@RequestMapping("/banner")
+@RequestMapping("/v1/banner")
 @CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class BannerController {
 

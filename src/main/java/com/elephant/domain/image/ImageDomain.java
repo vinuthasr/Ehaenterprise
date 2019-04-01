@@ -16,6 +16,7 @@ import javax.persistence.TemporalType;
 
 
 import com.elephant.domain.banner.BannerDomain;
+import com.elephant.domain.category.Category;
 
 @Entity
 @Table(name="image")
@@ -67,7 +68,18 @@ public class ImageDomain  implements Serializable{
 	@JoinColumn(name="bannerId")
 	private BannerDomain bannerDomain;
 	
+	@ManyToOne
+	@JoinColumn(name="categoryId")
+	private Category categoryDomain;
 	
+	public Category getCategoryDomain() {
+		return categoryDomain;
+	}
+
+	public void setCategoryDomain(Category categoryDomain) {
+		this.categoryDomain = categoryDomain;
+	}
+
 	public long getImageId() {
 		return imageId;
 	}

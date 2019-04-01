@@ -1,5 +1,6 @@
 package com.elephant.service.banner;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -19,6 +20,7 @@ import com.elephant.mapper.banner.BannerMapper;
 import com.elephant.model.banner.BannerModel;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
+import com.elephant.utils.DateUtility;
 
 
 @Service
@@ -41,6 +43,9 @@ public class BannerServiceImpl implements BannerService{
 	public Response createBanner(BannerModel bannerModel) {
 		//CustomerDomain cust=new CustomerDomain();
 		BannerDomain bannerDomain=new BannerDomain();
+		bannerModel.setModifiedDate(new Date());
+		bannerModel.setCreatedDate(new Date());
+        
 		BeanUtils.copyProperties(bannerModel, bannerDomain);
 		//
 		//bannerDomain.getBannerArea()

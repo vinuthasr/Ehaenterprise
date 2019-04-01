@@ -1,17 +1,16 @@
  package com.elephant.controller.customer;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.customer.CustomerDao;
 import com.elephant.dao.customer.CustomerRepository;
+import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.jwtauthentication.message.response.JwtResponse;
 import com.elephant.jwtauthentication.security.jwt.JwtProvider;
 import com.elephant.model.customer.CustomerModel;
@@ -38,6 +38,10 @@ import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.customer.CustomerService;
 import com.elephant.utils.CommonUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import scala.collection.mutable.HashMap;
 
 
 //@Controller
@@ -233,25 +237,42 @@ public class CustomerController {
 	}
 	
 	 @PostMapping(value="/signin",produces="application/json")
-	    public ResponseEntity<?> authenticateUser(@Valid @RequestBody CustomerModel loginRequest) {
-            if(cr.findByEmail(loginRequest.getEmail()).isActive()==false) {
-	        Authentication authentication = authenticationManager.authenticate(
-	                new UsernamePasswordAuthenticationToken(
-	                        loginRequest.getEmail(),
-	                        loginRequest.getPassword()
-	                )
-	        );
-
-	        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-	        String jwt = jwtProvider.generateJwtToken(authentication);
-	        //String userName=jwtProvider.getUserNameFromJwtToken(jwt);
-	       
-	        return ResponseEntity.ok(new JwtResponse(jwt));
-	        }
-	        
-            else 
-	        return ResponseEntity.ok("status : Email not verified");
+	    public ResponseEntity<?> authenticateUser(@Valid @RequestBody CustomerModel loginRequest) throws Exception {
+		 	
+		   if(cr != null) {
+			   CustomerDomain customerDomain = cr.findByEmail(loginRequest.getEmail());
+			   if(customerDomain != null) {
+				   if(customerDomain.isActive()==false) {
+				        Authentication authentication = authenticationManager.authenticate(
+				                new UsernamePasswordAuthenticationToken(
+				                        loginRequest.getEmail(),
+				                        loginRequest.getPassword()
+				                )
+				        );
+				        
+				        SecurityContextHolder.getContext().setAuthentication(authentication);
+	
+				        String jwt = jwtProvider.generateJwtToken(authentication);
+				        String userName= customerDomain.getCustomerName();
+				        		//customerService.getCustomerDetail(loginRequest.getEmail()).getCustomerName();
+				        List<String> loginMap = new ArrayList<String>();		
+				        
+				        loginMap.add(new JwtResponse(jwt).getAccessToken());
+				        loginMap.add(userName);
+				        loginMap.add(loginRequest.getEmail());
+				        return ResponseEntity.ok().body(loginMap);
+			        }
+			        
+		            else 
+			        return ResponseEntity.ok("status : Email not verified");
+			   } else {
+				   return ResponseEntity.ok("Username / Password is incorrect.............");
+			   }
+			   
+		   } else {
+			   return ResponseEntity.ok("Username / Password is incorrect");
+		   }
+            
             
 	    }
 

@@ -3,6 +3,7 @@ package com.elephant.model.image;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.elephant.domain.category.Category;
 import com.elephant.model.banner.BannerModel;
 
 public class ImageModel implements Serializable{
@@ -27,8 +28,15 @@ public class ImageModel implements Serializable{
 	private Date createdDate;
 	private Date modifiedDate;
 	private BannerModel bannerModel;
+	private Category categoryModel;
 	
 	
+	public Category getCategoryModel() {
+		return categoryModel;
+	}
+	public void setCategoryModel(Category categoryModel) {
+		this.categoryModel = categoryModel;
+	}
 	public BannerModel getBannerModel() {
 		return bannerModel;
 	}

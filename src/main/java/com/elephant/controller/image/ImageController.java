@@ -27,7 +27,7 @@ import com.elephant.service.image.ImageService;
 import com.elephant.utils.CommonUtils;
 
 @RestController
-@RequestMapping(value="/control")
+@RequestMapping(value="/v1/control")
 @CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com/"})
 public class ImageController {
 	
@@ -44,6 +44,7 @@ public class ImageController {
 		logger.info("addimage: Received Request: " + CommonUtils.getJson(imageModel));
 		
 		String bannerArea=imageModel.getBannerModel().getBannerArea();
+		String imageArea = imageModel.getCategoryModel().getCategoryName();
 		return imageService.postImage(imageModel,bannerArea);
 	}
 	
@@ -124,13 +125,13 @@ public class ImageController {
 	}
 	
 	
-	/*//=======================post image====================
+	//=======================post image====================
 		@RequestMapping(value="/post/ImageModel/{bannerArea}",method = RequestMethod.POST, produces = "application/json")
 		public Response postImage(@RequestBody ImageModel imageModel  ,@RequestParam(value="bannerArea") String bannerArea ,HttpServletRequest request,HttpServletResponse response) throws Exception {
 			logger.info("addimage: Received request URL:" + request.getRequestURL().toString()
 					+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 			logger.info("addimage: Received Request: " + CommonUtils.getJson(imageModel));
 			return imageService.postImage(imageModel,bannerArea);
-		}*/
+		}
 	
 }
