@@ -44,8 +44,8 @@ public class ImageController {
 		logger.info("addimage: Received Request: " + CommonUtils.getJson(imageModel));
 		
 		String bannerArea=imageModel.getBannerModel().getBannerArea();
-		String imageArea = imageModel.getCategoryModel().getCategoryName();
-		return imageService.postImage(imageModel,bannerArea);
+		String categoryName = imageModel.getCategoryModel().getCategoryName();
+		return imageService.postImage(imageModel,bannerArea,categoryName);
 	}
 	
 	//=====================get all image=================
@@ -125,13 +125,13 @@ public class ImageController {
 	}
 	
 	
-	//=======================post image====================
-		@RequestMapping(value="/post/ImageModel/{bannerArea}",method = RequestMethod.POST, produces = "application/json")
-		public Response postImage(@RequestBody ImageModel imageModel  ,@RequestParam(value="bannerArea") String bannerArea ,HttpServletRequest request,HttpServletResponse response) throws Exception {
-			logger.info("addimage: Received request URL:" + request.getRequestURL().toString()
-					+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
-			logger.info("addimage: Received Request: " + CommonUtils.getJson(imageModel));
-			return imageService.postImage(imageModel,bannerArea);
-		}
+//	//=======================post image====================
+//		@RequestMapping(value="/post/ImageModel/{bannerArea}",method = RequestMethod.POST, produces = "application/json")
+//		public Response postImage(@RequestBody ImageModel imageModel  ,@RequestParam(value="bannerArea") String bannerArea ,HttpServletRequest request,HttpServletResponse response) throws Exception {
+//			logger.info("addimage: Received request URL:" + request.getRequestURL().toString()
+//					+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+//			logger.info("addimage: Received Request: " + CommonUtils.getJson(imageModel));
+//			return imageService.postImage(imageModel,bannerArea);
+//		}
 	
 }

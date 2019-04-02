@@ -9,7 +9,7 @@ import com.elephant.response.Response;
 
 public interface ImageService {
 
-	public Response postImage(ImageModel imageModel,String bannerArea)throws Exception;
+	public Response postImage(ImageModel imageModel,String bannerArea,String categoryName)throws Exception;
 
 	public List<ImageModel> allImage()throws Exception;
 

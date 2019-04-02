@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.banner.BannerRepository;
+import com.elephant.dao.category.CategoryRepository;
 import com.elephant.dao.image.ImageDao;
 import com.elephant.dao.image.ImageDaoRepository;
 import com.elephant.domain.banner.BannerDomain;
+import com.elephant.domain.category.Category;
 import com.elephant.domain.image.ImageDomain;
 import com.elephant.mapper.image.ImageMapper;
 import com.elephant.model.image.ImageModel;
@@ -35,28 +37,59 @@ public class ImageServiceImpl implements ImageService {
 	
 	@Autowired
 	ImageDaoRepository imageDaoRepository ;
+	
+	@Autowired
+	CategoryRepository categoryRepository;
 
 	@Override
-	public Response postImage(ImageModel imageModel, String bannerArea) throws Exception {
+	public Response postImage(ImageModel imageModel, String bannerArea,String categoryName) throws Exception {
 		Response response=CommonUtils.getResponseObject("Post Image");
 		
 		try {
 		ImageDomain imageDomain=new ImageDomain();
 		BeanUtils.copyProperties(imageModel, imageDomain);
-		List<BannerDomain> bannerDomainList=bannerRepository.findAll();
-		for(int i=0;i< bannerDomainList.size();i++) {
-			if((bannerArea.equals(bannerDomainList.get(i).getBannerArea()))){
-				BannerDomain bannerDomain=bannerRepository.findByBannerArea(bannerArea);
-				imageDomain.setBanner(bannerDomain);
-				imageDaoRepository.save(imageDomain);
-				response.setStatus(StatusCode.SUCCESS.name());
-				response.setMessage("Image Post is Successfull");
-				//Response response=imageDao.postImage(imageDomain);
+		
+		if(null != bannerArea) {
+			BannerDomain bannerDomain=bannerRepository.findByBannerArea(bannerArea);
+			if(bannerDomain != null) {
+				imageDomain.setBanner(bannerDomain);				
+			} else {
+				response.setStatus(StatusCode.ERROR.name());
+				response.setMessage("Banner Area is Not found");
 				return response;
 			}
+			
 		}
-		response.setStatus(StatusCode.ERROR.name());
-		response.setMessage("Banner Area is Not found");
+        
+		if(null != categoryName) {
+			Category categoryDomain = categoryRepository.findByCategoryName(categoryName);
+			if(categoryDomain != null) {
+				imageDomain.setCategoryDomain(categoryDomain);
+			} else {
+				response.setStatus(StatusCode.ERROR.name());
+				response.setMessage("Category Name is Not found");
+				return response;
+			}
+			
+		}
+		imageDaoRepository.save(imageDomain);
+		response.setStatus(StatusCode.SUCCESS.name());
+		response.setMessage("Image Post is Successfull");
+		
+//		List<BannerDomain> bannerDomainList=bannerRepository.findAll();
+//		for(int i=0;i< bannerDomainList.size();i++) {
+//			if((bannerArea.equals(bannerDomainList.get(i).getBannerArea()))){
+//				BannerDomain bannerDomain=bannerRepository.findByBannerArea(bannerArea);
+//				imageDomain.setBanner(bannerDomain);
+//				imageDaoRepository.save(imageDomain);
+//				response.setStatus(StatusCode.SUCCESS.name());
+//				response.setMessage("Image Post is Successfull");
+//				//Response response=imageDao.postImage(imageDomain);
+//				return response;
+//			}
+//		}
+//		response.setStatus(StatusCode.ERROR.name());
+//		response.setMessage("Banner Area is Not found");
 		return response;
 		
 		}
