@@ -241,7 +241,8 @@ public class CustomerController {
 		 	
 		   if(cr != null) {
 			   CustomerDomain customerDomain = cr.findByEmail(loginRequest.getEmail());
-			   if(customerDomain != null) {
+			   boolean isValidPwd = customerService.checkPassword(customerDomain,loginRequest.getPassword());
+			   if(customerDomain != null && isValidPwd) {
 				   if(customerDomain.isActive()==false) {
 				        Authentication authentication = authenticationManager.authenticate(
 				                new UsernamePasswordAuthenticationToken(
@@ -250,23 +251,22 @@ public class CustomerController {
 				                )
 				        );
 				        
+				        
 				        SecurityContextHolder.getContext().setAuthentication(authentication);
 	
 				        String jwt = jwtProvider.generateJwtToken(authentication);
-				        String userName= customerDomain.getCustomerName();
-				        		//customerService.getCustomerDetail(loginRequest.getEmail()).getCustomerName();
 				        List<String> loginMap = new ArrayList<String>();		
 				        
 				        loginMap.add(new JwtResponse(jwt).getAccessToken());
-				        loginMap.add(userName);
+				        loginMap.add(customerDomain.getCustomerName());
 				        loginMap.add(loginRequest.getEmail());
 				        return ResponseEntity.ok().body(loginMap);
 			        }
 			        
 		            else 
-			        return ResponseEntity.ok("status : Email not verified");
+			        return ResponseEntity.ok("Email is not verified");
 			   } else {
-				   return ResponseEntity.ok("Username / Password is incorrect.............");
+				   return ResponseEntity.ok("Username / Password is incorrect");
 			   }
 			   
 		   } else {

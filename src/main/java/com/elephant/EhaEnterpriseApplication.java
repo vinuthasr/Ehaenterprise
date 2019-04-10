@@ -30,7 +30,7 @@ public class EhaEnterpriseApplication implements ApplicationRunner{
 		
 		customerService.addRole("ROLE_ADMIN");
 		customerService.addRole("ROLE_USER");
-		customerService.addAdmin("ehaadmin@gmail.com","12345678");		
+		customerService.addAdmin("ehaadmin@gmail.com","12345678","Puneeth");		
 		
 	}
 

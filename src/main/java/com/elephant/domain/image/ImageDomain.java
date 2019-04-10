@@ -56,6 +56,9 @@ public class ImageDomain  implements Serializable{
 	@Column(name="desc5")
 	private String desc5;
 	
+	@Column(name="imageSequenceNo")
+	private int imageSequenceNo;
+	
 	@Temporal(TemporalType.DATE)
 	@Column(name="createdDate")
 	private Date createdDate;
@@ -176,7 +179,11 @@ public class ImageDomain  implements Serializable{
 		this.bannerDomain = bannerDomain;
 	}
 
+	public int getImageSequenceNo() {
+		return imageSequenceNo;
+	}
 
-	
-	
+	public void setImageSequenceNo(int imageSequenceNo) {
+		this.imageSequenceNo = imageSequenceNo;
+	}
 }

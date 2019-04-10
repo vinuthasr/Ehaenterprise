@@ -44,11 +44,11 @@ public interface CustomerService {
 
 	public Response addCustomer1(CustomerModel customerModel, Model model1);
 
-	public void addAdmin(String email, String password);
+	public void addAdmin(String email, String password,String name);
 
 	public void addRole(String role);
 
-
+    public boolean checkPassword(CustomerDomain customerDomain,String password);
 
 
 

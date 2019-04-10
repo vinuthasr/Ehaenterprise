@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.banner.BannerRepository;
 import com.elephant.dao.category.CategoryRepository;
@@ -48,9 +49,9 @@ public class ImageServiceImpl implements ImageService {
 		try {
 		ImageDomain imageDomain=new ImageDomain();
 		BeanUtils.copyProperties(imageModel, imageDomain);
-		
+		BannerDomain bannerDomain = null;
 		if(null != bannerArea) {
-			BannerDomain bannerDomain=bannerRepository.findByBannerArea(bannerArea);
+		    bannerDomain=bannerRepository.findByBannerArea(bannerArea);
 			if(bannerDomain != null) {
 				imageDomain.setBanner(bannerDomain);				
 			} else {
@@ -70,8 +71,24 @@ public class ImageServiceImpl implements ImageService {
 				response.setMessage("Category Name is Not found");
 				return response;
 			}
+		}
+		
+		if(imageModel.getImageSequenceNo() != 0) {
+			if(!bannerArea.equalsIgnoreCase(Constants.BANNER_SLIDER_AREA)) {
+				List<ImageModel> imageList = getImageByBannerArea(bannerArea);
+				int seqenceNo = 0;
+				for(ImageModel imageModelItem : imageList){
+					seqenceNo = imageModelItem.getImageSequenceNo();
+					if(imageModel.getImageSequenceNo() ==seqenceNo) {
+						response.setStatus(StatusCode.ERROR.name());
+						response.setMessage("Image Sequence number already exist");
+						return response;
+					}
+				}
+			}
 			
 		}
+		
 		imageDaoRepository.save(imageDomain);
 		response.setStatus(StatusCode.SUCCESS.name());
 		response.setMessage("Image Post is Successfull");

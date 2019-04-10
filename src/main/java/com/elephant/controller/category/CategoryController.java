@@ -46,7 +46,7 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryController.
 	CategoryDao categoryDao;
 	
 	//----------------------------Add Categories----------------------------------	
-	@PreAuthorize("hasRole('ROLE_ADMIN')" )
+	//@PreAuthorize("hasRole('ROLE_ADMIN')" )
 	@RequestMapping(value="/categories",method=RequestMethod.POST,produces="application/json" )
 	public Response  addCategories(@Valid @RequestBody CategoryModel model,HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) 
 			throws Exception {

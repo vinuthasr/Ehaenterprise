@@ -124,94 +124,98 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 	@SuppressWarnings("unchecked")
 	@Override
 	public Response addCustomer(CustomerModel customerModel) throws Exception {
-		
-		
-		
-		
-
+		Response response=CommonUtils.getResponseObject("Add Customer");
 		try {
-		   CustomerDomain customer = new CustomerDomain();  
-			BeanUtils.copyProperties(customerModel, customer);
-			 customer.setValitateCode(CommonUtils.generateRandomId());
-			    customer.setActive(false);
-			    //customer.setActiveUser(false);
-			   // customer.setPassword(CommonUtils.encriptString(customerModel.getPassword()));
-			   // customer.setPassword(CommonUtils.encriptString(customerModel.getConfirmPassword()));
-			   		    
-			    Role userRole=rr.findByName("ROLE_USER");
-			    
-			    
-			    List<Role> roles = new ArrayList<>();
-			    
-				roles.add(userRole);
-			
-				
-				customer.setRoles(roles);
-	
-				
-			    
-			    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-				String hashedPassword = passwordEncoder.encode(customerModel.getPassword());
-//				String hashedPassword1 = passwordEncoder.encode(customerModel.getConfirmPassword( ));
-//			
-			 customer.setPassword(hashedPassword );
-//			 customer.setConfirmPassword(hashedPassword1);
-//			 
-			 //CartDomain cartDomain =new CartDomain();
-			 
-//			 Mail mail = new Mail();
-//		        mail.setFrom("yenugubala.hari@gmail.com");
-//		        mail.setTo(customer.getEmail());
-//		        mail.setSubject("Hello  "+customer.getCustomerName());
-//
-//		        Map<String, Object> model = new HashMap<String, Object>();
-//		        model.put("name", customer.getCustomerName());
-//		        model.put("email", customer.getEmail());
-//		        model.put("code", customer.getValitateCode());
-//		        
-//		        System.out.println(request.getServerPort());
-//		       
-//		       
-//		        model.put("signature",request.getServerPort()+"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
-//		        mail.setModel(model);
-//		        
-//		        MimeMessage message = emailSender.createMimeMessage();
-//		        MimeMessageHelper helper = new MimeMessageHelper(message,
-//		                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-//		                StandardCharsets.UTF_8.name());
-//
-//		       // helper.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
-//
-//		        Context context = new Context();
-//		        context.setVariables(mail.getModel());
-//		        
-//		        String html = templateEngine.process("registration-form", context);
-//
-//		        helper.setTo(mail.getTo());
-//		        helper.setText(html, true);
-//		        helper.setSubject(mail.getSubject());
-//		        helper.setFrom(mail.getFrom());
-//
-//		        emailSender.send(message);
-
-		       // emailService.sendSimpleMessage(mail);
-		     
-				
-
-//			        
-//			        System.out.println("mailsend successfully");
-//			    	System.out.println("Done!");
+			CustomerDomain custDomain = cr.findByEmail(customerModel.getEmail());
+			if(custDomain == null) {
+				   CustomerDomain customer = new CustomerDomain();  
+					BeanUtils.copyProperties(customerModel, customer);
+					 customer.setValitateCode(CommonUtils.generateRandomId());
+					    customer.setActive(false);
+					    //customer.setActiveUser(false);
+					   // customer.setPassword(CommonUtils.encriptString(customerModel.getPassword()));
+					   // customer.setPassword(CommonUtils.encriptString(customerModel.getConfirmPassword()));
+					   		    
+					    Role userRole=rr.findByName("ROLE_USER");
+					    
+					    
+					    List<Role> roles = new ArrayList<>();
+					    
+						roles.add(userRole);
 					
+						
+						customer.setRoles(roles);
+			
+						
+					    
+					    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+						String hashedPassword = passwordEncoder.encode(customerModel.getPassword());
+//						String hashedPassword1 = passwordEncoder.encode(customerModel.getConfirmPassword( ));
+//					
+					 customer.setPassword(hashedPassword );
+//					 customer.setConfirmPassword(hashedPassword1);
+//					 
+					 //CartDomain cartDomain =new CartDomain();
+					 
+//					 Mail mail = new Mail();
+//				        mail.setFrom("yenugubala.hari@gmail.com");
+//				        mail.setTo(customer.getEmail());
+//				        mail.setSubject("Hello  "+customer.getCustomerName());
+		//
+//				        Map<String, Object> model = new HashMap<String, Object>();
+//				        model.put("name", customer.getCustomerName());
+//				        model.put("email", customer.getEmail());
+//				        model.put("code", customer.getValitateCode());
+//				        
+//				        System.out.println(request.getServerPort());
+//				       
+//				       
+//				        model.put("signature",request.getServerPort()+"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
+//				        mail.setModel(model);
+//				        
+//				        MimeMessage message = emailSender.createMimeMessage();
+//				        MimeMessageHelper helper = new MimeMessageHelper(message,
+//				                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+//				                StandardCharsets.UTF_8.name());
+		//
+//				       // helper.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
+		//
+//				        Context context = new Context();
+//				        context.setVariables(mail.getModel());
+//				        
+//				        String html = templateEngine.process("registration-form", context);
+		//
+//				        helper.setTo(mail.getTo());
+//				        helper.setText(html, true);
+//				        helper.setSubject(mail.getSubject());
+//				        helper.setFrom(mail.getFrom());
+		//
+//				        emailSender.send(message);
 
-			 
-		        
-		        
-			 	customerDao.addCustomer(customer);
-	            /*cartDomain.setCustomer(customer);
-	            cartDao.createCart(cartDomain);
-	            customer.setCartDomain(cartDomain);*/
-	            Response response=customerDao.addCustomer(customer);
+				       // emailService.sendSimpleMessage(mail);
+				     
+						
+
+//					        
+//					        System.out.println("mailsend successfully");
+//					    	System.out.println("Done!");
+							
+
+					 
+				        
+				        
+					 	customerDao.addCustomer(customer);
+			            /*cartDomain.setCustomer(customer);
+			            cartDao.createCart(cartDomain);
+			            customer.setCartDomain(cartDomain);*/
+			            response=customerDao.addCustomer(customer);
+						return response;
+			} else {
+				response.setStatus(StatusCode.ERROR.name());
+				response.setMessage("Email id already exist");
 				return response;
+			}
+
 	            
 		 } catch (UnsupportedEncodingException ex) {
 	            ex.printStackTrace();
@@ -543,7 +547,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 
 
 	@Override
-	public void addAdmin(String email, String password) {
+	public void addAdmin(String email, String password, String name) {
 		// TODO Auto-generated method stub
 		CustomerDomain customerDomain=cr.findByEmail(email);
 		if(customerDomain==null) {
@@ -562,6 +566,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 //			String hashedPassword1 = passwordEncoder.encode(customerModel.getConfirmPassword( ));
 			
 			 cd.setPassword(hashedPassword);
+			 cd.setCustomerName(name);
 			//cd.setPassword(password);
 			cr.save(cd);
 		}
@@ -583,4 +588,14 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 		}
 		
 	}
+	
+	@Override
+	public boolean checkPassword(CustomerDomain customerDomain,String password) {
+		boolean isValid = false;
+		if(customerDomain != null) {
+			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+			isValid = passwordEncoder.matches(password,customerDomain.getPassword());
+		}
+		return isValid;
 	}
+}

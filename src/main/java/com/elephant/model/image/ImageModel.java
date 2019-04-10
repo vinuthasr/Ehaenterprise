@@ -29,6 +29,7 @@ public class ImageModel implements Serializable{
 	private Date modifiedDate;
 	private BannerModel bannerModel;
 	private Category categoryModel;
+	private int imageSequenceNo;
 	
 	
 	public Category getCategoryModel() {
@@ -111,6 +112,11 @@ public class ImageModel implements Serializable{
 	public void setDesc5(String desc5) {
 		this.desc5 = desc5;
 	}
-	
+	public int getImageSequenceNo() {
+		return imageSequenceNo;
+	}
+	public void setImageSequenceNo(int imageSequenceNo) {
+		this.imageSequenceNo = imageSequenceNo;
+	}
 	
 }
