@@ -1,33 +1,20 @@
 package com.elephant.service.uploadproduct;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddressList;
-import org.apache.poi.xssf.usermodel.XSSFDataValidation;
-import org.apache.poi.xssf.usermodel.XSSFDataValidationConstraint;
-import org.apache.poi.xssf.usermodel.XSSFDataValidationHelper;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbookType;
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,18 +23,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.category.CategoryRepository;
+import com.elephant.dao.subimage.SubImageDaoRepository;
 import com.elephant.dao.uploadproduct.ProductDao;
 import com.elephant.dao.uploadproduct.ProductRepository;
 import com.elephant.domain.category.Category;
+import com.elephant.domain.subimages.SubImageDomain;
 import com.elephant.domain.uploadproduct.ProductDomain;
 import com.elephant.mapper.category.CategoryMapper;
 import com.elephant.mapper.uploadproduct.ProductMapper;
-import com.elephant.model.category.CategoryModel;
+import com.elephant.model.subimagemodel.SubImageModel;
 import com.elephant.model.uploadproduct.ProductModel;
 import com.elephant.model.uploadproduct.ProductModel1;
 import com.elephant.response.Response;
@@ -79,6 +67,9 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Autowired
 	CategoryRepository categoryRepository;
+	
+	@Autowired
+	SubImageDaoRepository subImageDaoRepository;
 
 //	@Override
 //	public List<ProductModel> getProductByCatagory(String categoryName, String colors, Float discount, Double length,
@@ -112,33 +103,36 @@ public class ProductServiceImpl implements ProductService{
 			//double cp1=(model.getPrice()-((model.getDiscount()/100)*model.getPrice()));
 			double cp1=(model.getPrice()-((model.getDiscount()*model.getPrice())/100));
 			System.out.println(cp1);
-			System.out.println(cp1);
-			System.out.println(cp1);
-			System.out.println(cp1);
-			System.out.println(cp1);
-			System.out.println(cp1);
             domain.setCp(cp1);
 			
 			
-			
-			List<Category> domainList= categoryRepository.findAll();
-			
-			for(int i=0;i<domainList.size();i++) {
-				Category categoryDomain1=categoryRepository.findByCategoryName(categoryName);
-				if((categoryName.equals(domainList.get(i).getCategoryName())) && (categoryDomain1.isActive()==true)) {
-					//Category categoryDomain1=categoryrepository.findByCategoryName(categoryName);
-					domain.setCategory(categoryDomain1);
-					productRepository.save(domain);
-					response.setStatus(StatusCode.SUCCESS.name());
-					response.setMessage("product upload success");
+            if(null != categoryName) {
+            	Category categoryDomain1=categoryRepository.findByCategoryName(categoryName);
+            	if(categoryDomain1 != null) { //isActive need to check
+            		domain.setCategory(categoryDomain1);
+            	} else {
+            		response.setStatus(StatusCode.ERROR.name());
+					response.setMessage("Category name is not found");
 					return response;
-					
-				}
-				
+            	}
+            }
+            
+            productRepository.save(domain);
+			
+			SubImageDomain subImageDomain = null;
+			for(SubImageModel subImageModel:model.getSubImageListModel()) {
+				subImageDomain = new SubImageDomain();
+				BeanUtils.copyProperties(subImageModel, subImageDomain);
+				subImageDomain.setProductDomain(domain);
+				subImageDaoRepository.save(subImageDomain);
+				subImageDomain = null;
 			}
-			response.setStatus(StatusCode.ERROR.name());
-			response.setMessage("Category is not found");
-			return response;}
+			
+			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage("product upload success");
+			return response;
+			
+		}
 			/*UploadProductDomain update=new UploadProductDomain();
             	BeanUtils.copyProperties(model, update);
             	Category category=categoryrepository.findByCategoryName(categoryName);
@@ -183,7 +177,7 @@ public class ProductServiceImpl implements ProductService{
 				
 			}}*/
    		catch (Exception ex) {
-    			logger.info("Exception AddProductService:" + ex.getMessage());
+    			logger.info("Exception AddProductService: " + ex.getMessage());
     		}
     		return null;
     			
@@ -252,7 +246,7 @@ public class ProductServiceImpl implements ProductService{
 						uploadProduct.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 						uploadProduct.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 						uploadProduct.setActive(true);
-						uploadProduct.setBlouse(cell.getStringCellValue());break;
+						break;
 					case 2:
 						cell.setCellType(Cell.CELL_TYPE_STRING);
 						uploadProduct.setBlouseColor(cell.getStringCellValue());break;

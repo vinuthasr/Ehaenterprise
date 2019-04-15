@@ -21,6 +21,7 @@ import com.elephant.constant.StatusCode;
 import com.elephant.domain.image.ImageDomain;
 import com.elephant.model.banner.BannerModel;
 import com.elephant.model.image.ImageModel;
+import com.elephant.model.subimagemodel.SubImageModel;
 import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.image.ImageService;
@@ -38,14 +39,12 @@ public class ImageController {
 	
 	//=======================post image====================
 	@RequestMapping(value="/post/ImageModel",method = RequestMethod.POST, produces = "application/json")
-	public Response postImage(@RequestBody ImageModel imageModel  ,HttpServletRequest request,HttpServletResponse response) throws Exception {
+	public Response postImage(@RequestBody ImageModel imageModel,HttpServletRequest request,HttpServletResponse response) throws Exception {
 		logger.info("addimage: Received request URL:" + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		logger.info("addimage: Received Request: " + CommonUtils.getJson(imageModel));
 		
-		String bannerArea=imageModel.getBannerModel().getBannerArea();
-		String categoryName = imageModel.getCategoryModel().getCategoryName();
-		return imageService.postImage(imageModel,bannerArea,categoryName);
+		return imageService.postImage(imageModel);
 	}
 	
 	//=====================get all image=================
@@ -113,7 +112,7 @@ public class ImageController {
 	public String getImageByBannerArea(@PathVariable(value="bannerArea") String bannerArea) {
 		List<ImageModel> imageModel = imageService.getImageByBannerArea(bannerArea);
 		Response res = CommonUtils.getResponseObject("List of images");
-		if (imageModel.isEmpty()) {
+		if (imageModel == null) {
 			ErrorObject err = CommonUtils.getErrorResponse("images Not Found", "images Not Found");
 			res.setErrors(err);
 			res.setStatus(StatusCode.ERROR.name());

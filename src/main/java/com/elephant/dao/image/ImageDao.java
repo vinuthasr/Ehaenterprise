@@ -2,6 +2,7 @@ package com.elephant.dao.image;
 
 import java.util.List;
 
+import com.elephant.domain.banner.BannerDomain;
 import com.elephant.domain.image.ImageDomain;
 import com.elephant.response.Response;
 
@@ -20,6 +21,6 @@ public interface ImageDao {
 
 	public ImageDomain getPath(String imagePath)throws Exception ;
 
-
+    public boolean isRecordExist(BannerDomain bannerDomain,int imageSequenceNo);
 }
 

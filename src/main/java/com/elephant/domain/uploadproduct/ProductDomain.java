@@ -1,26 +1,23 @@
 package com.elephant.domain.uploadproduct;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
-
-import com.elephant.controller.imageList.ImageListConverter;
 import com.elephant.domain.category.Category;
+import com.elephant.domain.subimages.SubImageDomain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -57,9 +54,6 @@ public class ProductDomain implements Serializable {
 	@Column(name="quantity")
 	private int quantity;
 	
-	
-	
-	
 	@Column(name="isActive")
 	private boolean isActive;
 	
@@ -81,28 +75,42 @@ public class ProductDomain implements Serializable {
 	@Column(name="occassion")
     private String occassion;
 	
+	@OneToMany(targetEntity=SubImageDomain.class, mappedBy = "productDomain", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<SubImageDomain> subImageList;
+	
 	@JsonBackReference@LazyCollection(LazyCollectionOption.TRUE)
 	@ManyToOne(cascade=CascadeType.ALL,fetch = FetchType.LAZY,optional=true)
-    @JoinColumn(name="categoryId")//,referencedColumnName = "categoryName",insertable=true)
+	@JoinColumn(name="categoryId")//,referencedColumnName = "categoryName",insertable=true)
 	private Category category;
+	
+	@Column(name="fabricPurity")
 	private String fabricPurity;
+	
+	@Column(name = "pattern")
 	private String pattern;
+	
+	@Column(name = "border")
 	private String border;
+	
+	@Column(name="borderType")
 	private String borderType;
+	
+	@Column(name="zariType")
 	private String zariType;
+	
+	@Column(name = "length")
 	private Double length;
-	private String blouse;
+	
+	@Column(name="blouseColor")
 	private String blouseColor;
+	
+	@Column(name ="blouseLength" )
 	private Double blouseLength;
 	
+	@Column(name ="mainImageUrl" )
 	private String mainImageUrl;
-	@Convert(converter = ImageListConverter.class)
-	//private List<UploadProductDomain> otherImageUrls=new ArrayList<>();
-   	private List<String> otherImageUrls=new ArrayList<>();
-		
-	public List<String> getOtherImageUrls() {
-		return otherImageUrls;
-	}
+	//@Convert(converter = ImageListConverter.class)
+	
 	
 	public Long getInStock() {
 		return inStock;
@@ -110,9 +118,7 @@ public class ProductDomain implements Serializable {
 	public void setInStock(Long inStock) {
 		this.inStock = inStock;
 	}
-	public void setOtherImageUrls(List<String> otherImageUrls) {
-		this.otherImageUrls = otherImageUrls;
-	}
+	
 	public Category getCategory() {
 		return category;
 	}
@@ -233,12 +239,7 @@ public class ProductDomain implements Serializable {
 	public void setLength(Double length) {
 		this.length = length;
 	}
-	public String getBlouse() {
-		return blouse;
-	}
-	public void setBlouse(String blouse) {
-		this.blouse = blouse;
-	}
+	
 	public String getBlouseColor() {
 		return blouseColor;
 	}
@@ -266,5 +267,15 @@ public class ProductDomain implements Serializable {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
+
+	public List<SubImageDomain> getSubImageList() {
+		return subImageList;
+	}
+
+	public void setSubImageList(List<SubImageDomain> subImageList) {
+		this.subImageList = subImageList;
+	}
+	
+	
 	
 }

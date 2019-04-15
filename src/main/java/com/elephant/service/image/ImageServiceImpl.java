@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
@@ -12,6 +13,7 @@ import com.elephant.dao.banner.BannerRepository;
 import com.elephant.dao.category.CategoryRepository;
 import com.elephant.dao.image.ImageDao;
 import com.elephant.dao.image.ImageDaoRepository;
+import com.elephant.dao.subimage.SubImageDaoRepository;
 import com.elephant.domain.banner.BannerDomain;
 import com.elephant.domain.category.Category;
 import com.elephant.domain.image.ImageDomain;
@@ -39,13 +41,17 @@ public class ImageServiceImpl implements ImageService {
 	@Autowired
 	ImageDaoRepository imageDaoRepository ;
 	
+
+	
 	@Autowired
 	CategoryRepository categoryRepository;
 
 	@Override
-	public Response postImage(ImageModel imageModel, String bannerArea,String categoryName) throws Exception {
+	@Transactional(rollbackFor = Exception.class)
+	public Response postImage(ImageModel imageModel)throws Exception{
 		Response response=CommonUtils.getResponseObject("Post Image");
-		
+		String bannerArea = imageModel.getBannerModel().getBannerArea();
+		String categoryName = imageModel.getCategoryDomain().getCategoryName();
 		try {
 		ImageDomain imageDomain=new ImageDomain();
 		BeanUtils.copyProperties(imageModel, imageDomain);
@@ -75,21 +81,17 @@ public class ImageServiceImpl implements ImageService {
 		
 		if(imageModel.getImageSequenceNo() != 0) {
 			if(!bannerArea.equalsIgnoreCase(Constants.BANNER_SLIDER_AREA)) {
-				List<ImageModel> imageList = getImageByBannerArea(bannerArea);
-				int seqenceNo = 0;
-				for(ImageModel imageModelItem : imageList){
-					seqenceNo = imageModelItem.getImageSequenceNo();
-					if(imageModel.getImageSequenceNo() ==seqenceNo) {
-						response.setStatus(StatusCode.ERROR.name());
-						response.setMessage("Image Sequence number already exist");
-						return response;
-					}
+				boolean isRecordExist = imageDao.isRecordExist(bannerDomain, imageModel.getImageSequenceNo());
+				if(isRecordExist ==  true) {
+					response.setStatus(StatusCode.ERROR.name());
+					response.setMessage("Image Sequence number already exist");
+					return response;
 				}
 			}
-			
 		}
 		
 		imageDaoRepository.save(imageDomain);
+		
 		response.setStatus(StatusCode.SUCCESS.name());
 		response.setMessage("Image Post is Successfull");
 		

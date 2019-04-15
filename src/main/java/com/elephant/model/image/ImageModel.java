@@ -14,8 +14,7 @@ public class ImageModel implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = -4926909157084139936L;
-	
-	
+
 	private long imageId;
 	private String imageName;
 	private String imagePath;
@@ -25,25 +24,13 @@ public class ImageModel implements Serializable{
 	private String desc3;
 	private String desc4;
 	private String desc5;
+	private int imageSequenceNo;
 	private Date createdDate;
 	private Date modifiedDate;
 	private BannerModel bannerModel;
-	private Category categoryModel;
-	private int imageSequenceNo;
+	private Category categoryDomain;
 	
 	
-	public Category getCategoryModel() {
-		return categoryModel;
-	}
-	public void setCategoryModel(Category categoryModel) {
-		this.categoryModel = categoryModel;
-	}
-	public BannerModel getBannerModel() {
-		return bannerModel;
-	}
-	public void setBannerModel(BannerModel bannerModel) {
-		this.bannerModel = bannerModel;
-	}
 	public long getImageId() {
 		return imageId;
 	}
@@ -56,7 +43,6 @@ public class ImageModel implements Serializable{
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
 	}
-
 	public String getImagePath() {
 		return imagePath;
 	}
@@ -93,19 +79,6 @@ public class ImageModel implements Serializable{
 	public void setDesc4(String desc4) {
 		this.desc4 = desc4;
 	}
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
-	public Date getModifiedDate() {
-		return modifiedDate;
-	}
-	public void setModifiedDate(Date modifiedDate) {
-		this.modifiedDate = modifiedDate;
-	}
-		
 	public String getDesc5() {
 		return desc5;
 	}
@@ -118,5 +91,31 @@ public class ImageModel implements Serializable{
 	public void setImageSequenceNo(int imageSequenceNo) {
 		this.imageSequenceNo = imageSequenceNo;
 	}
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
 	
+	public BannerModel getBannerModel() {
+		return bannerModel;
+	}
+	public void setBannerModel(BannerModel bannerModel) {
+		this.bannerModel = bannerModel;
+	}
+	
+	public Category getCategoryDomain() {
+		return categoryDomain;
+	}
+	public void setCategoryDomain(Category categoryDomain) {
+		this.categoryDomain = categoryDomain;
+	}
+
 }

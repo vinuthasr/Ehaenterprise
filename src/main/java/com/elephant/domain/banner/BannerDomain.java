@@ -45,18 +45,6 @@ public class BannerDomain  implements Serializable{
 	@Column(name="ModifiedDate")
 	private Date ModifiedDate;
 	
-	public Date getCategoryName() {
-		return categoryName;
-	}
-
-	public void setCategoryName(Date categoryName) {
-		this.categoryName = categoryName;
-	}
-
-	@Column(name="categoryName")
-	private Date categoryName;
-	
-	
 	@OneToMany(mappedBy="bannerDomain", cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	private List<ImageDomain> imageDomain;
 	

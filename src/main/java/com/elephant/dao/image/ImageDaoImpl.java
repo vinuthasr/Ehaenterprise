@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.elephant.constant.StatusCode;
+import com.elephant.domain.banner.BannerDomain;
 import com.elephant.domain.image.ImageDomain;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
@@ -112,5 +113,22 @@ public class ImageDaoImpl implements ImageDao{
 		return null;
 	}
 
+	@Override
+	public boolean isRecordExist(BannerDomain bannerDomain, int imageSequenceNo) {
+		try {
+			String hql="from ImageDomain where bannerDomain=?1 and imageSequenceNo=?2";
+			ImageDomain domain = (ImageDomain) entityManager.createQuery(hql)
+					.setParameter(1, bannerDomain)
+					.setParameter(2, imageSequenceNo).getSingleResult();
+			if(domain != null)
+				return true;
+			}
+			catch(Exception e) {
+				System.out.println("exception "+e);
+			}
+		return false;
+	}
+
+	
 }
 

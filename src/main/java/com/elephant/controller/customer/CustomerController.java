@@ -1,7 +1,7 @@
  package com.elephant.controller.customer;
 
 import java.security.Principal;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,10 +38,7 @@ import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.customer.CustomerService;
 import com.elephant.utils.CommonUtils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import scala.collection.mutable.HashMap;
 
 
 //@Controller
@@ -238,7 +235,8 @@ public class CustomerController {
 	
 	 @PostMapping(value="/signin",produces="application/json")
 	    public ResponseEntity<?> authenticateUser(@Valid @RequestBody CustomerModel loginRequest) throws Exception {
-		 	
+		
+		 HashMap<String,Object> loginMap = new HashMap<String, Object>();
 		   if(cr != null) {
 			   CustomerDomain customerDomain = cr.findByEmail(loginRequest.getEmail());
 			   boolean isValidPwd = customerService.checkPassword(customerDomain,loginRequest.getPassword());
@@ -253,26 +251,29 @@ public class CustomerController {
 				        
 				        
 				        SecurityContextHolder.getContext().setAuthentication(authentication);
-	
 				        String jwt = jwtProvider.generateJwtToken(authentication);
-				        List<String> loginMap = new ArrayList<String>();		
-				        
-				        loginMap.add(new JwtResponse(jwt).getAccessToken());
-				        loginMap.add(customerDomain.getCustomerName());
-				        loginMap.add(loginRequest.getEmail());
-				        return ResponseEntity.ok().body(loginMap);
+				        loginMap.put("jwt", new JwtResponse(jwt).getAccessToken());
+				        loginMap.put("userName", customerDomain.getCustomerName());
+				        loginMap.put("email", customerDomain.getEmail());
 			        }
-			        
 		            else 
-			        return ResponseEntity.ok("Email is not verified");
+		            {
+		            	loginMap.put("status", StatusCode.ERROR.name());
+		            	loginMap.put("message", "Email is not verified");
+		            	
+		            }
+			        
 			   } else {
-				   return ResponseEntity.ok("Username / Password is incorrect");
+				    loginMap.put("status", StatusCode.ERROR.name());
+	            	loginMap.put("message", "Username / Password is incorrect");
 			   }
 			   
 		   } else {
-			   return ResponseEntity.ok("Username / Password is incorrect");
+			    loginMap.put("status", StatusCode.ERROR.name());
+           		loginMap.put("message", "Username / Password is incorrect");
 		   }
-            
+		   
+		   return ResponseEntity.ok().body(loginMap);
             
 	    }
 

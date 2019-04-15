@@ -1,19 +1,9 @@
 package com.elephant.model.uploadproduct;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
-
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
-
-import com.elephant.controller.imageList.ImageListConverter;
+import com.elephant.model.subimagemodel.SubImageModel;
 
 public class ProductModel implements Serializable {
 
@@ -28,39 +18,27 @@ public class ProductModel implements Serializable {
 	private Long inStock;
 	private double cp;
 	private int quantity;
-	
-	
 	private boolean isActive;
 	private String uploadDate;
 	private String modifiedDate;
 	private String materialType;
 	private String collectionDesc;
 	private String colors;
-	
-	
 	private String fabricPurity;
 	private String pattern;
 	private String border;
 	private String borderType;
 	private String zariType;
 	private Double length;
-	private String blouse;
 	private String blouseColor;
 	private Double blouseLength;
     private String occassion;
-    
     private String mainImageUrl;
-    @Convert(converter = ImageListConverter.class)
-	//private List<String> otherImageUrls= new ArrayList<>();
     
-	private List<String> otherImageUrls=new ArrayList<>();
+    private List<SubImageModel> subImageListModel;
+    
+   // @Convert(converter = ImageListConverter.class)
 	
-	public List<String> getOtherImageUrls() {
-		return otherImageUrls;
-	}
-	public void setOtherImageUrls(List<String> otherImageUrls) {
-		this.otherImageUrls = otherImageUrls;
-	}
 	
 	public Long getInStock() {
 		return inStock;
@@ -178,12 +156,7 @@ public class ProductModel implements Serializable {
 	public void setLength(Double length) {
 		this.length = length;
 	}
-	public String getBlouse() {
-		return blouse;
-	}
-	public void setBlouse(String blouse) {
-		this.blouse = blouse;
-	}
+	
 	public String getBlouseColor() {
 		return blouseColor;
 	}
@@ -215,7 +188,13 @@ public class ProductModel implements Serializable {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	
+    
+	public List<SubImageModel> getSubImageListModel() {
+		return subImageListModel;
+	}
+	public void setSubImageListModel(List<SubImageModel> subImageListModel) {
+		this.subImageListModel = subImageListModel;
+	}
 
 }
 	

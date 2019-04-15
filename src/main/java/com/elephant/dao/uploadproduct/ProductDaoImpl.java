@@ -428,12 +428,10 @@ public class ProductDaoImpl implements ProductDao {
 			up.setBorderType(update.getBorderType());
 			up.setZariType(update.getZariType());
 			up.setLength(update.getLength());
-			up.setBlouse(update.getBlouse());
 			up.setBlouseColor(update.getBlouseColor());
 			up.setBlouseLength(update.getBlouseLength());
 			
 			up.setMainImageUrl(update.getMainImageUrl());
-			up.setOtherImageUrls(update.getOtherImageUrls());
 			
 			entitymanager.flush();
 			response.setStatus(StatusCode.SUCCESS.name());

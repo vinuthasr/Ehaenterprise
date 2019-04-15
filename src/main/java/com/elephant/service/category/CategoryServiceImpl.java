@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import com.elephant.constant.StatusCode;
 import com.elephant.dao.category.CategoryDao;
 import com.elephant.dao.category.CategoryRepository;
 import com.elephant.dao.uploadproduct.ProductDao;
@@ -56,57 +57,66 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 	@SuppressWarnings({ "deprecation", "unused" })
 	@Override
 	public Response addCategories(CategoryModel model) throws Exception {
-		Category update=new Category();
+		Response response=CommonUtils.getResponseObject("Add Category");
+		Category categoryRep = categoryRepository.findByCategoryName(model.getCategoryName());
+		if(categoryRep != null) {
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Category name already exist");
+			return response;
+		} else {
+			Category update=new Category();
+			
+			try {
+							
+	            	BeanUtils.copyProperties(model, update);
+		            update.setCategoryId(CommonUtils.generateRandomId());
+		            update.setCategoryName(model.getCategoryName());
+		            update.setDescription(model.getDescription());
+		            update.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
+	                update.setCreatedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
+	                update.setActive(true);
+	               try {
+	            	   if(new Date().before(new Date(model.getStartingDateAndTime()))) {
+	            		   if(new Date(model.getEndingDateAndTime()) != null)
+	            			   update.setStartingDateAndTime(new Date(model.getStartingDateAndTime()));}
+	                	//else {System.out.println("Enter Correct Date And Time");}
+	                	
+	                	if(new Date(model.getEndingDateAndTime()).after(new Date(model.getStartingDateAndTime()))) {
+	                		if((new Date(model.getStartingDateAndTime()) != null))
+	                			update.setEndingDateAndTime(new Date(model.getEndingDateAndTime()));}
+	                	//else {System.out.println("Enter Correct Ending Date And Time");}
+	                	
+	                	/*if(new Date().equals(new Date(model.getEndingDateAndTime()))) {
+	                		update.setActive(false);
+	                	}*/
+	                }
+	               
+	                catch (Exception e) {
+						e.printStackTrace();	
+					}
+	               /* try {
+	                	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
+	            		Date dateStart=sdf.parse(model.getStartingDateAndTime());
+	            		Date dateEnd=sdf.parse(model.getEndingDateAndTime());
+	            		Date todayDate=new Date();
+	            		
+	            		if(todayDate.after(dateStart)) {
+						update.setStartingDateAndTime(dateStart);}
+	            		else {System.out.println("Enter Correct Date and Time");}
+	            		//if(dateStart.after(dateEnd)) 
+						update.setEndingDateAndTime(dateEnd);
+					} catch (Exception e) {
+						e.getMessage();
+					}*/
+	                response = categoryDao.addCategories(update);
+	    			return response;
+	    		}
+	    		catch (Exception ex) {
+	    			logger.info("Exception Service:" + ex.getMessage());
+	    		}
+		}
 		
-		try {
-						
-            	BeanUtils.copyProperties(model, update);
-	            update.setCategoryId(CommonUtils.generateRandomId());
-	            update.setCategoryName(model.getCategoryName());
-	            update.setDescription(model.getDescription());
-	            update.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-                update.setCreatedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-                update.setActive(true);
-               try {
-            	   if(new Date().before(new Date(model.getStartingDateAndTime()))) {
-            		   if(new Date(model.getEndingDateAndTime()) != null)
-            			   update.setStartingDateAndTime(new Date(model.getStartingDateAndTime()));}
-                	//else {System.out.println("Enter Correct Date And Time");}
-                	
-                	if(new Date(model.getEndingDateAndTime()).after(new Date(model.getStartingDateAndTime()))) {
-                		if((new Date(model.getStartingDateAndTime()) != null))
-                			update.setEndingDateAndTime(new Date(model.getEndingDateAndTime()));}
-                	//else {System.out.println("Enter Correct Ending Date And Time");}
-                	
-                	/*if(new Date().equals(new Date(model.getEndingDateAndTime()))) {
-                		update.setActive(false);
-                	}*/
-                }
-               
-                catch (Exception e) {
-					e.printStackTrace();	
-				}
-               /* try {
-                	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
-            		Date dateStart=sdf.parse(model.getStartingDateAndTime());
-            		Date dateEnd=sdf.parse(model.getEndingDateAndTime());
-            		Date todayDate=new Date();
-            		
-            		if(todayDate.after(dateStart)) {
-					update.setStartingDateAndTime(dateStart);}
-            		else {System.out.println("Enter Correct Date and Time");}
-            		//if(dateStart.after(dateEnd)) 
-					update.setEndingDateAndTime(dateEnd);
-				} catch (Exception e) {
-					e.getMessage();
-				}*/
-                Response response = categoryDao.addCategories(update);
-    			return response;
-    		}
-    		catch (Exception ex) {
-    			logger.info("Exception Service:" + ex.getMessage());
-    		}
-    		return null;
+		return null;
     }
 	
 
