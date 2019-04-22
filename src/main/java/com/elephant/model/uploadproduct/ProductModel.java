@@ -35,7 +35,7 @@ public class ProductModel implements Serializable {
     private String occassion;
     private String mainImageUrl;
     
-    private List<SubImageModel> subImageListModel;
+    private List<SubImageModel> subImageList;
     
    // @Convert(converter = ImageListConverter.class)
 	
@@ -188,12 +188,11 @@ public class ProductModel implements Serializable {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-    
-	public List<SubImageModel> getSubImageListModel() {
-		return subImageListModel;
+	public List<SubImageModel> getSubImageList() {
+		return subImageList;
 	}
-	public void setSubImageListModel(List<SubImageModel> subImageListModel) {
-		this.subImageListModel = subImageListModel;
+	public void setSubImageList(List<SubImageModel> subImageList) {
+		this.subImageList = subImageList;
 	}
 
 }

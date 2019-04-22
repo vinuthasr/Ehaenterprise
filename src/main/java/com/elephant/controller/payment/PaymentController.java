@@ -1,5 +1,8 @@
 package com.elephant.controller.payment;
 
+import java.security.Principal;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -7,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
+import com.elephant.constant.Constants;
+import com.elephant.model.address.AddressModel;
+import com.elephant.model.cartitem.CartItemModel;
 import com.elephant.service.payment.PaypalService;
 import com.elephant.utils.URLUtils;
 import com.paypal.api.payments.Links;
@@ -39,18 +46,23 @@ public class PaymentController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/pay")
-	public String pay(HttpServletRequest request){
+	public String pay(@RequestBody AddressModel addressModel,
+					 @RequestBody List<CartItemModel> cartItemModelList,
+					 @RequestParam("paymentId") String paymentDesc,		
+						Principal pr,HttpServletRequest request){
 		String cancelUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_CANCEL_URL;
 		String successUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_SUCCESS_URL;
 		try {
 			Payment payment = paypalService.createPayment(
-					50.00, 
-					"USD", 
+					cartItemModelList, 
+					Constants.CURRENCY, 
 					PaypalPaymentMethod.paypal, 
 					PaypalPaymentIntent.sale,
-					"Total cost 50", 
+					paymentDesc, 
 					cancelUrl, 
-					successUrl);
+					successUrl,
+					addressModel,
+					pr.getName());
 			paypalService.add(payment);
 			for(Links links : payment.getLinks()){
 				if(links.getRel().equals("approval_url")){

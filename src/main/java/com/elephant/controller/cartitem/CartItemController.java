@@ -26,7 +26,7 @@ import com.elephant.service.cartitem.CartItemsService;
 import com.elephant.utils.CommonUtils;
 
 @RestController
-@RequestMapping(value="/cartitem")
+@RequestMapping(value="/v1/cartitem")
 @CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class CartItemController {
 
@@ -36,7 +36,7 @@ public class CartItemController {
 	@Autowired
 	CustomerRepository customerDaoRepository;
 	
-	@PreAuthorize("hasRole('ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping(value="/save" , method = RequestMethod.POST,produces="application/json")
 	public Response saveItem(@RequestBody List<CartItemModel> cartItemModel,  Principal currentUser) {
 		

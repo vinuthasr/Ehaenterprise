@@ -13,6 +13,8 @@ import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
 import com.elephant.dao.payment.PaymentDao;
 import com.elephant.domain.payment.PaymentDomain;
+import com.elephant.model.address.AddressModel;
+import com.elephant.model.cartitem.CartItemModel;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Item;
 import com.paypal.api.payments.ItemList;
@@ -37,52 +39,56 @@ public class PaypalService {
 	//@Autowired
 	
 	public Payment createPayment(
-			Double total, 
+			List<CartItemModel> cartItemModelList, 
 			String currency, 
 			PaypalPaymentMethod method, 
 			PaypalPaymentIntent intent, 
 			String description, 
 			String cancelUrl, 
-			String successUrl) throws PayPalRESTException{
+			String successUrl,
+			AddressModel addressModel,
+			String userName) throws PayPalRESTException{
+		double total =0.0;
+		//amount.setTotal(total);
+		
+		ShippingAddress shippingAddress = null;
+		if(addressModel != null) {
+		    shippingAddress = new ShippingAddress();
+			shippingAddress.setCity(addressModel.getCity());
+			shippingAddress.setLine1(addressModel.getAddressline1());
+			shippingAddress.setPostalCode(addressModel.getPincode());
+			shippingAddress.setState(addressModel.getState());
+			shippingAddress.setCountryCode(addressModel.getCountry());
+			shippingAddress.setRecipientName(userName);
+		}
+		
+		Item item=null;
+		ItemList itemList=new ItemList();
+		List<Item> items=new ArrayList<Item>();
+		
+		for(CartItemModel cartItem:cartItemModelList) {
+			item=new Item();
+			item.setPrice(cartItem.getProduct().getPrice().toString());
+			item.setQuantity(Integer.toString(cartItem.getQuantity()));
+			item.setSku(cartItem.getSku());
+			item.setCurrency(currency);
+			total = total + (cartItem.getProduct().getPrice() *cartItem.getQuantity());
+			items.add(item);
+		}
+		itemList.setShippingAddress(shippingAddress);
+		
+		itemList.setItems(items);
+		
 		Amount amount = new Amount();
 		amount.setCurrency(currency);
 		total = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP).doubleValue();
 		amount.setTotal(String.format("%.2f", total));
-		//amount.setTotal(total);
-		ShippingAddress shippingAddress = new ShippingAddress();
-		shippingAddress.setCity("Boston");
-		shippingAddress.setLine1("250 Beacon St #5");
-		shippingAddress.setPostalCode("02116");
-		shippingAddress.setState("MA");
-		shippingAddress.setCountryCode("US");
-		shippingAddress.setRecipientName("MIGUEL CAREY");
 		
-		Item item=new Item();
-		item.setPrice("25.00");
-		item.setQuantity("2");
-		item.setSku("123456789");
-		item.setCurrency(currency);
-		
-		
-       ItemList itemList=new ItemList();
 		Transaction transaction = new Transaction();
 		transaction.setDescription(description);
 		transaction.setAmount(amount);
-		itemList.setShippingAddress(shippingAddress);
-		
-		
-		
-	    List<Item>items=new ArrayList<>();
-	    items.add(item);
-		
-		itemList.setItems(items);
 		transaction.setItemList(itemList);
-	
 		
-		
-		
-		
-
 		List<Transaction> transactions = new ArrayList<>();
 		transactions.add(transaction);
 
@@ -94,16 +100,12 @@ public class PaypalService {
 		payment.setIntent(intent.toString());
 		payment.setPayer(payer);
 		payment.setTransactions(transactions);
-	
-		
-	
 		
 		RedirectUrls redirectUrls = new RedirectUrls();
 		redirectUrls.setCancelUrl(cancelUrl);
 		redirectUrls.setReturnUrl(successUrl);
 		payment.setRedirectUrls(redirectUrls);
 		
-
 		return payment.create(apiContext);
 	}
 	

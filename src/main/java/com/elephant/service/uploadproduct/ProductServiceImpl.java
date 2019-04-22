@@ -96,7 +96,7 @@ public class ProductServiceImpl implements ProductService{
 			ProductDomain domain=new ProductDomain();
 			BeanUtils.copyProperties(model, domain);
 			domain.setProductId(CommonUtils.generateRandomId());
-			domain.setQuantity(1);
+			//domain.setQuantity(1);
 			domain.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
             domain.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 			domain.setActive(true);
@@ -117,10 +117,11 @@ public class ProductServiceImpl implements ProductService{
             	}
             }
             
+            domain.setSubImageList(null);
             productRepository.save(domain);
 			
 			SubImageDomain subImageDomain = null;
-			for(SubImageModel subImageModel:model.getSubImageListModel()) {
+			for(SubImageModel subImageModel:model.getSubImageList()) {
 				subImageDomain = new SubImageDomain();
 				BeanUtils.copyProperties(subImageModel, subImageDomain);
 				subImageDomain.setProductDomain(domain);

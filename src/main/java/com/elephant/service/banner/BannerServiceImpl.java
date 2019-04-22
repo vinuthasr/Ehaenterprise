@@ -120,8 +120,11 @@ public class BannerServiceImpl implements BannerService{
 
 	public List<BannerModel> getAllBanners() {
 		try {
-			List<BannerDomain> bannerDomain= bannerDao.getAllBanners();
-			return bannerMapper.entityList(bannerDomain);
+			List<BannerDomain> bannerDomainList= bannerDao.getAllBanners();
+			for(BannerDomain bannDom:bannerDomainList) {
+				bannDom.setImageDomain(null);
+			}
+			return bannerMapper.entityList(bannerDomainList);
 		} catch (Exception ex) {
 			logger.info("Exception getUsers:", ex);
 		}

@@ -5,6 +5,7 @@ import java.util.Date;
 
 import com.elephant.domain.category.Category;
 import com.elephant.model.banner.BannerModel;
+import com.elephant.model.category.CategoryModel;
 
 public class ImageModel implements Serializable{
 
@@ -28,7 +29,7 @@ public class ImageModel implements Serializable{
 	private Date createdDate;
 	private Date modifiedDate;
 	private BannerModel bannerModel;
-	private Category categoryDomain;
+	private CategoryModel categoryDomain;
 	
 	
 	public long getImageId() {
@@ -110,12 +111,18 @@ public class ImageModel implements Serializable{
 	public void setBannerModel(BannerModel bannerModel) {
 		this.bannerModel = bannerModel;
 	}
-	
-	public Category getCategoryDomain() {
+//	public Category getCategoryDomain() {
+//		return categoryDomain;
+//	}
+//	public void setCategoryDomain(Category categoryDomain) {
+//		this.categoryDomain = categoryDomain;
+//	}
+	public CategoryModel getCategoryDomain() {
 		return categoryDomain;
 	}
-	public void setCategoryDomain(Category categoryDomain) {
+	public void setCategoryDomain(CategoryModel categoryDomain) {
 		this.categoryDomain = categoryDomain;
 	}
-
+	
+	
 }

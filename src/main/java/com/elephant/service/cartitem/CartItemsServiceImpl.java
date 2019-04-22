@@ -91,7 +91,8 @@ public class CartItemsServiceImpl implements CartItemsService{
 			    			}
 			    			
 			    			else {
-			    				System.out.println("quantity is more:" );
+			    				response.setStatus(StatusCode.ERROR.name());
+			    		        response.setMessage("quantity is more:");
 			    			}
 			    			
 			    		}
@@ -113,6 +114,8 @@ public class CartItemsServiceImpl implements CartItemsService{
 						    				}else {
 						    					//response.getObject().add("quantity is more for:"+cartItemDummyModel.getSku());
 						    					logger.info("quantity is more for:"+cartItemModel.getSku());
+						    					response.setStatus(StatusCode.ERROR.name());
+							    		        response.setMessage("quantity is more for: " +cartItemModel.getSku());
 						    				    					
 						    				}
 						    			}
@@ -144,7 +147,9 @@ public class CartItemsServiceImpl implements CartItemsService{
 					cartItemDaoRepository.save(cartItemDomain);
 					listCartItemDomain.add(cartItemDomain);
 					//response.getObject().add("save item is succefull for: "+cartItemDummyModel.getSku());			    				
-    				logger.info("save item is success: for "+cartItemModel.getSku());					
+    				logger.info("save item is success: for "+cartItemModel.getSku());			
+    				response.setStatus(StatusCode.SUCCESS.name());
+    		        response.setMessage("save item is success: for "+cartItemModel.getSku());
 			        }			        
 			        
     	}///end of cartdummymodel for loop 

@@ -213,12 +213,6 @@ public class OrderServiceImpl implements OrderService {
 		response.setMessage1("Order Creation is Successfull");
 		System.out.println("Order Creation is Successfull");
 		System.out.println("order id"+orderDomain1.getOrderId());
-		System.out.println("order id"+orderDomain1.getOrderId());
-		System.out.println("order id"+orderDomain1.getOrderId());
-		System.out.println("order id"+orderDomain1.getOrderId());
-		System.out.println("order id"+orderDomain1.getOrderId());
-		System.out.println("order id"+orderDomain1.getOrderId());
-		System.out.println("order id"+orderDomain1.getOrderId());
 		
 		/*-------------------------Clear Cart amount after order Confirmation-------------------------------*/
 		//cartDomain.setGrandtotal(0);
@@ -268,7 +262,7 @@ public class OrderServiceImpl implements OrderService {
 	        mail.setSubject("Sending Email with Thymeleaf HTML Template Example");
 	   
 	       
-	        List<OrderDetailDomain> kkk=orderDaoRepository.findByOrderId(1).getOrderDetailDomain();
+	        List<OrderDetailDomain> kkk=orderDaoRepository.findByOrderId(orderDomain1.getOrderId()).getOrderDetailDomain();
 	      
 	        	
 	        		System.out.println(kkk);
@@ -305,7 +299,7 @@ public class OrderServiceImpl implements OrderService {
 			
 	}
 		
-		return null;
+		return response;
 
 	}	
 	

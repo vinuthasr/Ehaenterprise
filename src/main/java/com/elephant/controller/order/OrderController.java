@@ -39,7 +39,7 @@ import com.elephant.utils.CommonUtils;
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 @RestController
-@RequestMapping(value="/Orders")
+@RequestMapping(value="/v1/Orders")
 @CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class OrderController {
 	
