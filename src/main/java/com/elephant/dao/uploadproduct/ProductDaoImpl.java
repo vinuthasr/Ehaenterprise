@@ -430,6 +430,7 @@ public class ProductDaoImpl implements ProductDao {
 			up.setLength(update.getLength());
 			up.setBlouseColor(update.getBlouseColor());
 			up.setBlouseLength(update.getBlouseLength());
+			up.setHeaderDesc(update.getHeaderDesc());
 			
 			up.setMainImageUrl(update.getMainImageUrl());
 			

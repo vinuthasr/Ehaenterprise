@@ -7,14 +7,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elephant.constant.StatusCode;
-import com.elephant.domain.order.OrderDomain;
 import com.elephant.model.address.AddressModel;
 import com.elephant.model.order.OrderModel;
 import com.elephant.model.orderdetail.OrderDetailModel;
@@ -35,8 +30,6 @@ import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.order.OrderService;
 import com.elephant.utils.CommonUtils;
-
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 @RestController
 @RequestMapping(value="/v1/Orders")

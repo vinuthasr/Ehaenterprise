@@ -27,7 +27,7 @@ import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 
-@Controller
+@RestController
 @RequestMapping("/v1")
 //@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class PaymentController {
@@ -48,7 +48,7 @@ public class PaymentController {
 	@RequestMapping(method = RequestMethod.POST, value = "/pay")
 	public String pay(@RequestBody AddressModel addressModel,
 					 @RequestBody List<CartItemModel> cartItemModelList,
-					 @RequestParam("paymentId") String paymentDesc,		
+					 @RequestParam("paymentDesc") String paymentDesc,		
 						Principal pr,HttpServletRequest request){
 		String cancelUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_CANCEL_URL;
 		String successUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_SUCCESS_URL;

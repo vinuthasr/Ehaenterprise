@@ -228,10 +228,12 @@ public class OrderServiceImpl implements OrderService {
 		/* -----------------------------dump cartItem to Order detail---------------------------------------*/ 
 		/*------------------------------------------&&------------------------------------------------------*/
 		/*----------------------------Product In stock should decrease after order is conformed-------------*/
+		ProductDomain productDomain = null;
+		OrderDetailDomain orderDetailDomain = null;
 		for(CartItemDomain cartItemDomain: customerDomain.getCartItemDomain()) {
 		
-			ProductDomain productDomain=cartItemDomain.getProduct();
-			OrderDetailDomain orderDetailDomain=new OrderDetailDomain();
+			productDomain=cartItemDomain.getProduct();
+			orderDetailDomain=new OrderDetailDomain();
 			
 			orderDetailDomain.setProductSku(productDomain.getSku());
 			orderDetailDomain.setProductImagePath(productDomain.getMainImageUrl());

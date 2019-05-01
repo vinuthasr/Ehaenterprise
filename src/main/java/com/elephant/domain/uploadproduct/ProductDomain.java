@@ -111,7 +111,15 @@ public class ProductDomain implements Serializable {
 	private String mainImageUrl;
 	//@Convert(converter = ImageListConverter.class)
 	
+	@Column(name ="headerDesc" )
+	private String headerDesc;
 	
+	public String getHeaderDesc() {
+		return headerDesc;
+	}
+	public void setHeaderDesc(String headerDesc) {
+		this.headerDesc = headerDesc;
+	}
 	public Long getInStock() {
 		return inStock;
 	}

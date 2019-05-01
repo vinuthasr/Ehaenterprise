@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
@@ -35,7 +37,7 @@ public interface ProductService {
 	
 	public Response deleteProduct(String productId, boolean isActive)throws Exception;
 
-	public void exportExcel(MultipartFile file, String categoryName)throws Exception;
+	public Response exportExcel(MultipartFile file)throws Exception;
 
 	public ProductModel getProductById(String productId)throws Exception;
 
@@ -95,6 +97,6 @@ public interface ProductService {
 
 	public List<ProductModel> getProductByCatagory1(ProductModel1 pm1);
 
-
+    public boolean createExcelTemplate(ServletContext context,HttpServletRequest request, HttpServletResponse response);
 
 }

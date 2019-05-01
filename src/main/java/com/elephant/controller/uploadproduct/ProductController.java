@@ -5,6 +5,7 @@ package com.elephant.controller.uploadproduct;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -171,13 +174,16 @@ public class ProductController {
 	
 	//-------------------------------Upload Product By Excel Sheet-------------------------------------
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
-	public ResponseEntity<String> importExcel(@RequestPart MultipartFile file,@RequestParam String categoryName,final HttpServletRequest request) {
+	public @ResponseBody String importExcel(@RequestPart MultipartFile file,final HttpServletRequest request) {
+		Response response = null;
 		try {
-			uploadproductservice.exportExcel(file,categoryName);
+		  response = uploadproductservice.exportExcel(file);
 		} 
-		catch (Exception e) {}
-		return new ResponseEntity<String>("Successfully uploaded - " + file.getOriginalFilename(),
-		new HttpHeaders(), HttpStatus.OK);
+		catch (Exception e) {
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Error while uploading "+e.toString());
+		}
+		return CommonUtils.getJson(response);
 	}
 
 	//-------------------------------- Get Product By Color------------------------------------
@@ -664,7 +670,7 @@ return null;
 
 	@SuppressWarnings("resource")
 	private byte[] getReportContent() throws IOException {
-		String[] columnshead = {"sku","quantity","saree_length","pattern","fabric_purity","border","border_type","zari_type","material_type","price", "discount", "blouse","blouse_color","blouse_length","saree_colors","collection_desc","occassion","main_imageUrl","otherImageUrls"};
+		String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric_purity","Border","border_type","zari_type","material_type","price", "discount","blouse_color","blouse_length","saree_colors","collection_desc","occassion","main_imageUrl","Sub Image1"};
 		// List<UploadProductDomain> domain =  new ArrayList<>();
 		Workbook workbook = new XSSFWorkbook();
 		 //CreationHelper createHelper = workbook.getCreationHelper();
@@ -672,16 +678,17 @@ return null;
 		
 		 
 		 Font headerFont = workbook.createFont();
-	        headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 14);
-	        headerFont.setColor(IndexedColors.RED.getIndex());
+	       // headerFont.setBold(true);
+	        headerFont.setFontHeightInPoints((short) 11);
+	        headerFont.setColor(IndexedColors.BLACK.getIndex());
+	        headerFont.setFontName("Calibri");
 	        
 	     CellStyle headerCellStyle = workbook.createCellStyle();
 	        headerCellStyle.setFont(headerFont);
-	        headerCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-	        headerCellStyle.setLeftBorderColor(IndexedColors.GREEN.getIndex());
+	       // headerCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
+	        //headerCellStyle.setLeftBorderColor(IndexedColors.GREEN.getIndex());
 	       // headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);	       
-	        headerCellStyle.setFillForegroundColor(IndexedColors.TAN.getIndex());
+	        headerCellStyle.setFillForegroundColor(IndexedColors.GOLD.getIndex());
 	        
 	        Row headerRow = sheet.createRow(0);
 	       
