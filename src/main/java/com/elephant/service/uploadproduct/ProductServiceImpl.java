@@ -19,10 +19,8 @@ import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -104,7 +102,7 @@ public class ProductServiceImpl implements ProductService{
 
 	
 	@Override
-	public Response addproduct(ProductModel model,String categoryName) throws Exception {
+	public Response addproduct(ProductModel model) throws Exception {
 		Response response=CommonUtils.getResponseObject("upload products");
 		try {
 			ProductDomain domain=new ProductDomain();
@@ -120,8 +118,8 @@ public class ProductServiceImpl implements ProductService{
             domain.setCp(cp1);
 			
 			
-            if(null != categoryName) {
-            	Category categoryDomain1=categoryRepository.findByCategoryName(categoryName);
+            if(null != model.getCategoryName()) {
+            	Category categoryDomain1=categoryRepository.findByCategoryName(model.getCategoryName());
             	if(categoryDomain1 != null) { //isActive need to check
             		domain.setCategory(categoryDomain1);
             	} else {

@@ -34,6 +34,8 @@ public class ProductModel implements Serializable {
 	private Double blouseLength;
     private String occassion;
     private String mainImageUrl;
+    private String headerDesc;
+    private String categoryName;
     
     private List<SubImageModel> subImageList;
     
@@ -194,7 +196,20 @@ public class ProductModel implements Serializable {
 	public void setSubImageList(List<SubImageModel> subImageList) {
 		this.subImageList = subImageList;
 	}
+	public String getHeaderDesc() {
+		return headerDesc;
+	}
+	public void setHeaderDesc(String headerDesc) {
+		this.headerDesc = headerDesc;
+	}
+	public String getCategoryName() {
+		return categoryName;
+	}
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
 
+	
 }
 	
 	

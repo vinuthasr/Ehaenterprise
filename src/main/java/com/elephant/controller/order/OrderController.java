@@ -42,12 +42,8 @@ public class OrderController {
 	
 	@RequestMapping(value = "/ordercreate/{email}/{addressId}/{paymentMode}",method=RequestMethod.POST, produces="application/json")
 	@CrossOrigin(origins="https://sheltered-fortress-53647.herokuapp.com",allowedHeaders="*")
-    public Response createOrder(@RequestParam(value="email")String email, @PathVariable(value="addressId")long addressId ,@RequestParam(value="paymentMode") String paymentMode) throws IOException{
-		
-		PaymentModel paymentModel=new PaymentModel();
-		paymentModel.setEmail(email);
-		paymentModel.setAddressId(addressId);
-		paymentModel.setPaymentMode(paymentMode);
+    //public Response createOrder(@RequestParam(value="email")String email, @PathVariable(value="addressId")long addressId ,@RequestParam(value="paymentMode") String paymentMode) throws IOException{
+	public Response createOrder(@RequestBody PaymentModel paymentModel)	throws IOException{
        return orderService.createOrder(paymentModel);
 	}
         

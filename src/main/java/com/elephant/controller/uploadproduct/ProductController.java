@@ -35,7 +35,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,9 +72,9 @@ public class ProductController {
 	//------------------------------Add Products--------------------------------------
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/addproduct",method=RequestMethod.POST,produces="application/json" )
-	public Response  addproduct(@Valid @RequestBody ProductModel model,@RequestParam(value="categoryName") String categoryName,HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) 
+	public Response  addproduct(@Valid @RequestBody ProductModel model,HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) 
 			throws Exception {
-		return  (Response) uploadproductservice.addproduct(model,categoryName);
+		return  (Response) uploadproductservice.addproduct(model);
 	}
 	
 	//------------------------------Filter Products--------------------------------------

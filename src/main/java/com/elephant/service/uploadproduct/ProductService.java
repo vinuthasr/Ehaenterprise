@@ -1,23 +1,16 @@
 package com.elephant.service.uploadproduct;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.elephant.domain.uploadproduct.ProductDomain;
-import com.elephant.model.category.CategoryModel;
 //import com.elephant.domain.uploadproduct.UploadProductDomain;
 import com.elephant.model.uploadproduct.ProductModel;
 import com.elephant.model.uploadproduct.ProductModel1;
@@ -29,7 +22,7 @@ public interface ProductService {
 
 //	public List<ProductModel> getProductByCatagory(String types,String colors, Float discount,Double length, double min,double max, String materialType, String fabricPurity, String pattern, String border, String borderType, String zariType, String blouse, String blouseColor, Double blouseLength)throws Exception;
 
-	public Response addproduct(ProductModel model, String categoryName)throws Exception;
+	public Response addproduct(ProductModel model)throws Exception;
 
 	public Response updateProduct(ProductModel updateproduct)throws Exception;
 
