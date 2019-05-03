@@ -108,13 +108,12 @@ public class ProductServiceImpl implements ProductService{
 			ProductDomain domain=new ProductDomain();
 			BeanUtils.copyProperties(model, domain);
 			domain.setProductId(CommonUtils.generateRandomId());
-			//domain.setQuantity(1);
+			domain.setQuantity(1);
 			domain.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
             domain.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 			domain.setActive(true);
 			//double cp1=(model.getPrice()-((model.getDiscount()/100)*model.getPrice()));
 			double cp1=(model.getPrice()-((model.getDiscount()*model.getPrice())/100));
-			System.out.println(cp1);
             domain.setCp(cp1);
 			
 			

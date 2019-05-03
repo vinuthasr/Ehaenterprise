@@ -415,7 +415,7 @@ public class ProductDaoImpl implements ProductDao {
 			up.setOccassion(update.getOccassion());
 			up.setPrice(update.getPrice());
 			up.setInStock(update.getInStock());
-			//up.setQuantity(update.getQuantity());
+			up.setQuantity(update.getQuantity());
 			up.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 			up.setSku(update.getSku());
 			up.setCollectionDesc(update.getCollectionDesc());
