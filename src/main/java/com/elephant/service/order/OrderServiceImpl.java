@@ -33,6 +33,8 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.address.AddressDaoRepository;
+import com.elephant.dao.cartitem.CartItemDao;
+import com.elephant.dao.cartitem.CartItemDaoImpl;
 //import com.elephant.dao.cart.CartDaoRepository;
 import com.elephant.dao.cartitem.CartItemDaoRepository;
 import com.elephant.dao.customer.CustomerRepository;
@@ -132,7 +134,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private SpringTemplateEngine templateEngine;
 	
-	
+	@Autowired
+	CartItemDao cartItemDao; 
 	
 	
 	private MailSender mailSender;
@@ -147,9 +150,7 @@ public class OrderServiceImpl implements OrderService {
     }
 	
 	
-	public Response createOrder( PaymentModel paymentModel) throws IOException {
-		
-		
+	public Response createOrder( PaymentModel paymentModel) throws Exception {
 		Response response=CommonUtils.getResponseObject("Order creation");
 		
 		try {
@@ -245,8 +246,7 @@ public class OrderServiceImpl implements OrderService {
 			//ProductDomain productDomain=productRepository.findByProductId(orderDetailDomain.getProductId());
 			productDomain.setInStock(productDomain.getInStock()-orderDetailDomain.getProductQuantity() );
 			productRepository.saveAndFlush(productDomain);
-			cartItemDaoRepository.delete(cartItemDomain);
-			
+			cartItemDao.deleteCartItem(cartItemDomain.getCartItemId());
 		}
 		response.setMessage3("Cart Items are dumped into Order details");
 		System.out.println("cartItem  are dumped to Order detail");		

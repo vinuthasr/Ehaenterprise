@@ -221,158 +221,175 @@ public class ProductServiceImpl implements ProductService{
 	public Response exportExcel(MultipartFile file) throws Exception {
 		Response response=CommonUtils.getResponseObject("upload products excel");
 		XSSFWorkbook workbook = null;
-			try {
-				
-				InputStream inputStream = file.getInputStream(); 	
-				workbook = new XSSFWorkbook(inputStream);
+		try {
+//			FileType fileType = FileType.valueOf(FilenameUtils.getExtension(file.getOriginalFilename()).toUpperCase());
+//			switch (fileType) {
+//			case CSV:
+//				return saveCSVFile(file);
+//			case XLS:
+//				return saveXLSFile(file);
+//			case XLSX:
+//				return saveXLSXFile(file);
+//			default:
+//				response.setStatus(StatusCode.ERROR.name());
+//				response.setErrors("The ." + file.getContentType() + " is not supported");
+//				return response;
+//			}
+
 			
-			XSSFSheet sheet = workbook.getSheetAt(0);
-			Iterator<Row> rowIterator = sheet.iterator();
-			ProductDomain uploadProduct = null;
-			while(rowIterator.hasNext()) 
+			InputStream inputStream = file.getInputStream(); 	
+			workbook = new XSSFWorkbook(inputStream);
+		
+		XSSFSheet sheet = workbook.getSheetAt(0);
+		Iterator<Row> rowIterator = sheet.iterator();
+		ProductDomain uploadProduct = null;
+		while(rowIterator.hasNext()) 
+		{
+			Row row=rowIterator.next();
+			if(row.getRowNum()==0)
+				continue;
+			
+			SubImageDomain subImageDomain = null;
+			List<SubImageDomain> subImageList = new ArrayList<SubImageDomain>();
+			
+			Iterator<Cell> cellIterator = row.cellIterator();
+			Cell cell = null;
+			int index;
+			uploadProduct = new ProductDomain();
+			while(cellIterator.hasNext()) 
 			{
-				Row row=rowIterator.next();
-				if(row.getRowNum()==0)
-					continue;
+			    cell = cellIterator.next();
+				index= cell.getColumnIndex();
+				System.out.println(index);
 				
-				SubImageDomain subImageDomain = null;
-				List<SubImageDomain> subImageList = new ArrayList<SubImageDomain>();
-				
-				Iterator<Cell> cellIterator = row.cellIterator();
-				Cell cell = null;
-				int index;
-				uploadProduct = new ProductDomain();
-				while(cellIterator.hasNext()) 
+				//ProductDomain update=new ProductDomain();
+            	//Category category=categoryRepository.findByCategoryName(categoryName);
+            	//if(category!=null && category.isActive()==true) {
+					//update.setCategory(category);
+				Category category = null;
+				switch(index+1) 
 				{
-				    cell = cellIterator.next();
-					index= cell.getColumnIndex();
-					System.out.println(index);
-					
-					//ProductDomain update=new ProductDomain();
-	            	//Category category=categoryRepository.findByCategoryName(categoryName);
-	            	//if(category!=null && category.isActive()==true) {
-						//update.setCategory(category);
-					Category category = null;
-					switch(index+1) 
-					{
-					
-						case 1:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setProductId(CommonUtils.generateRandomId());
-							uploadProduct.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-							uploadProduct.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-							uploadProduct.setActive(true);
-							category=categoryRepository.findByCategoryName(cell.getStringCellValue());
-							if(category != null) {
-								uploadProduct.setCategory(category);
-							} else {
-								response.setStatus(StatusCode.ERROR.name());
-								response.setMessage("Category name "+cell.getStringCellValue()+" is not valid");
-								return response;
-							}
-							
-							break;
-						case 2:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setSku(cell.getStringCellValue());
-							break;
-	
-						case 3:
-							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							uploadProduct.setInStock((long) cell.getNumericCellValue());break;
-							
-						case 4:
-							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							uploadProduct.setLength(cell.getNumericCellValue());break;
-							
-						case 5:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setPattern(cell.getStringCellValue());break;
-							
-						case 6:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setFabricPurity(cell.getStringCellValue());break;
-							
-						case 7:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setBorder(cell.getStringCellValue());break;
-							
-						case 8:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setBorderType(cell.getStringCellValue());break;
-								
-							
-						case 9:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setZariType(cell.getStringCellValue());break;
-							
-									
-						case 10:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setMaterialType(cell.getStringCellValue());break;
-						
-						case 11:
-							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							uploadProduct.setPrice((double)(cell.getNumericCellValue()));break;
-							
-						case 12:
-							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							uploadProduct.setDiscount((float) cell.getNumericCellValue());break;
-							
-						case 13:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setBlouseColor(cell.getStringCellValue());break;		
-							
-						case 14:
-							cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-							uploadProduct.setBlouseLength(cell.getNumericCellValue());break;
-							
-						case 15:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setColors(cell.getStringCellValue());break;
-																
-						case 16:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setCollectionDesc(cell.getStringCellValue());break;
-																	
-						case 17:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setOccassion(cell.getStringCellValue());break;
-							
-						case 18:
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							uploadProduct.setMainImageUrl(cell.getStringCellValue());break;	
-							
-						default:	
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							subImageDomain = null;
-							subImageDomain = new SubImageDomain();
-							cell.setCellType(Cell.CELL_TYPE_STRING);
-							subImageDomain.setImagePath(cell.getStringCellValue());
-							subImageList.add(subImageDomain);
-					}
-	            }
-				uploadproductdao.save(uploadProduct);
-				subImageDomain = null;
-				for(SubImageDomain subImage:subImageList) {
-					subImageDomain = new SubImageDomain();
-					subImageDomain.setImagePath(subImage.getImagePath());
-					subImageDomain.setProductDomain(uploadProduct);
-					subImageDaoRepository.save(subImageDomain);
-					subImageDomain = null;
-				}
-				response.setStatus(StatusCode.SUCCESS.name());
-				response.setMessage("Products successfully uploaded");
 				
+					case 1:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setProductId(CommonUtils.generateRandomId());
+						uploadProduct.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
+						uploadProduct.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
+						uploadProduct.setActive(true);
+						category=categoryRepository.findByCategoryName(cell.getStringCellValue());
+						if(category != null) {
+							uploadProduct.setCategory(category);
+						} else {
+							response.setStatus(StatusCode.ERROR.name());
+							response.setMessage("Category name "+cell.getStringCellValue()+" is not valid");
+							return response;
+						}
+						
+						break;
+					case 2:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setSku(cell.getStringCellValue());
+						break;
+
+					case 3:
+						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+						uploadProduct.setInStock((long) cell.getNumericCellValue());break;
+						
+					case 4:
+						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+						uploadProduct.setLength(cell.getNumericCellValue());break;
+						
+					case 5:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setPattern(cell.getStringCellValue());break;
+						
+					case 6:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setFabricPurity(cell.getStringCellValue());break;
+						
+					case 7:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setBorder(cell.getStringCellValue());break;
+						
+					case 8:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setBorderType(cell.getStringCellValue());break;
+							
+						
+					case 9:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setZariType(cell.getStringCellValue());break;
+						
+								
+					case 10:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setMaterialType(cell.getStringCellValue());break;
+					
+					case 11:
+						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+						uploadProduct.setPrice((double)(cell.getNumericCellValue()));break;
+						
+					case 12:
+						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+						uploadProduct.setDiscount((float) cell.getNumericCellValue());break;
+						
+					case 13:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setBlouseColor(cell.getStringCellValue());break;		
+						
+					case 14:
+						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+						uploadProduct.setBlouseLength(cell.getNumericCellValue());break;
+						
+					case 15:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setColors(cell.getStringCellValue());break;
+															
+					case 16:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setCollectionDesc(cell.getStringCellValue());break;
+																
+					case 17:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setOccassion(cell.getStringCellValue());break;
+						
+					case 18:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setMainImageUrl(cell.getStringCellValue());break;	
+						
+					default:	
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						subImageDomain = null;
+						subImageDomain = new SubImageDomain();
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						subImageDomain.setImagePath(cell.getStringCellValue());
+						subImageList.add(subImageDomain);
 				}
+            }
+			uploadproductdao.save(uploadProduct);
+			subImageDomain = null;
+			for(SubImageDomain subImage:subImageList) {
+				subImageDomain = new SubImageDomain();
+				subImageDomain.setImagePath(subImage.getImagePath());
+				subImageDomain.setProductDomain(uploadProduct);
+				subImageDaoRepository.save(subImageDomain);
+				subImageDomain = null;
 			}
-			catch (IOException e) {
-				e.printStackTrace();
+			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage("Products successfully uploaded");
+			
 			}
-			return response;
+			
+		}catch (Exception ex) {
+			logger.info("Exception Service:" + ex.getMessage());
 		}
+		
+		//response.setStatus(StatusCode.ERROR.name());
+		//response.setErrors("The ." + FilenameUtils.getExtension(file.getOriginalFilename()) + " is not supported");
+		return response;
+	}
 
-
+	
 		
 		
 		

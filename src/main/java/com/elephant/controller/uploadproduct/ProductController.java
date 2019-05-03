@@ -3,6 +3,7 @@ package com.elephant.controller.uploadproduct;
 
 
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +37,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -174,8 +177,16 @@ public class ProductController {
 	//-------------------------------Upload Product By Excel Sheet-------------------------------------
 	@RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody String importExcel(@RequestPart MultipartFile file,final HttpServletRequest request) {
+		logger.debug("importExcel: Received request: " + file);
 		Response response = null;
 		try {
+			if(file.isEmpty()) {
+				response = CommonUtils.getResponseObject("Upload File Error");
+				ErrorObject err = CommonUtils.getErrorResponse("File Not Found", "Please select a file to upload");
+				response.setErrors(err);
+				response.setStatus(StatusCode.ERROR.name());
+			}
+			
 		  response = uploadproductservice.exportExcel(file);
 		} 
 		catch (Exception e) {
@@ -653,10 +664,12 @@ try {
 	}
 return null;
 	}
+	
 	@ResponseStatus(HttpStatus.OK)
 	@RequestMapping(value = {"/download/excel-report"},
 	                method = RequestMethod.GET,produces="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	public HttpEntity<byte[]> downloadExcelReport() throws IOException {
+	
 	 
 	    byte[] excelContent = getReportContent();
 	    HttpHeaders header = new HttpHeaders();

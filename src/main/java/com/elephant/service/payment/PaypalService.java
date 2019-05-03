@@ -6,15 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
+import com.elephant.dao.address.AddressDao;
+import com.elephant.dao.customer.CustomerRepository;
 import com.elephant.dao.payment.PaymentDao;
+import com.elephant.domain.address.AddressDomain;
+import com.elephant.domain.cartitem.CartItemDomain;
+import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.domain.payment.PaymentDomain;
-import com.elephant.model.address.AddressModel;
-import com.elephant.model.cartitem.CartItemModel;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Item;
 import com.paypal.api.payments.ItemList;
@@ -36,41 +38,49 @@ public class PaypalService {
 	@Autowired
 	PaymentDao pd;
 	
-	//@Autowired
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	AddressDao addressDao;
 	
 	public Payment createPayment(
-			List<CartItemModel> cartItemModelList, 
+			long addressId,
+			String email, 
 			String currency, 
 			PaypalPaymentMethod method, 
 			PaypalPaymentIntent intent, 
 			String description, 
 			String cancelUrl, 
-			String successUrl,
-			AddressModel addressModel,
-			String userName) throws PayPalRESTException{
+			String successUrl) throws Exception{
 		double total =0.0;
 		//amount.setTotal(total);
+		CustomerDomain customerDomain=customerRepository.findByEmail(email);
+		
+		AddressDomain addressDomain=addressDao.getAddressById(addressId);
+		
+		List<CartItemDomain> cartItemDomainList=customerDomain.getCartItemDomain();
 		
 		ShippingAddress shippingAddress = null;
-		if(addressModel != null) {
+		if(addressDomain != null) {
 		    shippingAddress = new ShippingAddress();
-			shippingAddress.setCity(addressModel.getCity());
-			shippingAddress.setLine1(addressModel.getAddressline1());
-			shippingAddress.setPostalCode(addressModel.getPincode());
-			shippingAddress.setState(addressModel.getState());
-			shippingAddress.setCountryCode(addressModel.getCountry());
-			shippingAddress.setRecipientName(userName);
+			shippingAddress.setCity(addressDomain.getCity());
+			shippingAddress.setLine1(addressDomain.getAddressline1());
+			shippingAddress.setPostalCode(addressDomain.getPincode());
+			shippingAddress.setState(addressDomain.getState());
+			shippingAddress.setCountryCode("IN");
+			shippingAddress.setRecipientName(customerDomain.getCustomerName());
 		}
 		
 		Item item=null;
 		ItemList itemList=new ItemList();
 		List<Item> items=new ArrayList<Item>();
 		
-		for(CartItemModel cartItem:cartItemModelList) {
+		for(CartItemDomain cartItem:cartItemDomainList) {
 			item=new Item();
 			item.setPrice(cartItem.getProduct().getPrice().toString());
 			item.setQuantity(Integer.toString(cartItem.getQuantity()));
-			item.setSku(cartItem.getSku());
+			item.setSku(cartItem.getProduct().getSku());
 			item.setCurrency(currency);
 			total = total + (cartItem.getProduct().getPrice() *cartItem.getQuantity());
 			items.add(item);
