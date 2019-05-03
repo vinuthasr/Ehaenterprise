@@ -150,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
     }
 	
 	
-	public Response createOrder( PaymentModel paymentModel) throws Exception {
+	public Response createOrder( PaymentModel paymentModel) throws IOException {
 		Response response=CommonUtils.getResponseObject("Order creation");
 		
 		try {
