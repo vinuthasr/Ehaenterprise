@@ -242,21 +242,25 @@ public class OrderServiceImpl implements OrderService {
 			orderDetailDomain.setProductQuantity(cartItemDomain.getQuantity());
 			orderDetailDomain.setProductAmount((productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity());
 			orderDetailDomain.setOrderDomain(orderDomain);
-			orderDetailRepository.save(orderDetailDomain);
+			
 			//ProductDomain productDomain=productRepository.findByProductId(orderDetailDomain.getProductId());
-			productDomain.setInStock(productDomain.getInStock()-orderDetailDomain.getProductQuantity() );
-			productRepository.saveAndFlush(productDomain);
-			cartItemDao.deleteCartItem(cartItemDomain.getCartItemId());
+			if(productDomain.getInStock() < orderDetailDomain.getProductQuantity()) {
+				response.setStatus(StatusCode.ERROR.toString());
+				response.setMessage3(productDomain.getSku() +" stock is not available");
+				return response;
+			} else {
+				orderDetailRepository.save(orderDetailDomain);
+				productDomain.setInStock(productDomain.getInStock()-orderDetailDomain.getProductQuantity());
+				if(productDomain.getInStock() == 0) {
+					productDomain.setActive(false);
+				}
+				productRepository.saveAndFlush(productDomain);
+				cartItemDao.deleteCartItem(cartItemDomain.getCartItemId());
+			}
 		}
 		response.setMessage3("Cart Items are dumped into Order details");
 		System.out.println("cartItem  are dumped to Order detail");		
 		/*-------------------------------------------------------------------------------------------------*/
-		
-		
-		
-		
-
-		
 		
 		 Mail mail = new Mail();
 	        mail.setFrom("yenugubala.hari@gmail.com");

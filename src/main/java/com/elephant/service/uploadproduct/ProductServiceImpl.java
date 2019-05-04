@@ -259,7 +259,6 @@ public class ProductServiceImpl implements ProductService{
 			{
 			    cell = cellIterator.next();
 				index= cell.getColumnIndex();
-				System.out.println(index);
 				
 				//ProductDomain update=new ProductDomain();
             	//Category category=categoryRepository.findByCategoryName(categoryName);
@@ -347,12 +346,16 @@ public class ProductServiceImpl implements ProductService{
 					case 16:
 						cell.setCellType(Cell.CELL_TYPE_STRING);
 						uploadProduct.setCollectionDesc(cell.getStringCellValue());break;
-																
+						
 					case 17:
+						cell.setCellType(Cell.CELL_TYPE_STRING);
+						uploadProduct.setHeaderDesc(cell.getStringCellValue());break;
+																
+					case 18:
 						cell.setCellType(Cell.CELL_TYPE_STRING);
 						uploadProduct.setOccassion(cell.getStringCellValue());break;
 						
-					case 18:
+					case 19:
 						cell.setCellType(Cell.CELL_TYPE_STRING);
 						uploadProduct.setMainImageUrl(cell.getStringCellValue());break;	
 						

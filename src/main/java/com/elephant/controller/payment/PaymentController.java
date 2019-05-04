@@ -42,14 +42,13 @@ public class PaymentController {
 	@RequestMapping(method = RequestMethod.POST, value = "/pay")
 	public String pay(@RequestParam("addressId")long addressId,
 					 @RequestParam("paymentDesc") String paymentDesc,		
-						Principal pr,HttpServletRequest request) throws Exception{
+					 @RequestParam("email") String email ,HttpServletRequest request) throws Exception{
 		String cancelUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_CANCEL_URL;
 		String successUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_SUCCESS_URL;
 		try {
 			Payment payment = paypalService.createPayment(
 					addressId , 
-					//pr.getName(),
-					"vinutha.sr@gmail.com",
+					email,
 					Constants.CURRENCY, 
 					PaypalPaymentMethod.paypal, 
 					PaypalPaymentIntent.sale,
