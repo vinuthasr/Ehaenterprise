@@ -3,41 +3,20 @@ package com.elephant.controller.uploadproduct;
 
 
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.util.IOUtils;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.CacheControl;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -649,103 +627,19 @@ public class ProductController {
 	}
 	
 	//--------------------------------Excel Sheet Download------------------------------------
-	@RequestMapping(path = "/download_excel", method = RequestMethod.GET)
-	public ResponseEntity<ByteArrayResource> download() throws IOException {
-try {
-	ByteArrayResource resource = uploadproductservice.exportExcelHeaders("aaa");
-
-	return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=Template.xlsx")
-	        .contentLength(resource.contentLength())
-	        //.contentType(MediaType.parseMediaType("application/vnd.ms-excel"))
-	        .body(resource);
-	}catch (Exception e) {
-		// TODO: handle exception
+	/**Donwload Template **/
+	@RequestMapping(value = "/excel/template", method = RequestMethod.GET, produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	public ResponseEntity<Resource> getExcelForBulkProduct() {
+		Resource file = null;
+		try {
+			file = uploadproductservice.getExcelForBulkProduct();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok().
+				header( "filename", file.getFilename())
+				.body(file);
 	}
-return null;
-	}
-	
-	@ResponseStatus(HttpStatus.OK)
-	@RequestMapping(value = {"/download/excel-report"},
-	                method = RequestMethod.GET,produces="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	public HttpEntity<byte[]> downloadExcelReport() throws IOException {
-	
-	 
-	    byte[] excelContent = getReportContent();
-	    HttpHeaders header = new HttpHeaders();
-	    header.setContentType(new MediaType("application", "vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-	    header.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=file.xls");
-	    header.setContentLength(excelContent.length);
-	 
-	    return new HttpEntity<byte[]>(excelContent, header);
-	}
-
-	@SuppressWarnings("resource")
-	private byte[] getReportContent() throws IOException {
-		String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric_purity","Border","border_type","zari_type","material_type","price", "discount","blouse_color","blouse_length","saree_colors","collection_desc","occassion","main_imageUrl","Sub Image1"};
-		// List<UploadProductDomain> domain =  new ArrayList<>();
-		Workbook workbook = new XSSFWorkbook();
-		 //CreationHelper createHelper = workbook.getCreationHelper();
-		XSSFSheet  sheet = (XSSFSheet) workbook.createSheet("Product_Upload_Template");
-		
-		 
-		 Font headerFont = workbook.createFont();
-	       // headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 11);
-	        headerFont.setColor(IndexedColors.BLACK.getIndex());
-	        headerFont.setFontName("Calibri");
-	        
-	     CellStyle headerCellStyle = workbook.createCellStyle();
-	        headerCellStyle.setFont(headerFont);
-	       // headerCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-	        //headerCellStyle.setLeftBorderColor(IndexedColors.GREEN.getIndex());
-	       // headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);	       
-	        headerCellStyle.setFillForegroundColor(IndexedColors.GOLD.getIndex());
-	        
-	        Row headerRow = sheet.createRow(0);
-	       
-	        
-	        for(int i = 0; i < columnshead.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(columnshead[i]);
-	            cell.setCellStyle(headerCellStyle);
-	        }
-	        
-	        for(int i = 0; i < columnshead.length; i++) {
-	            sheet.autoSizeColumn(i);
-	        }
-	       
-			//String d="G:\\Mahesh\\Template.xlsx";
-	       // FileOutputStream fileOut = new FileOutputStream("Template.xlsx");
-	       // workbook.write(fileOut);
-	       // fileOut.close();
-	        //workbook.close();
-	        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        workbook.write(baos);
-	     
-	        return baos.toByteArray();
-}
-	
-	
-	@RequestMapping(value = "/files", method = RequestMethod.GET,produces="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	public void getFile(
-			@RequestParam(value="file_name", required = false) String fileName, 
-	    HttpServletResponse response) {
-	    try {
-	      // get your file as InputStream
-	      InputStream is = uploadproductservice.exportExcel();
-	      // copy it to response's OutputStream
-	      IOUtils.copy(is, response.getOutputStream());
-	      response.setHeader("Content-Disposition", "attachment; filename=file.xlsx");
-	      response.setContentType("text/plain; charset=utf-8");
-	      response.flushBuffer();
-	    } catch (IOException ex) {
-	      logger.info("Error writing file to output stream. Filename was '{}'", fileName, ex);
-	      throw new RuntimeException("IOError writing file to output stream");
-	    }
-
-	}
-	
 	
 }
 

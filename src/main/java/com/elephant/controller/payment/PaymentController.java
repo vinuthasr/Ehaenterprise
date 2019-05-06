@@ -1,7 +1,5 @@
 package com.elephant.controller.payment;
 
-import java.security.Principal;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -10,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
 import com.elephant.constant.Constants;
 import com.elephant.service.payment.PaypalService;
+import com.elephant.utils.CommonUtils;
 import com.elephant.utils.URLUtils;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
@@ -40,7 +40,7 @@ public class PaymentController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/pay")
-	public String pay(@RequestParam("addressId")long addressId,
+	public  @ResponseBody String pay(@RequestParam("addressId")long addressId,
 					 @RequestParam("paymentDesc") String paymentDesc,		
 					 @RequestParam("email") String email ,HttpServletRequest request) throws Exception{
 		String cancelUrl = URLUtils.getBaseURl(request) + "/" + PAYPAL_CANCEL_URL;
@@ -58,18 +58,18 @@ public class PaymentController {
 			paypalService.add(payment);
 			for(Links links : payment.getLinks()){
 				if(links.getRel().equals("approval_url")){
-					return "redirect:" + links.getHref();
+					return CommonUtils.getJson("redirect:" + links.getHref());
 				}
 			}
 		} catch (PayPalRESTException e) {
 			log.error(e.getMessage());
 		}
-		return "redirect:/";
+		return CommonUtils.getJson("redirect:/");
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "pay/cancel")
 	public String cancelPay(){
-		return "cancel";
+		return CommonUtils.getJson("cancel");
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "pay/success")
@@ -78,12 +78,12 @@ public class PaymentController {
 			Payment payment = paypalService.executePayment(paymentId, payerId);
 			if(payment.getState().equals("approved")){
 				paypalService.update(payment);
-				return "success";
+				return CommonUtils.getJson("success");
 			}
 		} catch (PayPalRESTException e) {
 			log.error(e.getMessage());
 		}
-		return "redirect:/";
+		return CommonUtils.getJson("redirect:/");
 	}
 	
 }

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 //import com.elephant.domain.uploadproduct.UploadProductDomain;
@@ -84,12 +85,8 @@ public interface ProductService {
 
 	public List<ProductModel> getProductsByPriceRange(String categoryName, double minPrice, double maxPrice) throws Exception;
 
-	public ByteArrayResource exportExcelHeaders(String fileName) throws IOException;
-
-	public InputStream exportExcel() throws IOException;
-
 	public List<ProductModel> getProductByCatagory1(ProductModel1 pm1);
-
-    public boolean createExcelTemplate(ServletContext context,HttpServletRequest request, HttpServletResponse response);
+    
+    public Resource getExcelForBulkProduct() throws Exception;
 
 }

@@ -4,21 +4,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -33,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -274,6 +268,7 @@ public class ProductServiceImpl implements ProductService{
 						uploadProduct.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 						uploadProduct.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 						uploadProduct.setActive(true);
+						uploadProduct.setQuantity(1);
 						category=categoryRepository.findByCategoryName(cell.getStringCellValue());
 						if(category != null) {
 							uploadProduct.setCategory(category);
@@ -948,92 +943,6 @@ try {
 	}
 
 	@Override
-	public ByteArrayResource exportExcelHeaders(String fileName) throws IOException{
-		String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric_purity","Border","border_type","zari_type","material_type","price", "discount","blouse_color","blouse_length","saree_colors","collection_desc","occassion","main_imageUrl","Sub Image1"};
-		// List<UploadProductDomain> domain =  new ArrayList<>();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Workbook workbook = new XSSFWorkbook();
-		 //CreationHelper createHelper = workbook.getCreationHelper();
-		XSSFSheet  sheet = (XSSFSheet) workbook.createSheet("Product_Upload_Template");
-		 
-		 Font headerFont = workbook.createFont();
-	       // headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 11);
-	        headerFont.setColor(IndexedColors.BLACK.getIndex());
-	        headerFont.setFontName("Arial");
-	        
-	     CellStyle headerCellStyle = workbook.createCellStyle();
-	        headerCellStyle.setFont(headerFont);
-	       // headerCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-	       // headerCellStyle.setLeftBorderColor(IndexedColors.GREEN.getIndex());
-	        // headerCellStyle.setFillBackgroundColor(HSSFColor.GOLD.index);	       
-	        //headerCellStyle.setFillForegroundColor(IndexedColors.GOLD.getIndex());
-	        //headerCellStyle.setFillBackgroundColor(IndexedColors.GOLD.getIndex());
-	        //headerCellStyle.setLocked(false);
-	        Row headerRow = sheet.createRow(0);
-	       
-	        
-	        for(int i = 0; i < columnshead.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(columnshead[i]);
-	            cell.setCellStyle(headerCellStyle);
-	        }
-	        
-	        for(int i = 0; i < columnshead.length; i++) {
-	            sheet.autoSizeColumn(i);
-	        }
-	        //String d="G:\\Mahesh\\Template.xlsx";
-	        FileOutputStream fileOut = new FileOutputStream("Template.xlsx");
-	        workbook.write(fileOut);
-	        fileOut.close();
-	        workbook.close();
-	        fileOut.flush();
-			return null;
-		
-	}
-
-	@Override
-	public InputStream exportExcel() throws IOException {
-		String[] columnshead = {"sku","quantity","saree_length","pattern","fabric_purity","border","border_type","zari_type","material_type","price", "discount", "blouse","blouse_color","blouse_length","saree_colors","collection_desc","occassion","main_imageUrl","otherImageUrls"};
-		// List<UploadProductDomain> domain =  new ArrayList<>();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Workbook workbook = new XSSFWorkbook();
-		 //CreationHelper createHelper = workbook.getCreationHelper();
-		XSSFSheet  sheet = (XSSFSheet) workbook.createSheet("Product_Upload_Template");
-		 
-		 Font headerFont = workbook.createFont();
-	       // headerFont.setBold(true);
-	        headerFont.setFontHeightInPoints((short) 14);
-	        headerFont.setColor(IndexedColors.RED.getIndex());
-	        
-	     CellStyle headerCellStyle = workbook.createCellStyle();
-	        headerCellStyle.setFont(headerFont);
-	        headerCellStyle.setBottomBorderColor(IndexedColors.BLACK.getIndex());
-	        headerCellStyle.setLeftBorderColor(IndexedColors.GREEN.getIndex());
-	       // headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);	       
-	        headerCellStyle.setFillForegroundColor(IndexedColors.TAN.getIndex());
-	        
-	        Row headerRow = sheet.createRow(0);
-	       
-	        
-	        for(int i = 0; i < columnshead.length; i++) {
-	            Cell cell = headerRow.createCell(i);
-	            cell.setCellValue(columnshead[i]);
-	            cell.setCellStyle(headerCellStyle);
-	        }
-	        
-	        for(int i = 0; i < columnshead.length; i++) {
-	            sheet.autoSizeColumn(i);
-	        }
-	        //String d="G:\\Mahesh\\Template.xlsx";
-	        FileOutputStream fileOut = new FileOutputStream("Template.xlsx");
-	        workbook.write(fileOut);
-	        fileOut.close();
-	        workbook.close();
-			return null;
-	}
-
-	@Override
 	public List<ProductModel> getProductByCatagory1(ProductModel1 pm1) {
 		try {
 			
@@ -1045,43 +954,67 @@ try {
 		return null;
 	}
 
-	@Override
-	public boolean createExcelTemplate(ServletContext context, HttpServletRequest request,
-			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		//String filePath = context.getRealPath("resources/reports/");
-		String filePath = Paths.get("").toAbsolutePath().toString();
-		System.out.println("path -> "+filePath);
-		File file = new File(filePath);
-		boolean exists = new File(filePath).exists();
-		if(!exists) {
-			new File(filePath).mkdirs();
+
+	public void createExcelTemplate(File file) {
+		try {
+			String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric Purity","Border","Border Type","Zari Type","Material Type","Price", "Discount","Blouse Color","Blouse Length","Saree Colors","Collection Desc","Header Desc","Occassion","Main ImageUrl","Sub Image1"};
+			Workbook workbook = new XSSFWorkbook();
+			XSSFSheet  sheet = (XSSFSheet) workbook.createSheet("Product_Upload_Template");
+			 
+			 Font headerFont = workbook.createFont();
+		        headerFont.setBold(true);
+		        headerFont.setFontHeightInPoints((short) 11);
+		        headerFont.setColor(IndexedColors.BLACK.getIndex());
+		        headerFont.setFontName("Arial");
+		        
+		     CellStyle headerCellStyle = workbook.createCellStyle();
+		        headerCellStyle.setFont(headerFont);
+		        Row headerRow = sheet.createRow(0);
+		       
+		        
+		        for(int i = 0; i < columnshead.length; i++) {
+		            Cell cell = headerRow.createCell(i);
+		            cell.setCellValue(columnshead[i]);
+		            cell.setCellStyle(headerCellStyle);
+		        }
+		        
+		        for(int i = 0; i < columnshead.length; i++) {
+		            sheet.autoSizeColumn(i);
+		        }
+		        FileOutputStream fileOut = new FileOutputStream(file);
+		        workbook.write(fileOut);
+		        fileOut.close();
+		        workbook.close();
+		        fileOut.flush();
+		} catch (Exception e) {
+			throw new RuntimeException("FAIL!"+e);
 		}
 		
+	}
+
+	@Override
+	public Resource getExcelForBulkProduct() throws Exception {
 		try {
-			FileOutputStream outputStream = new FileOutputStream(file+"/"+"product"+".xls");
-			HSSFWorkbook workBook = new HSSFWorkbook();
-			HSSFSheet workSheet = workBook.createSheet("Product");
-			workSheet.setDefaultColumnWidth(30);
+			String filePath = Paths.get("").toAbsolutePath().toString() +"\\ExcelTemplate";
+			Path file = Paths.get(filePath+"\\Template.xlsx");
 			
-			HSSFCellStyle headerCellStyle = workBook.createCellStyle();
-			//headerCellStyle.setFillPattern(HSSFCellStyle.BORDER_THICK);
-			HSSFRow headerRow = workSheet.createRow(0);
-			
-			HSSFCell firstName = headerRow.createCell(0);
-			firstName.setCellValue("First Name");
-			firstName.setCellStyle(headerCellStyle);
-			
-			workBook.write(outputStream);
-			outputStream.flush();
-			outputStream.close();
-			workBook.close();
-			return true;
-		}catch (Exception e) {
-			System.out.println(e);
-			return false;
+			File fileNew = new File(filePath+"\\Template.xlsx");
+			boolean exists = fileNew.exists();
+			if(!exists) {
+				new File(filePath).mkdirs();
+				createExcelTemplate(fileNew);
+			}
+			System.out.println(file);
+			Resource resource = new UrlResource(file.toUri());
+			if (resource.exists() || resource.isReadable()) {
+				return resource;
+			} else {
+				throw new RuntimeException("FAIL!");
+			}
+		} catch (Exception e) {
+			logger.info("Exception getExcelForBulkProduct:", e);
+			throw new RuntimeException("FAIL!");
 		}
-		//return false;
 	}
 
 	
