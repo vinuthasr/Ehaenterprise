@@ -34,7 +34,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/v1/address")
-@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
+@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class AddressController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AddressController.class);
