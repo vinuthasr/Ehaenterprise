@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +24,7 @@ import com.paypal.base.rest.PayPalRESTException;
 
 @RestController
 @RequestMapping("/v1")
-//@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
+@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class PaymentController {
 	
 	public static final String PAYPAL_SUCCESS_URL = "v1/pay/success";
@@ -68,12 +69,12 @@ public class PaymentController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "pay/cancel")
-	public String cancelPay(){
+	public @ResponseBody String cancelPay(){
 		return CommonUtils.getJson("cancel");
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "pay/success")
-	public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
+	public @ResponseBody String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
 		try {
 			Payment payment = paypalService.executePayment(paymentId, payerId);
 			if(payment.getState().equals("approved")){
