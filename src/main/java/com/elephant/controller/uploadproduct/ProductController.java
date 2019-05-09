@@ -40,7 +40,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
+@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class ProductController {
 	private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 	
@@ -51,7 +51,7 @@ public class ProductController {
 	ProductDao 	productDao;
 	
 	//------------------------------Add Products--------------------------------------
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	//@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/addproduct",method=RequestMethod.POST,produces="application/json" )
 	public Response  addproduct(@Valid @RequestBody ProductModel model,HttpServletRequest request, HttpServletResponse response, BindingResult bindingResult) 
 			throws Exception {
