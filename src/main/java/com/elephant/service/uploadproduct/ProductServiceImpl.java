@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -995,7 +997,8 @@ try {
 	@Override
 	public Resource getExcelForBulkProduct() throws Exception {
 		try {
-			String filePath = Paths.get("").toAbsolutePath().toString() +"\\ExcelTemplate";
+			String filePath = Paths.get(".").toAbsolutePath().toString() +"\\ExcelTemplate";
+			System.out.println(filePath);
 			Path file = Paths.get(filePath+"\\Template.xlsx");
 			
 			File fileNew = new File(filePath+"\\Template.xlsx");
