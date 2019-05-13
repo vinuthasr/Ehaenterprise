@@ -11,6 +11,7 @@ import org.hibernate.HibernateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,9 @@ public class CategoryDaoImpl implements CategoryDao {
 	
 	@Autowired
 	CategoryRepository categoryRepository;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 
 	@Override
 	public Response addCategories(Category update) throws Exception {
@@ -148,7 +152,8 @@ public class CategoryDaoImpl implements CategoryDao {
 //			
 //			entityManager.remove(up);
 //			//entityManager.flush();
-			categoryRepository.deleteById(categoryId);
+			String sql = "DELETE FROM category WHERE category_id = '"+categoryId+"'";
+			jdbcTemplate.execute(sql);
 			
 			response.setStatus(StatusCode.SUCCESS.name());
 			response.setMessage(" Category Deleted Successfully");
