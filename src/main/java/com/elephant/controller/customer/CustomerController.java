@@ -44,7 +44,7 @@ import com.elephant.utils.CommonUtils;
 //@Controller
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com/"})
+@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class CustomerController {
 	
 	//@PersistenceContext
@@ -147,7 +147,7 @@ public class CustomerController {
 	
 	//====================== update customer ===================//
 	
-	@PreAuthorize("hasRole('ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/update", method = RequestMethod.PUT, produces = "application/json")
 	public Response updateUser(@RequestBody CustomerModel customerModel, Principal pr, HttpServletRequest request, HttpServletResponse response)
 			throws Exception {

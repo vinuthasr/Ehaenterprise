@@ -143,11 +143,13 @@ public class CategoryDaoImpl implements CategoryDao {
 	public Response deleteCategoryData(String categoryId) throws Exception {
 		Response response = CommonUtils.getResponseObject("Deleted"+categoryId);
 		try {
-			Category up = entityManager.find(Category.class,categoryId);
-			//up.setActive(true);
+//			Category up = entityManager.find(Category.class,categoryId);
+//			//up.setActive(true);
+//			
+//			entityManager.remove(up);
+//			//entityManager.flush();
+			categoryRepository.deleteById(categoryId);
 			
-			entityManager.remove(up);
-			//entityManager.flush();
 			response.setStatus(StatusCode.SUCCESS.name());
 			response.setMessage(" Category Deleted Successfully");
 		} catch (Exception e) {
