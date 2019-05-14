@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -53,6 +54,9 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 
 	@Autowired
 	CategoryRepository categoryRepository ;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 	
 	@SuppressWarnings({ "deprecation", "unused" })
 	@Override
@@ -180,12 +184,23 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 	
 	@Override
 	public Response deleteCategoryData(String categoryId) throws Exception {
+		Response response = CommonUtils.getResponseObject("Deleted category Data");
 		try
 		{
-		return categoryDao.deleteCategoryData(categoryId);
+			//return categoryDao.deleteCategoryData(categoryId);
+			String sql = "DELETE FROM category WHERE category_id = '"+categoryId+"'";
+			jdbcTemplate.execute(sql);
+			
+			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage(" Category Deleted Successfully");
 		} catch (Exception e) {
-			logger.info("Exception deletecategory:"+ e.getMessage());}
-			return null;
+			logger.info("Exception deletecategory:"+ e.getMessage());
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage(" Category is not deleted due to the exception: " +e.getMessage());
+			return response;
+		}
+			
+			return response;
 	}
 
 
