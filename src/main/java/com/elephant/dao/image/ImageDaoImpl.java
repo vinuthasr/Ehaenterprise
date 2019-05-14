@@ -85,6 +85,7 @@ public class ImageDaoImpl implements ImageDao{
 			i.setImageName(imageDomain.getImageName());
 			i.setImagePath(imageDomain.getImagePath());
 			i.setHeader(imageDomain.getHeader());
+			i.setImageSequenceNo(imageDomain.getImageSequenceNo());
 			i.setCreatedDate(imageDomain.getCreatedDate());
 			i.setModifiedDate(imageDomain.getModifiedDate());
 			i.setDesc1(imageDomain.getDesc1());
