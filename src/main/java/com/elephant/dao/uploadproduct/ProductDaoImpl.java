@@ -6,24 +6,21 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.hibernate.HibernateException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.GenericTypeAwareAutowireCandidateResolver;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.category.CategoryDao;
 import com.elephant.dao.category.CategoryRepository;
-import com.elephant.domain.category.Category;
 import com.elephant.domain.uploadproduct.ProductDomain;
-import com.elephant.model.category.CategoryModel;
 import com.elephant.model.uploadproduct.ProductModel1;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
@@ -48,6 +45,9 @@ public class ProductDaoImpl implements ProductDao {
 	
 	@Autowired
 	ProductRepository productRepository;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 	
 	@SuppressWarnings({ "unchecked", "unlikely-arg-type" })
 	@Override
@@ -431,7 +431,7 @@ public class ProductDaoImpl implements ProductDao {
 			up.setBlouseColor(update.getBlouseColor());
 			up.setBlouseLength(update.getBlouseLength());
 			up.setHeaderDesc(update.getHeaderDesc());
-			
+			up.setProductName(update.getProductName());
 			up.setMainImageUrl(update.getMainImageUrl());
 			
 			entitymanager.flush();
@@ -904,6 +904,18 @@ public Response deleteproductByCategoryId(String categoryId, boolean isActive) t
 	return response;
 	
 }
+
+
+
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public ProductDomain isSKUExist(String sku) {
+		String sql = "Select * FROM uploadproduct WHERE sku = '"+sku+"'";
+		ProductDomain productDomain = (ProductDomain)jdbcTemplate.queryForObject(sql, new Object[] { sku },
+				new BeanPropertyRowMapper(ProductDomain.class));
+		
+		return productDomain;
+	}
 
 
 

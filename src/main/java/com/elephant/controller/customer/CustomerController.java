@@ -78,7 +78,7 @@ public class CustomerController {
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		logger.info("addCustomers: Received Request: " + CommonUtils.getJson(customerModel));
 		
-	return customerService.addCustomer(customerModel);
+	return customerService.addCustomer(customerModel,request);
 	
 	
 	}
@@ -186,14 +186,6 @@ public class CustomerController {
 	}
 	
 	
-	
-
-		
-
-	
-	
-	
-	
 	@RequestMapping(value = "/login2", method = RequestMethod.POST, produces = "application/json")
 	public @ResponseBody String authenticate(@RequestBody CustomerModel customerModel, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -278,6 +270,27 @@ public class CustomerController {
 	    }
 
 
+	 @RequestMapping(value = "/getByEmail/{email}", method = RequestMethod.GET, produces = "application/json")
+		public @ResponseBody String getCustomerByEmail(@PathVariable("email") String email, HttpServletRequest request,
+				HttpServletResponse response) throws Exception {
+			logger.info("getCustomerByEmail: Received request: " + request.getRequestURL().toString()
+					+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+			Response res = CommonUtils.getResponseObject("Customer Details");
+			if(null != email) {
+				CustomerModel customerModel = customerService.getCustomerByEmail(email);
+				
+				if (customerModel == null) {
+					ErrorObject err = CommonUtils.getErrorResponse("Customer Not Found", "Customers Not Found");
+					res.setErrors(err);
+					res.setStatus(StatusCode.ERROR.name());
+				} else {
+					res.setData(customerModel);
+				}
+			}
+			
+			logger.info("getCustomerByEmail: Sent response");
+			return CommonUtils.getJson(res);
+		}
 	
 }
 

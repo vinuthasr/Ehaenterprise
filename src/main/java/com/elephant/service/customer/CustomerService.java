@@ -13,7 +13,7 @@ import com.elephant.response.Response;
 
 public interface CustomerService {
 	
-	public Response addCustomer(CustomerModel customerModel) throws Exception;
+	public Response addCustomer(CustomerModel customerModel,HttpServletRequest request) throws Exception;
 
 	public Response updateCustomer(CustomerModel customerModel, Principal pr) throws Exception;
 
@@ -50,7 +50,7 @@ public interface CustomerService {
 
     public boolean checkPassword(CustomerDomain customerDomain,String password);
 
-
+    public CustomerModel getCustomerByEmail(String email);
 
 	//public void getConfirm(String valitate, String email);
 

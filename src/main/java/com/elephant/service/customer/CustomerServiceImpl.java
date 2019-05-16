@@ -32,6 +32,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpRequest;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -123,7 +124,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Response addCustomer(CustomerModel customerModel) throws Exception {
+	public Response addCustomer(CustomerModel customerModel,HttpServletRequest request) throws Exception {
 		Response response=CommonUtils.getResponseObject("Add Customer");
 		try {
 			CustomerDomain custDomain = cr.findByEmail(customerModel.getEmail());
@@ -157,59 +158,46 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 //					 
 					 //CartDomain cartDomain =new CartDomain();
 					 
-//					 Mail mail = new Mail();
-//				        mail.setFrom("yenugubala.hari@gmail.com");
-//				        mail.setTo(customer.getEmail());
-//				        mail.setSubject("Hello  "+customer.getCustomerName());
-		//
-//				        Map<String, Object> model = new HashMap<String, Object>();
-//				        model.put("name", customer.getCustomerName());
-//				        model.put("email", customer.getEmail());
-//				        model.put("code", customer.getValitateCode());
+//					Mail mail = new Mail();
+//			        mail.setFrom("ehauiele@gmail.com");
+//			        mail.setTo(customer.getEmail());
+//			        mail.setSubject("Hello  "+customer.getCustomerName());
+//	
+//			        Map<String, Object> model = new HashMap<String, Object>();
+//			        model.put("name", customer.getCustomerName());
+//			        model.put("email", customer.getEmail());
+//			        model.put("code", customer.getValitateCode());
 //				        
-//				        System.out.println(request.getServerPort());
-//				       
-//				       
-//				        model.put("signature",request.getServerPort()+"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
-//				        mail.setModel(model);
+//				    model.put("signature",request.getServerPort()+"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
+//				    mail.setModel(model);
 //				        
-//				        MimeMessage message = emailSender.createMimeMessage();
-//				        MimeMessageHelper helper = new MimeMessageHelper(message,
-//				                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-//				                StandardCharsets.UTF_8.name());
-		//
-//				       // helper.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
-		//
-//				        Context context = new Context();
-//				        context.setVariables(mail.getModel());
-//				        
-//				        String html = templateEngine.process("registration-form", context);
-		//
-//				        helper.setTo(mail.getTo());
-//				        helper.setText(html, true);
-//				        helper.setSubject(mail.getSubject());
-//				        helper.setFrom(mail.getFrom());
-		//
-//				        emailSender.send(message);
-
-				       // emailService.sendSimpleMessage(mail);
-				     
-						
-
-//					        
-//					        System.out.println("mailsend successfully");
-//					    	System.out.println("Done!");
-							
-
-					 
-				        
-				        
-					 	customerDao.addCustomer(customer);
-			            /*cartDomain.setCustomer(customer);
-			            cartDao.createCart(cartDomain);
-			            customer.setCartDomain(cartDomain);*/
-			            response=customerDao.addCustomer(customer);
-						return response;
+//			        MimeMessage message = emailSender.createMimeMessage();
+//			        MimeMessageHelper helper = new MimeMessageHelper(message,
+//			                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+//			                StandardCharsets.UTF_8.name());
+//	
+//				    helper.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
+//		
+//			        Context context = new Context();
+//			        context.setVariables(mail.getModel());
+//			        
+//			        String html = templateEngine.process("registration-form", context);
+//	
+//			        helper.setTo(mail.getTo());
+//			        helper.setText(html, true);
+//			        helper.setSubject(mail.getSubject());
+//			        helper.setFrom(mail.getFrom());
+//		
+//				    emailSender.send(message);
+			       //emailService.sendSimpleMessage(mail);
+//				    System.out.println("mailsend successfully");
+			        
+				 	customerDao.addCustomer(customer);
+		            /*cartDomain.setCustomer(customer);
+		            cartDao.createCart(cartDomain);
+		            customer.setCartDomain(cartDomain);*/
+		            response=customerDao.addCustomer(customer);
+					return response;
 			} else {
 				response.setStatus(StatusCode.ERROR.name());
 				response.setMessage("Email id already exist");
@@ -223,6 +211,7 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 	        } catch (MessagingException ex) {
 	            ex.printStackTrace();
 	        }
+
 		return null;
 	    }
 
@@ -598,4 +587,22 @@ private static Logger log = LoggerFactory.getLogger(EhaEnterpriseApplication.cla
 		}
 		return isValid;
 	}
+
+
+
+
+	@Override
+	public CustomerModel getCustomerByEmail(String email) {
+		CustomerModel customerModel = new CustomerModel();
+        if(null != email) {
+        	CustomerDomain customerDomain = cr.findByEmail(email);
+        	if(customerDomain != null) {
+        		BeanUtils.copyProperties(customerDomain, customerModel);
+        	}
+        }
+		
+		return customerModel;
+	}
+	
+	
 }

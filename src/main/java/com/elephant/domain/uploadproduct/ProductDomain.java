@@ -78,8 +78,9 @@ public class ProductDomain implements Serializable {
 	@OneToMany(targetEntity=SubImageDomain.class, mappedBy = "productDomain", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<SubImageDomain> subImageList;
 	
-	@JsonBackReference@LazyCollection(LazyCollectionOption.TRUE)
-	@ManyToOne(cascade=CascadeType.ALL,fetch = FetchType.LAZY,optional=true)
+	//@JsonBackReference@LazyCollection(LazyCollectionOption.TRUE)
+	@ManyToOne
+	//(cascade=CascadeType.ALL,fetch = FetchType.,optional=true)
 	@JoinColumn(name="categoryId")//,referencedColumnName = "categoryName",insertable=true)
 	private Category category;
 	
@@ -113,6 +114,9 @@ public class ProductDomain implements Serializable {
 	
 	@Column(name ="headerDesc" )
 	private String headerDesc;
+	
+	@Column(name ="productName" )
+	private String productName;
 	
 	public String getHeaderDesc() {
 		return headerDesc;
@@ -283,7 +287,11 @@ public class ProductDomain implements Serializable {
 	public void setSubImageList(List<SubImageDomain> subImageList) {
 		this.subImageList = subImageList;
 	}
-	
-	
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 	
 }

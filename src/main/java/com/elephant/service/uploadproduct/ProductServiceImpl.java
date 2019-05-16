@@ -78,6 +78,7 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Autowired
 	SubImageDaoRepository subImageDaoRepository;
+	
 
 //	@Override
 //	public List<ProductModel> getProductByCatagory(String categoryName, String colors, Float discount, Double length,
@@ -124,6 +125,8 @@ public class ProductServiceImpl implements ProductService{
             	}
             }
             
+            response = validateSku(domain.getSku());
+            
             domain.setSubImageList(null);
             productRepository.save(domain);
 			
@@ -141,49 +144,7 @@ public class ProductServiceImpl implements ProductService{
 			return response;
 			
 		}
-			/*UploadProductDomain update=new UploadProductDomain();
-            	BeanUtils.copyProperties(model, update);
-            	Category category=categoryrepository.findByCategoryName(categoryName);
-            	if(category!=null && category.isActive()==true) {
-					update.setCategory(category);
-				
-	            update.setProductId(CommonUtils.generateRandomId());
-	            update.setSku(model.getSku());
-	            update.setColors(model.getColors());
-	            update.setDiscount(model.getDiscount());
-	            update.setOccassion(model.getOccassion());
-	            update.setPrice(model.getPrice());
-                update.setQuantity(model.getQuantity());
-                update.setActive(true);
-                update.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-                update.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-                update.setMaterialType(model.getMaterialType());
-                update.setCollectionDesc(model.getCollectionDesc());
-                
-                update.setFabricPurity(model.getFabricPurity());
-                update.setPattern(model.getPattern());
-                update.setBorder(model.getBorder());
-                update.setBorderType(model.getBorderType());
-                update.setZariType(model.getZariType());
-                update.setLength(model.getLength());
-                update.setBlouse(model.getBlouse());
-                update.setBlouseColor(model.getBlouseColor());
-                update.setBlouseLength(model.getBlouseLength());
-                
-                update.setMainImageUrl(model.getMainImageUrl());
-                update.setOtherImageUrls(model.getOtherImageUrls());
-                
-                Response response1 = uploadproductdao.addproduct(update);
-    			return response1;
-	           
-    		
-    		}
-				else {
-					Response response2 = CommonUtils.getResponseObject("Category Name Not Available");
-					response.setStatus(StatusCode.ERROR.name());
-					return response2;
-				
-			}}*/
+			
    		catch (Exception ex) {
 	   			response.setStatus(StatusCode.ERROR.name());
 				response.setMessage("Exception "+ex.getMessage());
@@ -192,6 +153,17 @@ public class ProductServiceImpl implements ProductService{
     			
     		}
 	
+	
+	private Response validateSku(String sku) {
+		Response response=CommonUtils.getResponseObject("validate sku");
+		ProductDomain productDomain = uploadproductdao.isSKUExist(sku);
+		if(productDomain != null) {
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("SKU already exists");
+		}
+		
+		return response;
+	}
 	/*----------------------------------Update Product -------------------------------------*/
 
 
@@ -200,7 +172,7 @@ public class ProductServiceImpl implements ProductService{
 		try {
 			ProductDomain upd = new ProductDomain();
 			BeanUtils.copyProperties(updateproduct, upd);
-
+				
 			Response response = uploadproductdao.updateProduct(upd);
 			return response;
 
@@ -648,6 +620,7 @@ try {
 				subImageDomain.setProductDomain(null);
 			}
 			BeanUtils.copyProperties(up, productModel);
+			productModel.setCategoryName(up.getCategory().getCategoryName());
 			
 			return productModel;
 		} catch (Exception e) {

@@ -36,6 +36,7 @@ public class ProductModel implements Serializable {
     private String mainImageUrl;
     private String headerDesc;
     private String categoryName;
+    private String productName;
     
     private List<SubImageModel> subImageList;
     
@@ -208,8 +209,13 @@ public class ProductModel implements Serializable {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 
-	
 }
 	
 	

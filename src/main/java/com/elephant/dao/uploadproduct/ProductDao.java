@@ -148,26 +148,6 @@ public interface ProductDao {
 
 	public List<ProductDomain> getProductByCatagory1(ProductModel1 pm1);
 
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-	
+	public ProductDomain isSKUExist(String sku);
 	
 }

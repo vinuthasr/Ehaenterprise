@@ -90,7 +90,9 @@ public class BannerServiceImpl implements BannerService{
 		
 		}
 		catch(Exception ex) {
-			System.out.println("Exception in deleting banner"+ex);
+			//System.out.println("Exception in deleting banner"+ex);
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Banner should not able to delete as this is already used in product/image");
 		}
 		return response;
 	}
