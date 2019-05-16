@@ -11,8 +11,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -21,12 +19,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -125,7 +121,12 @@ public class ProductServiceImpl implements ProductService{
             	}
             }
             
-            response = validateSku(domain.getSku());
+            ProductDomain validateSku = uploadproductdao.isSKUExist(domain.getSku());
+            if(validateSku != null){
+            	response.setStatus(StatusCode.ERROR.name());
+    			response.setMessage("SKU already exists");
+    			return response;
+            }
             
             domain.setSubImageList(null);
             productRepository.save(domain);
@@ -153,17 +154,6 @@ public class ProductServiceImpl implements ProductService{
     			
     		}
 	
-	
-	private Response validateSku(String sku) {
-		Response response=CommonUtils.getResponseObject("validate sku");
-		ProductDomain productDomain = uploadproductdao.isSKUExist(sku);
-		if(productDomain != null) {
-			response.setStatus(StatusCode.ERROR.name());
-			response.setMessage("SKU already exists");
-		}
-		
-		return response;
-	}
 	/*----------------------------------Update Product -------------------------------------*/
 
 

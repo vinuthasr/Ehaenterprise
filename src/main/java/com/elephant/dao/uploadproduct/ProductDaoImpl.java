@@ -908,13 +908,16 @@ public Response deleteproductByCategoryId(String categoryId, boolean isActive) t
 
 
 	@Override
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ProductDomain isSKUExist(String sku) {
-		String sql = "Select * FROM uploadproduct WHERE sku = '"+sku+"'";
-		ProductDomain productDomain = (ProductDomain)jdbcTemplate.queryForObject(sql, new Object[] { sku },
-				new BeanPropertyRowMapper(ProductDomain.class));
-		
-		return productDomain;
+		try {
+			String hql = "FROM ProductDomain where sku='"+sku+"'";
+			return (ProductDomain) entitymanager.createQuery(hql).getSingleResult();
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		} catch (Exception e) {
+			logger.error("Exception in getProductByBlouseColor", e);
+			return null;
+		}
 	}
 
 
