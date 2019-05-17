@@ -59,11 +59,13 @@ public class PaymentController {
 			paypalService.add(payment);
 			for(Links links : payment.getLinks()){
 				if(links.getRel().equals("approval_url")){
-					return CommonUtils.getJson("redirect:" + links.getHref());
+					//return CommonUtils.getJson("redirect:" + links.getHref());
+					return CommonUtils.getJson(links.getHref());
 				}
 			}
 		} catch (PayPalRESTException e) {
 			log.error(e.getMessage());
+			return CommonUtils.getJson(e.getMessage());
 		}
 		return CommonUtils.getJson("redirect:/");
 	}
