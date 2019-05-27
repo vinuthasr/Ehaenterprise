@@ -42,14 +42,14 @@ public class AddressController {
 	@Autowired
 	AddressService addressService;
 	
-	@PreAuthorize("hasRole('ROLE_USER')" )
+	//@PreAuthorize("hasRole('ROLE_USER')" )
 	@RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
 	
 	public Response addAddress(@RequestBody AddressModel model, Principal pr,HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		logger.info("addUser: Received request URL: " + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
-		logger.info("addUser: Received request: "/* + CommonUtils.getJson(user)*/);
+		logger.info("addUser: Received request: " + CommonUtils.getJson(""));
 		System.out.println(pr.getName());
 		
 		
