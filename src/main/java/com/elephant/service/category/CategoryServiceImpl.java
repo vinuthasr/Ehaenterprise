@@ -79,7 +79,7 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 		            update.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 	                update.setCreatedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 	                update.setActive(true);
-	               try {
+	              /* try {
 	            	   if(new Date().before(new Date(model.getStartingDateAndTime()))) {
 	            		   if(new Date(model.getEndingDateAndTime()) != null)
 	            			   update.setStartingDateAndTime(new Date(model.getStartingDateAndTime()));}
@@ -92,12 +92,12 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 	                	
 	                	/*if(new Date().equals(new Date(model.getEndingDateAndTime()))) {
 	                		update.setActive(false);
-	                	}*/
+	                	}
 	                }
 	               
 	                catch (Exception e) {
 						e.printStackTrace();	
-					}
+					} */
 	               /* try {
 	                	SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
 	            		Date dateStart=sdf.parse(model.getStartingDateAndTime());
