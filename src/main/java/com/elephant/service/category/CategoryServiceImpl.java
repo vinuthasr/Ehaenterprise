@@ -1,11 +1,7 @@
 package com.elephant.service.category;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -14,7 +10,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -28,7 +23,7 @@ import com.elephant.mapper.category.CategoryMapper;
 import com.elephant.mapper.uploadproduct.ProductMapper;
 import com.elephant.model.category.CategoryModel;
 import com.elephant.model.uploadproduct.ProductModel;
-import com.elephant.response.*;
+import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
 import com.elephant.utils.DateUtility;
 

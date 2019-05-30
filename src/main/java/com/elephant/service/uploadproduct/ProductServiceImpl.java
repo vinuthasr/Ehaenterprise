@@ -1,22 +1,25 @@
 package com.elephant.service.uploadproduct;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -29,6 +32,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.elephant.constant.FileType;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.category.CategoryRepository;
 import com.elephant.dao.subimage.SubImageDaoRepository;
@@ -36,16 +40,18 @@ import com.elephant.dao.uploadproduct.ProductDao;
 import com.elephant.dao.uploadproduct.ProductRepository;
 import com.elephant.domain.category.Category;
 import com.elephant.domain.subimages.SubImageDomain;
+import com.elephant.domain.uploadproduct.BulkProduct;
 import com.elephant.domain.uploadproduct.ProductDomain;
 import com.elephant.mapper.category.CategoryMapper;
 import com.elephant.mapper.uploadproduct.ProductMapper;
 import com.elephant.model.subimagemodel.SubImageModel;
+import com.elephant.model.uploadproduct.BulkProductModel;
 import com.elephant.model.uploadproduct.ProductModel;
 import com.elephant.model.uploadproduct.ProductModel1;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
 import com.elephant.utils.DateUtility;
-
+import com.elephant.utils.FileUtils;
 
 
 
@@ -74,7 +80,6 @@ public class ProductServiceImpl implements ProductService{
 	
 	@Autowired
 	SubImageDaoRepository subImageDaoRepository;
-	
 
 //	@Override
 //	public List<ProductModel> getProductByCatagory(String categoryName, String colors, Float discount, Double length,
@@ -175,183 +180,222 @@ public class ProductServiceImpl implements ProductService{
 
 
 	@Override
-	public Response exportExcel(MultipartFile file) throws Exception {
+	public Response exportExcel(MultipartFile file,BulkProductModel bulkProductModel) throws Exception {
 		Response response=CommonUtils.getResponseObject("upload products excel");
-		XSSFWorkbook workbook = null;
 		try {
-//			FileType fileType = FileType.valueOf(FilenameUtils.getExtension(file.getOriginalFilename()).toUpperCase());
-//			switch (fileType) {
-//			case CSV:
-//				return saveCSVFile(file);
-//			case XLS:
-//				return saveXLSFile(file);
-//			case XLSX:
-//				return saveXLSXFile(file);
-//			default:
-//				response.setStatus(StatusCode.ERROR.name());
-//				response.setErrors("The ." + file.getContentType() + " is not supported");
-//				return response;
-//			}
-
-			
-			InputStream inputStream = file.getInputStream(); 	
-			workbook = new XSSFWorkbook(inputStream);
-		
-		XSSFSheet sheet = workbook.getSheetAt(0);
-		Iterator<Row> rowIterator = sheet.iterator();
-		ProductDomain uploadProduct = null;
-		while(rowIterator.hasNext()) 
-		{
-			Row row=rowIterator.next();
-			if(row.getRowNum()==0)
-				continue;
-			
-			SubImageDomain subImageDomain = null;
-			List<SubImageDomain> subImageList = new ArrayList<SubImageDomain>();
-			
-			Iterator<Cell> cellIterator = row.cellIterator();
-			Cell cell = null;
-			int index;
-			uploadProduct = new ProductDomain();
-			while(cellIterator.hasNext()) 
-			{
-			    cell = cellIterator.next();
-				index= cell.getColumnIndex();
-				
-				//ProductDomain update=new ProductDomain();
-            	//Category category=categoryRepository.findByCategoryName(categoryName);
-            	//if(category!=null && category.isActive()==true) {
-					//update.setCategory(category);
-				Category category = null;
-				switch(index+1) 
-				{
-				
-					case 1:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setProductId(CommonUtils.generateRandomId());
-						uploadProduct.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-						uploadProduct.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
-						uploadProduct.setActive(true);
-						uploadProduct.setQuantity(1);
-						category=categoryRepository.findByCategoryName(cell.getStringCellValue());
-						if(category != null) {
-							uploadProduct.setCategory(category);
-						} else {
-							response.setStatus(StatusCode.ERROR.name());
-							response.setMessage("Category name "+cell.getStringCellValue()+" is not valid");
-							return response;
-						}
-						
-						break;
-					case 2:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setSku(cell.getStringCellValue());
-						break;
-
-					case 3:
-						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-						uploadProduct.setInStock((long) cell.getNumericCellValue());break;
-						
-					case 4:
-						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-						uploadProduct.setLength(cell.getNumericCellValue());break;
-						
-					case 5:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setPattern(cell.getStringCellValue());break;
-						
-					case 6:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setFabricPurity(cell.getStringCellValue());break;
-						
-					case 7:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setBorder(cell.getStringCellValue());break;
-						
-					case 8:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setBorderType(cell.getStringCellValue());break;
-							
-						
-					case 9:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setZariType(cell.getStringCellValue());break;
-						
-								
-					case 10:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setMaterialType(cell.getStringCellValue());break;
-					
-					case 11:
-						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-						uploadProduct.setPrice((double)(cell.getNumericCellValue()));break;
-						
-					case 12:
-						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-						uploadProduct.setDiscount((float) cell.getNumericCellValue());break;
-						
-					case 13:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setBlouseColor(cell.getStringCellValue());break;		
-						
-					case 14:
-						cell.setCellType(Cell.CELL_TYPE_NUMERIC);
-						uploadProduct.setBlouseLength(cell.getNumericCellValue());break;
-						
-					case 15:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setColors(cell.getStringCellValue());break;
-															
-					case 16:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setCollectionDesc(cell.getStringCellValue());break;
-						
-					case 17:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setHeaderDesc(cell.getStringCellValue());break;
-																
-					case 18:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setOccassion(cell.getStringCellValue());break;
-						
-					case 19:
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						uploadProduct.setMainImageUrl(cell.getStringCellValue());break;	
-						
-					default:	
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						subImageDomain = null;
-						subImageDomain = new SubImageDomain();
-						cell.setCellType(Cell.CELL_TYPE_STRING);
-						subImageDomain.setImagePath(cell.getStringCellValue());
-						subImageList.add(subImageDomain);
-				}
-            }
-			uploadproductdao.save(uploadProduct);
-			subImageDomain = null;
-			for(SubImageDomain subImage:subImageList) {
-				subImageDomain = new SubImageDomain();
-				subImageDomain.setImagePath(subImage.getImagePath());
-				subImageDomain.setProductDomain(uploadProduct);
-				subImageDaoRepository.save(subImageDomain);
-				subImageDomain = null;
+			FileType fileType = FileType.valueOf(FilenameUtils.getExtension(file.getOriginalFilename()).toUpperCase());
+			switch (fileType) {
+			case CSV:
+				return saveCSVFile(bulkProductModel,file);
+			case XLS:
+				return saveXLSFile(bulkProductModel,file);
+			case XLSX:
+				return saveXLSXFile(bulkProductModel,file);
+			default:
+				response.setStatus(StatusCode.ERROR.name());
+				response.setErrors("The ." + file.getContentType() + " is not supported");
+				return response;
 			}
-			response.setStatus(StatusCode.SUCCESS.name());
-			response.setMessage("Products successfully uploaded");
-			
-			}
-			
 		}catch (Exception ex) {
 			logger.info("Exception Service:" + ex.getMessage());
 		}
-		
-		//response.setStatus(StatusCode.ERROR.name());
-		//response.setErrors("The ." + FilenameUtils.getExtension(file.getOriginalFilename()) + " is not supported");
+		response.setStatus(StatusCode.ERROR.name());
+		response.setErrors("The ." + FilenameUtils.getExtension(file.getOriginalFilename()) + " is not supported");
 		return response;
 	}
 
+	public Response saveXLSXFile(BulkProductModel bulkProductModel, MultipartFile file) {
+		Response response = CommonUtils.getResponseObject("Add xlsx file");
+		try {
+		    BulkProduct bulk = new BulkProduct();
+			bulk = getFileObject(bulkProductModel, file);
+			XSSFRow row = null;
+			File excel = new File(bulk.getPath());
+			FileInputStream fis = new FileInputStream(excel);
+			XSSFWorkbook wb = new XSSFWorkbook(fis);
+			XSSFSheet ws = wb.getSheetAt(0);
+			int rowNum = ws.getLastRowNum() + 1;
+			
+			
+			for (int i = 1; i < rowNum; i++) {
+				row = ws.getRow(i);
+				int colNum = ws.getRow(i).getLastCellNum();
+				ProductDomain uploadProduct = new ProductDomain();
+				Category category = null;
+				SubImageDomain subImageDomain = null;
+				List<SubImageDomain> subImageList = new ArrayList<SubImageDomain>();
+				for (int j = 0; j < colNum; j++) 
+				{
+					switch(j+1) 
+					{
+						case 1:
+							uploadProduct.setProductId(CommonUtils.generateRandomId());
+							uploadProduct.setUploadDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
+							uploadProduct.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
+							uploadProduct.setActive(true);
+							uploadProduct.setQuantity(1);
+							
+							row.getCell(j).setCellType(CellType.STRING);
+							category=categoryRepository.findByCategoryName(row.getCell(j).getStringCellValue());
+							if(category != null) {
+								uploadProduct.setCategory(category);
+							} else {
+								response.setStatus(StatusCode.ERROR.name());
+								response.setMessage("Category name "+row.getCell(j).toString()+" is not valid");
+								return response;
+							}
+							
+							break;
+						case 2:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setSku(row.getCell(j).getStringCellValue());
+							break;
+	
+						case 3:
+							row.getCell(j).setCellType(CellType.NUMERIC);
+							uploadProduct.setInStock((long)row.getCell(j).getNumericCellValue());break;
+							
+						case 4:
+							row.getCell(j).setCellType(CellType.NUMERIC);
+							uploadProduct.setLength(row.getCell(j).getNumericCellValue());break;
+							
+						case 5:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setPattern(row.getCell(j).getStringCellValue());break;
+							
+						case 6:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setFabricPurity(row.getCell(j).getStringCellValue());break;
+							
+						case 7:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setBorder(row.getCell(j).getStringCellValue());break;
+							
+						case 8:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setBorderType(row.getCell(j).getStringCellValue());break;
+							
+						case 9:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setZariType(row.getCell(j).getStringCellValue());break;
+									
+						case 10:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setMaterialType(row.getCell(j).getStringCellValue());break;
+						
+						case 11:
+							row.getCell(j).setCellType(CellType.NUMERIC);
+							uploadProduct.setPrice(row.getCell(j).getNumericCellValue());break;
+							
+						case 12:
+							row.getCell(j).setCellType(CellType.NUMERIC);
+							uploadProduct.setDiscount((float)row.getCell(j).getNumericCellValue());break;
+							
+						case 13:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setBlouseColor(row.getCell(j).getStringCellValue());break;		
+							
+						case 14:
+							row.getCell(j).setCellType(CellType.NUMERIC);
+							uploadProduct.setBlouseLength(row.getCell(j).getNumericCellValue());break;
+							
+						case 15:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setColors(row.getCell(j).getStringCellValue());break;
+																
+						case 16:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setCollectionDesc(row.getCell(j).getStringCellValue());break;
+							
+						case 17:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setHeaderDesc(row.getCell(j).getStringCellValue());break;
+																	
+						case 18:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setOccassion(row.getCell(j).getStringCellValue());break;
+							
+						case 19:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setProductName(row.getCell(j).getStringCellValue());break;
+							
+						case 20:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setMainImageUrl(row.getCell(j).getStringCellValue());break;	
+							
+						default:	
+							row.getCell(j).setCellType(CellType.STRING);
+							subImageDomain = null;
+							subImageDomain = new SubImageDomain();
+							subImageDomain.setImagePath(row.getCell(j).getStringCellValue());
+							subImageList.add(subImageDomain);
+					}
+				}
+				uploadproductdao.save(uploadProduct);
+				subImageDomain = null;
+				for(SubImageDomain subImage:subImageList) {
+					subImageDomain = new SubImageDomain();
+					subImageDomain.setImagePath(subImage.getImagePath());
+					subImageDomain.setProductDomain(uploadProduct);
+					subImageDaoRepository.save(subImageDomain);
+					subImageDomain = null;
+				}
+			}
+			uploadproductdao.saveBulkProduct(bulk);
+			
+			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage("Products successfully uploaded");
+			
+			wb.close();
+		}catch (Exception ex) {
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Exception "+ex.getMessage());
+			logger.info("Exception Service:" + ex.getMessage());
+		}
+		return response;
+	}
+	
+	public Response saveCSVFile(BulkProductModel bulkProductModel, MultipartFile file) {
+		Response response = CommonUtils.getResponseObject("Add CSV file");
+		response.setStatus(StatusCode.SUCCESS.name());
+		response.setMessage("Under progress");
+		return response;
+	}
+	
+	public Response saveXLSFile(BulkProductModel bulkProductModel, MultipartFile file) {
+		Response response = CommonUtils.getResponseObject("Add xls file");
+		response.setStatus(StatusCode.SUCCESS.name());
+		response.setMessage("Under progress");
+		return response;
+	}
 	
 		
+	public BulkProduct getFileObject(BulkProductModel bulkProductModel, MultipartFile file) {
+		BulkProduct bulk = new BulkProduct();
+		try {
+			String filePath = Paths.get(".").toAbsolutePath().toString() +"\\Product Excel";
+			BeanUtils.copyProperties(bulkProductModel, bulk);
+			bulk.setBulkProductId(CommonUtils.generateRandomId());
+			bulk.setName(file.getOriginalFilename());
+			bulk.setType(file.getContentType());
+			bulk.setSize(file.getSize());
+			bulk.setPath(filePath + "/" + bulk.getBulkProductId() + "/" + file.getOriginalFilename());
+			bulk.setCreatedDate(new Date());
+			bulk.setModifiedDate(new Date());
+			FileUtils.createDir(filePath + "/" + bulk.getBulkProductId()) ;
+			try {
+				byte[] bytes = file.getBytes();
+				Path path = Paths.get(filePath + "/" + bulk.getBulkProductId() + "/" + file.getOriginalFilename());
+				Files.write(path, bytes);
+			} catch (Exception e) {
+				logger.info("Exception in getFileObject:" + e.getMessage());
+			}
+		} catch (Exception ex) {
+			logger.info("Exception Service:" + ex.getMessage());
+		}
+		return bulk;
+	}
+
 		
 		
 	/*@Override
@@ -922,7 +966,7 @@ try {
 
 	public void createExcelTemplate(File file) {
 		try {
-			String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric Purity","Border","Border Type","Zari Type","Material Type","Price", "Discount","Blouse Color","Blouse Length","Saree Colors","Collection Desc","Header Desc","Occassion","Main ImageUrl","Sub Image1"};
+			String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric Purity","Border","Border Type","Zari Type","Material Type","Price", "Discount","Blouse Color","Blouse Length","Saree Colors","Collection Desc","Header Desc","Occassion","Product Name","Main ImageUrl","Sub Image1"};
 			Workbook workbook = new XSSFWorkbook();
 			XSSFSheet  sheet = (XSSFSheet) workbook.createSheet("Product_Upload_Template");
 			 

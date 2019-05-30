@@ -1,17 +1,11 @@
 package com.elephant.service.uploadproduct;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.elephant.model.uploadproduct.BulkProductModel;
 //import com.elephant.domain.uploadproduct.UploadProductDomain;
 import com.elephant.model.uploadproduct.ProductModel;
 import com.elephant.model.uploadproduct.ProductModel1;
@@ -31,7 +25,7 @@ public interface ProductService {
 	
 	public Response deleteProduct(String productId, boolean isActive)throws Exception;
 
-	public Response exportExcel(MultipartFile file)throws Exception;
+	public Response exportExcel(MultipartFile file,BulkProductModel bulkProductModel)throws Exception;
 
 	public ProductModel getProductById(String productId)throws Exception;
 

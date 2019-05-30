@@ -18,7 +18,7 @@ public interface CustomerDao {
 //
 	public List<CustomerDomain> getCustomers() throws Exception;
 //
-	public List<CustomerDomain> getcustomersByrollId(long rollId);
+	public List<CustomerDomain> getcustomersByrollId(int rollId);
 //
 //	public Response updateCustomerStatus(CustomerDomain customer);
 

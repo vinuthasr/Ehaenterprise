@@ -10,8 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,6 @@ import com.elephant.constant.StatusCode;
 import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
-
 
 
 
@@ -34,6 +34,9 @@ private static final Logger logger = LoggerFactory.getLogger(CustomerDaoImpl.cla
 	
 	@Autowired
 	CustomerRepository cr;
+	
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 	
 	BCryptPasswordEncoder pass=new BCryptPasswordEncoder();
 
@@ -108,21 +111,19 @@ private static final Logger logger = LoggerFactory.getLogger(CustomerDaoImpl.cla
 		try {
 			CustomerDomain cust = getCustomer(cr.findByEmail(pr.getName()).getCustomersId());
 			if((!customer.getCustomerName().equals(null)) && (!customer.getCustomerName().equals("String"))) {
-			cust.setCustomerName(customer.getCustomerName());}
+				cust.setCustomerName(customer.getCustomerName());
+			}
 			cust.setGender(customer.getGender());
 			if((!customer.getEmail().equals(null)) && (!customer.getEmail().equals("String"))) {
-			cust.setEmail(customer.getEmail());}
+				cust.setEmail(customer.getEmail());
+			}
 			if((!customer.getPassword().equals(null)) && (!customer.getPassword().equals("String"))) {
-			cust.setPassword(customer.getPassword());}
+				cust.setPassword(customer.getPassword());
+			}
 			cust.setMobileNumber(customer.getMobileNumber());
-			//cust.setConfirmPassword(customer.getConfirmPassword());
-			//cust.setAddress(customer.getAddress());
-		
-			//cust.setActive(customer.isActive());
 			entityManager.flush();
-			
-			
 			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage("Updated successfully");
 			return response;
 		} catch (Exception e) {
 			logger.error("Exception in updateCustomer", e);
@@ -133,12 +134,13 @@ private static final Logger logger = LoggerFactory.getLogger(CustomerDaoImpl.cla
 	}
 
 
-	@SuppressWarnings("unchecked")
+
 	@Override
-	public List<CustomerDomain> getcustomersByrollId(long rollId) {
+	public List<CustomerDomain> getcustomersByrollId(int roleId) {
+		
 		try {
-			String hql = "FROM CustomerDomain  Where isActive=true and rollId=?1";
-			return (List<CustomerDomain>) entityManager.createQuery(hql).setParameter(1, rollId).getResultList();
+			String sql = "SELECT c.* FROM customers c, user_roles r where c.customers_id = r.customer_id and r.role_id = ?;";
+			return jdbcTemplate.query(sql, new Object[] { roleId }, new BeanPropertyRowMapper<CustomerDomain>(CustomerDomain.class));
 		} catch (Exception e) {
 			logger.error("Exception in getcustomers", e);
 		}

@@ -12,12 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,14 +39,10 @@ import com.elephant.utils.CommonUtils;
 
 
 
-//@Controller
-@RestController
+@RestController	
 @RequestMapping("/v1")
 @CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
 public class CustomerController {
-	
-	//@PersistenceContext
-	//private EntityManager entityManager;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 	
@@ -69,7 +63,7 @@ public class CustomerController {
     CustomerRepository cr;
 	
 	
-	//---------- post---------------//
+	//---------- Add Customer---------------//
 	
 	@RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
 	public Response addCustomer(@RequestBody CustomerModel customerModel, HttpServletRequest request,
@@ -78,25 +72,24 @@ public class CustomerController {
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		logger.info("addCustomers: Received Request: " + CommonUtils.getJson(customerModel));
 		
-	return customerService.addCustomer(customerModel,request);
-	
+	    return customerService.addCustomer(customerModel,request);
 	
 	}
 	
-	
-	
-
 	//---------- role_post---------------//
 	
 	@RequestMapping(value = "/roleadd", method = RequestMethod.POST, produces = "application/json")
-	public Response addRole(@RequestBody CustomerModel customerModel,Model model1, HttpServletRequest request,
+	public Response addRole(@RequestBody CustomerModel customerModel,HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		logger.info("addCustomers: Received request URL:" + request.getRequestURL().toString()
+		logger.info("addRoleToCustomer: Received request URL:" + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
-		logger.info("addCustomers: Received Request: " + CommonUtils.getJson(customerModel));
-	return customerService.addCustomer1(customerModel,model1);
+		logger.info("addRoleToCustomer: Received Request: " + CommonUtils.getJson(customerModel));
+		
+		return customerService.addRoleToCustomer(customerModel);
 	}
-	//------------------- get all--------------//
+	
+	
+	//------------------- get all customerss--------------//
 	
 	@RequestMapping(value = "/get", method = RequestMethod.GET, produces = "application/json")
 	public @ResponseBody String getCustomers(HttpServletRequest request, HttpServletResponse response)
@@ -116,14 +109,14 @@ public class CustomerController {
 		return CommonUtils.getJson(res);
 	}
 	
-	//------------------ get by Id-----------------//
+	//------------------ get customer by Id-----------------//
 	
 	@RequestMapping(value = "/get/{Id}", method = RequestMethod.GET, produces = "application/json")
-	public @ResponseBody String getCustomers(@PathVariable("Id") long customersId, HttpServletRequest request,
+	public @ResponseBody String getCustomerById(@PathVariable("Id") long customersId, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		logger.info("getCustomer: Received request: " + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
-		CustomerModel customerModel = customerService.getCustomer(customersId);
+		CustomerModel customerModel = customerService.getCustomerById(customersId);
 		Response res = CommonUtils.getResponseObject("Customer Details");
 		if (customerModel == null) {
 			ErrorObject err = CommonUtils.getErrorResponse("Customer Not Found", "Customers Not Found");
@@ -138,11 +131,11 @@ public class CustomerController {
 	
 	//------------------ delete --------------------//
 	@RequestMapping(value = "/delete/{customerId}", method = RequestMethod.DELETE, produces = "application/json")
-	public @ResponseBody Response deleteCustomer(@PathVariable("customerId") long customersId, HttpServletRequest request,
+	public @ResponseBody Response deleteCustomer(@PathVariable("customerId") long customerId, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		logger.info("deleteCustomer: Received request: " + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
-		return customerService.deleteCustomer(customersId);
+		return customerService.deleteCustomer(customerId);
 	}
 	
 	//====================== update customer ===================//
@@ -162,7 +155,7 @@ public class CustomerController {
 	
 	@RequestMapping(value = "/getroll/{rollId}", method = RequestMethod.GET, produces = "application/json")
 	
-	public @ResponseBody String getCustomersByRollId(@PathVariable("rollId") long rollId, HttpServletRequest request,
+	public @ResponseBody String getCustomersByRollId(@PathVariable("rollId") int rollId, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 	
 		logger.info("getCustomerbyrollid List: Received request URL: " + request.getRequestURL().toString()

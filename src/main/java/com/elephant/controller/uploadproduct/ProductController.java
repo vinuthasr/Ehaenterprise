@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.uploadproduct.ProductDao;
+import com.elephant.model.uploadproduct.BulkProductModel;
 import com.elephant.model.uploadproduct.ProductModel;
 import com.elephant.model.uploadproduct.ProductModel1;
 import com.elephant.response.ErrorObject;
@@ -165,7 +165,9 @@ public class ProductController {
 				response.setStatus(StatusCode.ERROR.name());
 			}
 			
-		  response = uploadproductservice.exportExcel(file);
+		  BulkProductModel bulkProductModel = new BulkProductModel();		
+		  bulkProductModel.setUserId("ehaadmin@gmail.com");
+		  response = uploadproductservice.exportExcel(file,bulkProductModel);
 		} 
 		catch (Exception e) {
 			response.setStatus(StatusCode.ERROR.name());
@@ -627,7 +629,7 @@ public class ProductController {
 	}
 	
 	//--------------------------------Excel Sheet Download------------------------------------
-	/**Donwload Template **/
+	/**Download Template **/
 	@RequestMapping(value = "/excel/template", method = RequestMethod.GET, produces = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
 	public ResponseEntity<Resource> getExcelForBulkProduct() {
 		Resource file = null;

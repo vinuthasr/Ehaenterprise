@@ -10,4 +10,7 @@ public interface Constants {
 	public static String POST_URL="http://localhost:8080";
 	public final static String BANNER_SLIDER_AREA = "Slider Area";
 	public final static String CURRENCY = "USD";
+	public final static String ROLE_ADMIN = "ROLE_ADMIN";
+	public final static String ROLE_USER = "ROLE_USER";
+	public final static String FROM_ADDRESS = "ehauiele@gmail.com";
 }

@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.category.CategoryDao;
 import com.elephant.dao.category.CategoryRepository;
+import com.elephant.domain.uploadproduct.BulkProduct;
 import com.elephant.domain.uploadproduct.ProductDomain;
 import com.elephant.model.uploadproduct.ProductModel1;
 import com.elephant.response.Response;
@@ -433,7 +433,7 @@ public class ProductDaoImpl implements ProductDao {
 			up.setHeaderDesc(update.getHeaderDesc());
 			up.setProductName(update.getProductName());
 			up.setMainImageUrl(update.getMainImageUrl());
-			
+			up.setCp(update.getCp());
 			entitymanager.flush();
 			response.setStatus(StatusCode.SUCCESS.name());
 		} catch (Exception e) {
@@ -918,6 +918,24 @@ public Response deleteproductByCategoryId(String categoryId, boolean isActive) t
 			logger.error("Exception in getProductByBlouseColor", e);
 			return null;
 		}
+	}
+
+
+
+	@Override
+	public Response saveBulkProduct(BulkProduct bulkProduct) throws Exception {
+		Response response = CommonUtils.getResponseObject("Add bulk product excel path");
+		try {
+			entitymanager.persist(bulkProduct);
+			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage(" Bulk product excel added Successfully");
+		} catch (Exception e) {
+			logger.error("Exception in adding bulk product", e);
+			response.setStatus(StatusCode.ERROR.name());
+			response.setErrors(e.getMessage());
+			response.setMessage("Failed to add bulk products ");
+		}
+		return null;
 	}
 
 

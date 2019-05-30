@@ -22,6 +22,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -212,8 +213,6 @@ public class OrderServiceImpl implements OrderService {
 
 		OrderDomain orderDomain1=orderDaoRepository.save(orderDomain);
 		response.setMessage1("Order Creation is Successfull");
-		System.out.println("Order Creation is Successfull");
-		System.out.println("order id"+orderDomain1.getOrderId());
 		
 		/*-------------------------Clear Cart amount after order Confirmation-------------------------------*/
 		//cartDomain.setGrandtotal(0);
@@ -259,51 +258,39 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 		response.setMessage3("Cart Items are dumped into Order details");
-		System.out.println("cartItem  are dumped to Order detail");		
 		/*-------------------------------------------------------------------------------------------------*/
 		
 		 Mail mail = new Mail();
-	        mail.setFrom("yenugubala.hari@gmail.com");
-	        mail.setTo(orderDomain.getCustomerEmail());
-	        mail.setSubject("Sending Email with Thymeleaf HTML Template Example");
-	   
-	       
-	        List<OrderDetailDomain> kkk=orderDaoRepository.findByOrderId(orderDomain1.getOrderId()).getOrderDetailDomain();
-	      
-	        	
-	        		System.out.println(kkk);
-	       
-	        MimeMessage message = emailSender.createMimeMessage();
-	        MimeMessageHelper helper = new MimeMessageHelper(message,
-	                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-	                StandardCharsets.UTF_8.name());
-
-	      
-	      
-	        Context context = new Context();
-	        
-	        context.setVariable("name",kkk);
-	        //context.setVariable("size",kkk.size());
-	        String html = templateEngine.process("order", context);
-	        
-	        
-	        System.out.println(html);
-	        helper.setTo(mail.getTo());
-	        helper.setText(html, true);
-	        helper.setSubject(mail.getSubject());
-	        helper.setFrom(mail.getFrom());
-
-	        emailSender.send(message);
-	    
-	        System.out.println("mailsend successfully");
-        
+         mail.setFrom("ehauiele@gmail.com");
+         mail.setTo(orderDomain.getCustomerEmail());
+         mail.setSubject("Sending Email with Thymeleaf HTML Template Example");
+   
+        List<OrderDetailDomain> kkk=orderDaoRepository.findByOrderId(orderDomain1.getOrderId()).getOrderDetailDomain();
+      
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        Context context = new Context();
+        context.setVariable("name",kkk);
+        //context.setVariable("size",kkk.size());
+        String html = templateEngine.process("order", context);
+        System.out.println(html);
+        helper.setTo(mail.getTo());
+        helper.setText(html, true);
+        helper.setSubject(mail.getSubject());
+        helper.setFrom(mail.getFrom());
+        emailSender.send(message);
     	response.setMessage("Order Conformation Mail sent Successfull");
     	System.out.println("Order Conformation Mailsent  successfull");
 		return response;
-		}catch(Exception ex) {
+		}catch(MailSendException exce) {
+			//response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("We are unable to send email due to gmail port issue. Please click on the below code to validate your email id");
+		}
+		catch(Exception ex) {
 			System.out.println("Exception in ordercreate status"+ex);
-			
-	}
+	   }
 		
 		return response;
 

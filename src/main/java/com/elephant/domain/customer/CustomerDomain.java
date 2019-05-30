@@ -3,9 +3,7 @@ package com.elephant.domain.customer;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,14 +16,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 
 //import com.elephant.domain.roles.Role;
 import org.springframework.format.annotation.NumberFormat;
 
-import com.elephant.constant.StatusCode;
 import com.elephant.domain.address.AddressDomain;
 import com.elephant.domain.cartitem.CartItemDomain;
 //import com.elephant.domain.cart.CartDomain;
@@ -67,12 +63,9 @@ public class CustomerDomain implements Serializable{
 	@NumberFormat
 	@Column(name="mobileNumber")
 	private long mobileNumber;
-	
-//	@Column(name="confirmPassword")
-//	private String confirmPassword;
+	 	
 	 
-	
-	 private Date expiryDate;
+	private Date expiryDate;
 	 
 	 @ManyToMany(fetch=FetchType.LAZY)
 	 @JoinTable(name = "user_roles", 
@@ -92,23 +85,14 @@ public class CustomerDomain implements Serializable{
 	@OneToMany(mappedBy="customerDomain", cascade=CascadeType.REMOVE, fetch=FetchType.LAZY )
 	private List<AddressDomain> addressDomain;
 	
-
-	/*//@OneToOne(mappedBy="customer", cascade=CascadeType.REMOVE, fetch=FetchType.LAZY )	
-	@OneToOne
-	@JoinColumn(name="cartId")
-	private CartDomain cartDomain;*/
-	
 	@OneToMany(mappedBy="customerDomain", cascade=CascadeType.ALL, fetch=FetchType.LAZY )
 	private List<CartItemDomain> cartItemDomain;
-
-	
 
 	@OneToMany(mappedBy="customerDomain", cascade=CascadeType.ALL, fetch=FetchType.LAZY )
 	private List<OrderDomain> orderDomain;
 	
 	@OneToMany(mappedBy="customerDomain", cascade=CascadeType.ALL, fetch=FetchType.LAZY )
 	private List<InvoiceDomain> invoiceDomain;
-	
 
 	public List<CartItemDomain> getCartItemDomain() {
 		return cartItemDomain;
@@ -137,27 +121,16 @@ public class CustomerDomain implements Serializable{
 	public void setOrderDomain(List<OrderDomain> orderDomain) {
 		this.orderDomain = orderDomain;
 	}
-	/*public CartDomain getCartDomain() {
-		return cartDomain;
-	}
-	public void setCartDomain(CartDomain cartDomain) {
-		this.cartDomain = cartDomain;
-	}*/
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 	
 	private boolean isActive;
 	
-//	private boolean isActiveUser;
-	
 	@Column(name="valitateCode")
 	private String valitateCode;
-	
-//	@Temporal(TemporalType.DATE)
-//	@Column(name="dateOfBirth")
-//	private Date dateOfBirth;
-//	
+
 	
 	public boolean isActive() {
 		return isActive;
@@ -165,12 +138,7 @@ public class CustomerDomain implements Serializable{
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
-	//	public Date getDateOfBirth() {
-//		return dateOfBirth;
-//	}
-//	public void setDateOfBirth(Date dateOfBirth) {
-//		this.dateOfBirth = dateOfBirth;
-//	}
+
 	public long getCustomersId() {
 		return customersId;
 	}
@@ -215,12 +183,6 @@ public class CustomerDomain implements Serializable{
 	public void setMobileNumber(long mobileNumber) {
 		this.mobileNumber = mobileNumber;
 	}
-//	public String getConfirmPassword() {
-//		return confirmPassword;
-//	}
-//	public void setConfirmPassword(String confirmPassword) {
-//		this.confirmPassword = confirmPassword;
-//	}
 	
 	public Date getExpiryDate() {
 		return expiryDate;
@@ -229,13 +191,6 @@ public class CustomerDomain implements Serializable{
 		this.expiryDate = expiryDate;
 	}
 
-	
-//	public boolean isActiveUser() {
-//		return isActiveUser;
-//	}
-//	public void setActiveUser(boolean isActiveUser) {
-//		this.isActiveUser = isActiveUser;
-//	}
 	public String getValitateCode() {
 		return valitateCode;
 	}

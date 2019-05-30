@@ -1,11 +1,9 @@
 package com.elephant.dao.uploadproduct;
 
 import java.util.List;
-import java.util.Optional;
 
+import com.elephant.domain.uploadproduct.BulkProduct;
 import com.elephant.domain.uploadproduct.ProductDomain;
-import com.elephant.model.category.CategoryModel;
-import com.elephant.model.uploadproduct.ProductModel;
 import com.elephant.model.uploadproduct.ProductModel1;
 import com.elephant.response.Response;
 
@@ -149,5 +147,7 @@ public interface ProductDao {
 	public List<ProductDomain> getProductByCatagory1(ProductModel1 pm1);
 
 	public ProductDomain isSKUExist(String sku);
+	
+	public Response saveBulkProduct(BulkProduct bulkProduct)throws Exception;
 	
 }

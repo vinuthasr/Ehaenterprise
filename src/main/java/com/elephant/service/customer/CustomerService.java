@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.ui.Model;
-
 import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.model.customer.CustomerModel;
 import com.elephant.response.Response;
@@ -19,12 +17,12 @@ public interface CustomerService {
 
 	public Response deleteCustomer(long customersId) throws Exception;
 	
-	public CustomerModel getCustomer(long customersId) throws Exception;
+	public CustomerModel getCustomerById(long customerId) throws Exception;
 	
 
 	public List<CustomerModel> getCustomers() throws Exception;
 
-	public List<CustomerModel> getcustomerByrollId(long rollId);
+	public List<CustomerModel> getcustomerByrollId(int rollId);
 
 	//public CustomerModel getConfirm(String valitate, String email);
 
@@ -42,7 +40,7 @@ public interface CustomerService {
 
 	public void createAdmin(CustomerDomain newAdmin);
 
-	public Response addCustomer1(CustomerModel customerModel, Model model1);
+	public Response addRoleToCustomer(CustomerModel customerModely);
 
 	public void addAdmin(String email, String password,String name);
 
