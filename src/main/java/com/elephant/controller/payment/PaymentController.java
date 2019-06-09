@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
 import com.elephant.constant.Constants;
+import com.elephant.constant.PaymentMode;
+import com.elephant.model.payment.PaymentCallback;
+import com.elephant.model.payment.PaymentDetail;
 import com.elephant.service.payment.PaypalService;
 import com.elephant.utils.CommonUtils;
 import com.paypal.api.payments.Links;
@@ -42,11 +46,12 @@ public class PaymentController {
 	@Autowired
 	private PaypalService paypalService;
 	
-	@RequestMapping(method = RequestMethod.GET)
-	public String index(){
-		return "index";
-	}
+//	@RequestMapping(method = RequestMethod.GET)
+//	public String index(){
+//		return "index";
+//	}
 	
+	/*----Payal----- - Start*/
 	@RequestMapping(method = RequestMethod.POST, value = "/pay")
 	public  @ResponseBody String pay(@RequestParam("addressId")long addressId,
 					 @RequestParam("paymentDesc") String paymentDesc,		
@@ -105,5 +110,29 @@ public class PaymentController {
 	
 		return new ResponseEntity<Map<String,Object> >(map,HttpStatus.BAD_REQUEST);
 	}
+
+	  /*----- Paypal end --- */
+	
+	/* Payumoney -----*/
+
+	
+	@PostMapping(path = "/paymentdetails")
+    public @ResponseBody PaymentDetail proceedPayment(@RequestParam("email") String email){
+		PaymentDetail paymentDetail = paypalService.proceedPayment(email);
+		
+		return paymentDetail;
+    }
+
+	
+    @RequestMapping(path = "/paymentresponse", method = RequestMethod.POST)
+    public @ResponseBody String payuCallback(@RequestParam String mihpayid, @RequestParam String status, @RequestParam PaymentMode mode, @RequestParam String txnid, @RequestParam String hash){
+        PaymentCallback paymentCallback = new PaymentCallback();
+        paymentCallback.setMihpayid(mihpayid);
+        paymentCallback.setTxnid(txnid);
+        paymentCallback.setMode(mode);
+        paymentCallback.setHash(hash);
+        paymentCallback.setStatus(status);
+        return paypalService.payuCallback(paymentCallback);
+    }
 
 }

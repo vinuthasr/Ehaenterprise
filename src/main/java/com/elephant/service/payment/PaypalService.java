@@ -3,6 +3,7 @@ package com.elephant.service.payment;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,19 @@ import org.springframework.stereotype.Service;
 
 import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
+import com.elephant.constant.PaymentStatus;
 import com.elephant.dao.address.AddressDao;
 import com.elephant.dao.customer.CustomerRepository;
+import com.elephant.dao.payment.PUMRepo;
 import com.elephant.dao.payment.PaymentDao;
 import com.elephant.domain.address.AddressDomain;
 import com.elephant.domain.cartitem.CartItemDomain;
 import com.elephant.domain.customer.CustomerDomain;
+import com.elephant.domain.payment.PUMPaymentDomain;
 import com.elephant.domain.payment.PaymentDomain;
+import com.elephant.model.payment.PaymentCallback;
+import com.elephant.model.payment.PaymentDetail;
+import com.elephant.utils.PaymentUtil;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Item;
 import com.paypal.api.payments.ItemList;
@@ -43,6 +50,9 @@ public class PaypalService {
 	
 	@Autowired
 	AddressDao addressDao;
+	
+	@Autowired
+	PUMRepo pumRepository;
 	
 	public Payment createPayment(
 			long addressId,
@@ -155,4 +165,65 @@ public class PaypalService {
 		pd.saveAndFlush(pm);
 		
 	}
+	
+	
+	/* PUM */
+	 @SuppressWarnings("static-access")
+	public PaymentDetail proceedPayment(String email) {
+		 
+		 CustomerDomain customerDomain=customerRepository.findByEmail(email);
+		 List<CartItemDomain> cartItemDomainList=customerDomain.getCartItemDomain();
+		 double total =0.0;
+		 String productInfo = null;
+		 for(CartItemDomain cartItem:cartItemDomainList) {
+				total = total + (cartItem.getProduct().getPrice() *cartItem.getQuantity());
+				productInfo = cartItem.getProduct().getProductName();
+		 }
+		 
+		 PaymentDetail paymentDetail= new PaymentDetail();
+		 paymentDetail.setAmount(String.valueOf(total));
+		 paymentDetail.setEmail(email);
+		 paymentDetail.setName(customerDomain.getCustomerName());
+		 paymentDetail.setPhone(String.valueOf(customerDomain.getMobileNumber()));
+		 paymentDetail.setProductInfo(productInfo);
+		 
+	     PaymentUtil paymentUtil = new PaymentUtil();
+	     paymentDetail = paymentUtil.populatePaymentDetail(paymentDetail);
+	     savePaymentDetail(paymentDetail);
+	     return paymentDetail;
+	 }
+	 
+	 private void savePaymentDetail(PaymentDetail paymentDetail) {
+		 PUMPaymentDomain payment = new PUMPaymentDomain();
+	        payment.setAmount(Double.parseDouble(paymentDetail.getAmount()));
+	        payment.setEmail(paymentDetail.getEmail());
+	        payment.setName(paymentDetail.getName());
+	        payment.setPaymentDate(new Date());
+	        payment.setPaymentStatus(PaymentStatus.Pending);
+	        payment.setPhone(paymentDetail.getPhone());
+	        payment.setProductInfo(paymentDetail.getProductInfo());
+	        payment.setTxnId(paymentDetail.getTxnId());
+	        pumRepository.save(payment);
+	  }
+	 
+    public String payuCallback(PaymentCallback paymentResponse) {
+        String msg = "Transaction failed.";
+        PUMPaymentDomain payment = pumRepository.findByTxnId(paymentResponse.getTxnid());
+        if(payment != null) {
+            //TODO validate the hash
+            PaymentStatus paymentStatus = null;
+            if(paymentResponse.getStatus().equals("failure")){
+                paymentStatus = PaymentStatus.Failed;
+            }else if(paymentResponse.getStatus().equals("success")) {
+                paymentStatus = PaymentStatus.Success;
+                msg = "Transaction success";
+            }
+            payment.setPaymentStatus(paymentStatus);
+            payment.setMihpayId(paymentResponse.getMihpayid());
+            payment.setMode(paymentResponse.getMode());
+            pumRepository.save(payment);
+        }
+        return msg;
+    }
+
 }

@@ -6,6 +6,5 @@ import com.elephant.domain.payment.PaymentDomain;
 
 public interface PaymentDao extends JpaRepository<PaymentDomain,Integer >{
 	PaymentDomain findByTxnId(String txnId);
-	
 
 }
