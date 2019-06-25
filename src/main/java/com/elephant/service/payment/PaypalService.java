@@ -183,7 +183,7 @@ public class PaypalService {
 		 PaymentDetail paymentDetail= new PaymentDetail();
 		 paymentDetail.setAmount(String.valueOf(total));
 		 paymentDetail.setEmail(email);
-		 paymentDetail.setName(customerDomain.getCustomerName());
+		 paymentDetail.setFirstName(customerDomain.getCustomerName());
 		 paymentDetail.setPhone(String.valueOf(customerDomain.getMobileNumber()));
 		 paymentDetail.setProductInfo(productInfo);
 		 
@@ -197,7 +197,7 @@ public class PaypalService {
 		 PUMPaymentDomain payment = new PUMPaymentDomain();
 	        payment.setAmount(Double.parseDouble(paymentDetail.getAmount()));
 	        payment.setEmail(paymentDetail.getEmail());
-	        payment.setName(paymentDetail.getName());
+	        payment.setName(paymentDetail.getFirstName());
 	        payment.setPaymentDate(new Date());
 	        payment.setPaymentStatus(PaymentStatus.Pending);
 	        payment.setPhone(paymentDetail.getPhone());

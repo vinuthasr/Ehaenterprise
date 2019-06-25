@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
@@ -32,7 +34,8 @@ import com.paypal.base.rest.PayPalRESTException;
 
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
+//@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com","http://media.payumoney.com"})
+@CrossOrigin(origins= {"*"}, maxAge = 4800, allowCredentials = "false" )
 public class PaymentController {
 	
 	//public static final String PAYPAL_SUCCESS_URL = "v1/pay/success";
@@ -46,11 +49,12 @@ public class PaymentController {
 	@Autowired
 	private PaypalService paypalService;
 	
-//	@RequestMapping(method = RequestMethod.GET)
-//	public String index(){
-//		return "index";
-//	}
-	
+	 @GetMapping
+	    public ModelAndView viewPaymentPage() {
+	        ModelAndView model = new ModelAndView();
+	        model.setViewName("paymentview");
+	        return model;
+	    }
 	/*----Payal----- - Start*/
 	@RequestMapping(method = RequestMethod.POST, value = "/pay")
 	public  @ResponseBody String pay(@RequestParam("addressId")long addressId,
@@ -114,19 +118,17 @@ public class PaymentController {
 	  /*----- Paypal end --- */
 	
 	/* Payumoney -----*/
-
 	
 	@PostMapping(path = "/paymentdetails")
     public @ResponseBody PaymentDetail proceedPayment(@RequestParam("email") String email){
 		PaymentDetail paymentDetail = paypalService.proceedPayment(email);
-		
 		return paymentDetail;
     }
 
 	
     @RequestMapping(path = "/paymentresponse", method = RequestMethod.POST)
     public @ResponseBody String payuCallback(@RequestParam String mihpayid, @RequestParam String status, @RequestParam PaymentMode mode, @RequestParam String txnid, @RequestParam String hash){
-        PaymentCallback paymentCallback = new PaymentCallback();
+    	PaymentCallback paymentCallback = new PaymentCallback();
         paymentCallback.setMihpayid(mihpayid);
         paymentCallback.setTxnid(txnid);
         paymentCallback.setMode(mode);

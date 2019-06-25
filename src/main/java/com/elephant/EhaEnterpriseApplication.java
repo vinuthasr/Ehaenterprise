@@ -6,10 +6,8 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.ui.Model;
 
 import com.elephant.constant.Constants;
-import com.elephant.model.customer.CustomerModel;
 import com.elephant.service.customer.CustomerService;
 
 @SpringBootApplication
@@ -21,6 +19,7 @@ public class EhaEnterpriseApplication implements ApplicationRunner{
 	@Autowired
 	CustomerService customerService;
 
+	
 	public static void main(String[] args) {
 		SpringApplication.run(EhaEnterpriseApplication.class, args);
 		System.out.println("<---------------------BOOOOOOOOOOOOTED--------------------------->");

@@ -29,7 +29,7 @@ public class PaymentUtil {
         hashString = hashString.replace("txnid", txnId);
         hashString = hashString.replace("amount", paymentDetail.getAmount());
         hashString = hashString.replace("productinfo", paymentDetail.getProductInfo());
-        hashString = hashString.replace("firstname", paymentDetail.getName());
+        hashString = hashString.replace("firstname", paymentDetail.getFirstName());
         hashString = hashString.replace("email", paymentDetail.getEmail());
 
         hash = hashCal("SHA-512", hashString);
