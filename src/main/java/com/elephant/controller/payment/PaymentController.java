@@ -24,8 +24,13 @@ import com.elephant.config.PaypalPaymentIntent;
 import com.elephant.config.PaypalPaymentMethod;
 import com.elephant.constant.Constants;
 import com.elephant.constant.PaymentMode;
+import com.elephant.constant.PaymentStatus;
+import com.elephant.constant.StatusCode;
+import com.elephant.domain.payment.PUMPaymentDomain;
 import com.elephant.model.payment.PaymentCallback;
 import com.elephant.model.payment.PaymentDetail;
+import com.elephant.response.ErrorObject;
+import com.elephant.response.Response;
 import com.elephant.service.payment.PaypalService;
 import com.elephant.utils.CommonUtils;
 import com.paypal.api.payments.Links;
@@ -37,7 +42,7 @@ import com.paypal.base.rest.PayPalRESTException;
 //@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com","http://media.payumoney.com"})
 @CrossOrigin(origins= {"*"}, maxAge = 4800, allowCredentials = "false" )
 public class PaymentController {
-	
+	private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 	//public static final String PAYPAL_SUCCESS_URL = "v1/pay/success";
 	//public static final String PAYPAL_CANCEL_URL = "v1/pay/cancel";
 	
@@ -128,13 +133,26 @@ public class PaymentController {
 	
     @RequestMapping(path = "/paymentresponse", method = RequestMethod.POST)
     public @ResponseBody String payuCallback(@RequestParam String mihpayid, @RequestParam String status, @RequestParam PaymentMode mode, @RequestParam String txnid, @RequestParam String hash){
+    	Response res = CommonUtils.getResponseObject("PUM response");
     	PaymentCallback paymentCallback = new PaymentCallback();
         paymentCallback.setMihpayid(mihpayid);
         paymentCallback.setTxnid(txnid);
         paymentCallback.setMode(mode);
         paymentCallback.setHash(hash);
         paymentCallback.setStatus(status);
-        return paypalService.payuCallback(paymentCallback);
+        PUMPaymentDomain paymentDomain= paypalService.payuCallback(paymentCallback);
+        if(null != paymentDomain) {
+        	if(paymentDomain.getPaymentStatus().equals(PaymentStatus.Failed)) {
+        		ErrorObject err = CommonUtils.getErrorResponse("Transaction failed", "Transaction failed");
+    			res.setErrors(err);
+    			res.setStatus(StatusCode.ERROR.name());
+        	} else {
+        		res.setMessage("Transaction successfull");
+        		res.setData(paymentDomain);
+        	}
+        }
+        logger.info("payuCallback: Sent response");
+        return CommonUtils.getJson(res);
     }
 
 }

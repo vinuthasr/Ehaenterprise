@@ -206,8 +206,7 @@ public class PaypalService {
 	        pumRepository.save(payment);
 	  }
 	 
-    public String payuCallback(PaymentCallback paymentResponse) {
-        String msg = "Transaction failed.";
+    public PUMPaymentDomain payuCallback(PaymentCallback paymentResponse) {
         PUMPaymentDomain payment = pumRepository.findByTxnId(paymentResponse.getTxnid());
         if(payment != null) {
             //TODO validate the hash
@@ -216,14 +215,13 @@ public class PaypalService {
                 paymentStatus = PaymentStatus.Failed;
             }else if(paymentResponse.getStatus().equals("success")) {
                 paymentStatus = PaymentStatus.Success;
-                msg = "Transaction success";
             }
             payment.setPaymentStatus(paymentStatus);
             payment.setMihpayId(paymentResponse.getMihpayid());
             payment.setMode(paymentResponse.getMode());
             pumRepository.save(payment);
         }
-        return msg;
+        return payment;
     }
 
 }
