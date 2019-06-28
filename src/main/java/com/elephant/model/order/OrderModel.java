@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import com.elephant.domain.orderdetail.OrderDetailDomain;
 import com.elephant.model.address.AddressModel;
-import com.elephant.model.cartitem.CartItemModel;
 import com.elephant.model.customer.CustomerModel;
 import com.elephant.model.orderdetail.OrderDetailModel;
 //import com.elephant.model.orderstatus.OrderStatusModel;
@@ -28,7 +26,7 @@ public class OrderModel implements Serializable {
     private String paymentMode;
 	private String transactionId;
 	private CustomerModel customerModel;
-    private List<OrderDetailModel> orderDetailModel;
+    private List<OrderDetailModel> orderDetailDomain;
     private AddressModel addressModel;
     
     public long getCustomerMobileNumber() {
@@ -77,11 +75,12 @@ public class OrderModel implements Serializable {
 	public void setAddressModel(AddressModel addressModel) {
 		this.addressModel = addressModel;
 	}
-	public List<OrderDetailModel> getOrderDetailModel() {
-		return orderDetailModel;
+	
+	public List<OrderDetailModel> getOrderDetailDomain() {
+		return orderDetailDomain;
 	}
-	public void setOrderDetailModel(List<OrderDetailModel> orderDetailModel) {
-		this.orderDetailModel = orderDetailModel;
+	public void setOrderDetailDomain(List<OrderDetailModel> orderDetailDomain) {
+		this.orderDetailDomain = orderDetailDomain;
 	}
 	public String getOrderNumber() {
 		return orderNumber;
