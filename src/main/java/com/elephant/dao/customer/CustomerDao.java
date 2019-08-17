@@ -34,19 +34,7 @@ public interface CustomerDao {
 
 	public void resetpass(String email, String password);
 
+	public Integer getNoOfNewCustomers();
 	
-		
-
-
-
-	
-
-
-
-
-
-	
-
-
-
+	public Integer getNoOfActiveCustomers();
 }

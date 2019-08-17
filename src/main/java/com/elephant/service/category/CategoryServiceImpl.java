@@ -191,7 +191,7 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 		} catch (Exception e) {
 			logger.info("Exception deletecategory:"+ e.getMessage());
 			response.setStatus(StatusCode.ERROR.name());
-			response.setMessage("Category should not be able to delete as this is already used in product/image" +e.getMessage());
+			response.setMessage("Category should not be able to delete as this is already used in product/image");
 			return response;
 		}
 			

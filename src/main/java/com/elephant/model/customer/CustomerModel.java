@@ -43,7 +43,7 @@ public class CustomerModel implements Serializable{
 	//private boolean isActiveUser;
 	private String valitateCode;
 	private List<CartItemModel> cartItemModel;
-	private List<AddressModel> addressModel;
+	private List<AddressModel> addressDomain;
 	//private CartModel cartModel;
 	private List<OrderModel> orderModel;
 	private List<InvoiceModel> invoiceModel;
@@ -67,12 +67,7 @@ public class CustomerModel implements Serializable{
 	public void setOrderModel(List<OrderModel> orderModel) {
 		this.orderModel = orderModel;
 	}
-	public List<AddressModel> getAddressModel() {
-		return addressModel;
-	}
-	public void setAddressModel(List<AddressModel> addressModel) {
-		this.addressModel = addressModel;
-	}
+	
 	/*public CartModel getCartModel() {
 		return cartModel;
 	}
@@ -81,6 +76,12 @@ public class CustomerModel implements Serializable{
 	}*/
 	
 	
+	public List<AddressModel> getAddressDomain() {
+		return addressDomain;
+	}
+	public void setAddressDomain(List<AddressModel> addressDomain) {
+		this.addressDomain = addressDomain;
+	}
 	public String getRolename() {
 		return rolename;
 	}

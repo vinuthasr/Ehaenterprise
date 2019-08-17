@@ -13,7 +13,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
@@ -162,6 +161,12 @@ public class CustomerServiceImpl implements CustomerService {
 		try {
 			CustomerModel customerModel = new CustomerModel();
 			CustomerDomain customerDomain= customerDao.getCustomer(customersId);
+			for (int i = 0; i < customerDomain.getAddressDomain().size(); i++) {
+				customerDomain.getAddressDomain().get(i).setCustomerDomain(null);
+				customerDomain.getAddressDomain().get(i).setOrderDomain(null);
+				customerDomain.getAddressDomain().get(i).setInvoiceDomain(null);
+			}
+
 			BeanUtils.copyProperties(customerDomain, customerModel);
 			return customerModel;
 		}catch(Exception e) {
@@ -475,6 +480,24 @@ public class CustomerServiceImpl implements CustomerService {
         }
 		
 		return customerModel;
+	}
+
+
+
+
+	@Override
+	public Integer noOfNewCustomers() {
+		// TODO Auto-generated method stub
+		return customerDao.getNoOfNewCustomers();
+	}
+
+
+
+
+	@Override
+	public Integer noOfActiveCustomers() {
+		// TODO Auto-generated method stub
+		return customerDao.getNoOfActiveCustomers();
 	}
 	
 	

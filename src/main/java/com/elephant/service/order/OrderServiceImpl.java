@@ -5,10 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -35,7 +32,6 @@ import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.address.AddressDaoRepository;
 import com.elephant.dao.cartitem.CartItemDao;
-import com.elephant.dao.cartitem.CartItemDaoImpl;
 //import com.elephant.dao.cart.CartDaoRepository;
 import com.elephant.dao.cartitem.CartItemDaoRepository;
 import com.elephant.dao.customer.CustomerRepository;
@@ -634,6 +630,20 @@ public class OrderServiceImpl implements OrderService {
 
         return new ByteArrayInputStream(out.toByteArray());
     }
+	
+	public Integer getNoOfOrdersReceived() {
+		return orderDao.getNoOfOrdersReceived();
+	}
+	
+	public Double getTotalEarnings() {
+		return orderDao.getTotalEarnings();
+	}
+
+	@Override
+	public List<Map<String, Object>> getSalesReport() {
+		// TODO Auto-generated method stub
+		return orderDao.getSalesReport();
+	}
 	
 	
 	

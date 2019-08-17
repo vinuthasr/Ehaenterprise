@@ -1,13 +1,11 @@
 package com.elephant.service.address;
 
 import java.util.List;
-import java.util.logging.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.stereotype.Service;
-
 
 import com.elephant.dao.address.AddressDao;
 import com.elephant.dao.customer.CustomerRepository;
@@ -92,7 +90,11 @@ public class AddressServiceImpl implements AddressService {
 	@Override
 	public List<AddressModel> getAddressByCustomer(String email) {
 		CustomerDomain customerDomain=customerRepository.findByEmail(email);
+		customerDomain.setRoles(null);
 		List<AddressDomain> addressDomain=customerDomain.getAddressDomain();
+	    for (int i = 0; i < addressDomain.size(); i++) {
+			addressDomain.get(i).setCustomerDomain(null);
+		}
 		return addressMapper.entityList(addressDomain);
 	}
 		

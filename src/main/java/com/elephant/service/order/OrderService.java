@@ -4,8 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import com.elephant.domain.order.OrderDomain;
 import com.elephant.model.address.AddressModel;
 import com.elephant.model.order.OrderModel;
 import com.elephant.model.orderdetail.OrderDetailModel;
@@ -39,5 +39,11 @@ public interface OrderService {
 	public OrderModel getOrderByOrderId(long orderId);
 
 	public ByteArrayInputStream citiesReport(String string);
+	
+	public Integer getNoOfOrdersReceived();
+	
+	public Double getTotalEarnings();
+	
+	public List<Map<String, Object>> getSalesReport();
 
 }

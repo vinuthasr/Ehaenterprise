@@ -40,7 +40,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
+@CrossOrigin(origins= {"http://35.154.144.35:4200","http://localhost:4200","http://13.233.224.183:5200"})
 public class ProductController {
 	private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 	

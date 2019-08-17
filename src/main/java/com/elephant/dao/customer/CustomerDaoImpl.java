@@ -206,48 +206,77 @@ private static final Logger logger = LoggerFactory.getLogger(CustomerDaoImpl.cla
 //	}}
 
 
-@Override
-public CustomerDomain isUserExist(CustomerDomain customerDomain) {
+	@Override
+	public CustomerDomain isUserExist(CustomerDomain customerDomain) {
+			try {
+				String hql = "FROM CustomerDomain where email=?1 ";
+				return (CustomerDomain) entityManager.createQuery(hql).setParameter(1, customerDomain.getEmail()).getSingleResult();
+			} catch (Exception e) {
+				logger.error("Exception in isUserExist", e);
+			}
+			return null	;
+		
+	}
+
+
+	@Override
+	public void resetpassword(String email, String pass) {
 		try {
-			String hql = "FROM CustomerDomain where email=?1 ";
-			return (CustomerDomain) entityManager.createQuery(hql).setParameter(1, customerDomain.getEmail()).getSingleResult();
-		} catch (Exception e) {
-			logger.error("Exception in isUserExist", e);
+			cr.findByEmail(email).setValitateCode(pass);
+			cr.findByEmail(email).setExpiryDate(5);
+			
+			entityManager.flush();
+		}catch (Exception e) {
+			logger.error("Exception in resetpassword");
 		}
-		return null	;
-	
-}
-
-
-@Override
-public void resetpassword(String email, String pass) {
-	try {
-		cr.findByEmail(email).setValitateCode(pass);
-		cr.findByEmail(email).setExpiryDate(5);
 		
-		entityManager.flush();
-	}catch (Exception e) {
-		logger.error("Exception in resetpassword");
 	}
+
+
+	@Override
+	public void resetpass(String email, String password) {
+		try {
 	
-}
-
-
-@Override
-public void resetpass(String email, String password) {
-	try {
-
-		cr.findByEmail(email).setPassword(password);
-		//cr.findByEmail(email).setConfirmPassword(password);
+			cr.findByEmail(email).setPassword(password);
+			//cr.findByEmail(email).setConfirmPassword(password);
+			
+			
+			//cr.findByEmail(email).setValitateCode(null);
+			entityManager.flush();
+		}catch (Exception e) {
+			logger.error("Exception in resetpassword");
+		}
 		
-		
-		//cr.findByEmail(email).setValitateCode(null);
-		entityManager.flush();
-	}catch (Exception e) {
-		logger.error("Exception in resetpassword");
 	}
-	
-}}
+
+
+	@Override
+	public Integer getNoOfNewCustomers() {
+		int newCustomerCount = 0;
+		try {
+			String sql = "select count(*) from customers where customers_id in (select customer_id from user_roles ur, role r where r.name != 'ROLE_ADMIN' and ur.role_id = r.role_id) ";
+			newCustomerCount = jdbcTemplate.queryForObject(sql,Integer.class);
+		} catch (Exception e) {
+			logger.error("Exception in getNoOfNewCustomers", e);
+		}
+		return newCustomerCount;
+	}
+
+
+	@Override
+	public Integer getNoOfActiveCustomers() {
+		int activeCustomerCount = 0;
+		try {
+			String sql = "select count(*) from customers where customers_id in (select customer_id from user_roles ur, role r where r.name != 'ROLE_ADMIN' "
+					+ "and ur.role_id = r.role_id) and is_active = 1";
+			activeCustomerCount = jdbcTemplate.queryForObject(sql,Integer.class);
+		} catch (Exception e) {
+			logger.error("Exception in getNoOfActiveCustomers", e);
+		}
+		return activeCustomerCount;
+	}
+
+}
 
 
 

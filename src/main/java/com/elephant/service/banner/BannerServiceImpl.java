@@ -59,7 +59,7 @@ public class BannerServiceImpl implements BannerService{
 			if(bannerDomain.getBannerArea().equals( bannerDomainList.get(i).getBannerArea()) || bannerDomain.getBannerName().equals(bannerDomainList.get(i).getBannerName())) {
 				
 				response.setStatus(StatusCode.ERROR.name());
-				response.setMessage("BannerArea/BannerName is Same");
+				response.setMessage("BannerArea/BannerName is already exist");
 				return response;
 			}
 			

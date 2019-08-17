@@ -28,7 +28,7 @@ import com.elephant.service.payment.PayPalService1;
 
 @Controller
 @RequestMapping("/v1/cart")
-@CrossOrigin(origins= {"https://eha-admin-app.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com"})
+@CrossOrigin(origins= {"http://13.234.17.130:4200","http://localhost:4200","http://13.233.224.183:5200"})
 
 public class PaymentController1 {
 	

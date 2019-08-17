@@ -51,6 +51,10 @@ public interface CustomerService {
     public CustomerModel getCustomerByEmail(String email);
 
 	//public void getConfirm(String valitate, String email);
+    
+    public Integer noOfNewCustomers();
+    
+    public Integer noOfActiveCustomers();
 
 }
   
