@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import org.hibernate.HibernateException;
@@ -914,7 +915,10 @@ public Response deleteproductByCategoryId(String categoryId, boolean isActive) t
 			return (ProductDomain) entitymanager.createQuery(hql).getSingleResult();
 		} catch (EmptyResultDataAccessException e) {
 			return null;
-		} catch (Exception e) {
+		} catch (NoResultException e) {
+			return null;
+		}
+		catch (Exception e) {
 			logger.error("Exception in getProductByBlouseColor", e);
 			return null;
 		}

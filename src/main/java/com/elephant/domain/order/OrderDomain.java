@@ -14,22 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.elephant.domain.address.AddressDomain;
-import com.elephant.domain.cartitem.CartItemDomain;
 import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.domain.orderdetail.OrderDetailDomain;
-//import com.elephant.domain.orderstatus.OrderStatusDomain;
-import com.elephant.model.cartitem.CartItemModel;
-import com.elephant.model.customer.CustomerModel;
 
 @Entity
 @Table(name = "orders")

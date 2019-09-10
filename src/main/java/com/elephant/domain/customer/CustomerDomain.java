@@ -215,12 +215,5 @@ public class CustomerDomain implements Serializable{
 		// TODO Auto-generated constructor stub
 	}
 	
-	
-
-	
-	
-
-	
-	
 
 }

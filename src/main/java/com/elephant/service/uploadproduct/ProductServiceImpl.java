@@ -137,12 +137,15 @@ public class ProductServiceImpl implements ProductService{
             productRepository.save(domain);
 			
 			SubImageDomain subImageDomain = null;
-			for(SubImageModel subImageModel:model.getSubImageList()) {
-				subImageDomain = new SubImageDomain();
-				BeanUtils.copyProperties(subImageModel, subImageDomain);
-				subImageDomain.setProductDomain(domain);
-				subImageDaoRepository.save(subImageDomain);
-				subImageDomain = null;
+			if(model.getSubImageList() != null) {
+				for(SubImageModel subImageModel:model.getSubImageList()) {
+					subImageDomain = new SubImageDomain();
+					BeanUtils.copyProperties(subImageModel, subImageDomain);
+					subImageDomain.setProductDomain(domain);
+					subImageDaoRepository.save(subImageDomain);
+					subImageDomain = null;
+				}
+				
 			}
 			
 			response.setStatus(StatusCode.SUCCESS.name());

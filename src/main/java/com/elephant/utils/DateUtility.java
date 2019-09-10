@@ -21,6 +21,7 @@ public class DateUtility {
 	public static final String DATE_FORMAT_DD_MMM_YYYY_HHMMSS = "dd-MMM-yyyy HH.mm.ss";
 	public static final String DATE_FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
 	public static final String DATE_FORMAT_MMM_YYYY = null;
+	public static final String DATE_FORMAT_YYYYMMDD ="yyyyMMdd";
 
 	private DateUtility() {
 

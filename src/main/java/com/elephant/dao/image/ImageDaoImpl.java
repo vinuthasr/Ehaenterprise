@@ -72,7 +72,7 @@ public class ImageDaoImpl implements ImageDao{
 		return response;
 		}
 		catch(Exception e) {
-			logger.info("error",e.getMessage());
+			logger.info("error: ",e.getMessage());
 		}
 		return null;
 	}

@@ -11,7 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.elephant.domain.image.ImageDomain;
 import com.elephant.domain.uploadproduct.ProductDomain;
 
 @Entity

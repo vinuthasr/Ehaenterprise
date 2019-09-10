@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -19,10 +20,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.model.address.AddressModel;
+import com.elephant.model.courier.CourierOrderDetModel;
+import com.elephant.model.courier.PickupReqModel;
 import com.elephant.model.order.OrderModel;
 import com.elephant.model.orderdetail.OrderDetailModel;
 import com.elephant.model.payment.PaymentModel;
@@ -197,7 +201,7 @@ public class OrderController {
     	Response response=CommonUtils.getResponseObject("Get Order by OrderId");
     	OrderModel orderModel=orderService.getOrderByOrderId(orderId);
     	if(orderModel==null) {
-    		ErrorObject err=CommonUtils.getErrorResponse("Address is null", "Address is null");
+    		ErrorObject err=CommonUtils.getErrorResponse("No Data found", "No Data found");
     		response.setErrors(err);
     		response.setStatus(StatusCode.ERROR.name());
 		} else {
@@ -226,4 +230,57 @@ public class OrderController {
                 .body(new InputStreamResource(bis));
     }
     
+    
+    @RequestMapping(value = "/getCourierOrderDetails",method=RequestMethod.GET, produces="application/json")
+    public @ResponseBody String getCourierOrderDetails(@RequestParam(value="status") String status){
+    	Response res = CommonUtils.getResponseObject("Get Courier Order Details");
+    	List<Map<String, Object>> courierOrderDetails=orderService.getCourierOrderDetails(status);
+		if (courierOrderDetails.isEmpty() ) {
+			ErrorObject err = CommonUtils.getErrorResponse("No Records found", "No Records found");
+			res.setErrors(err);
+			res.setStatus(StatusCode.ERROR.name());
+		} else {
+			res.setData(courierOrderDetails);
+		}
+		
+		return CommonUtils.getJson(res);
+    	
+    }
+    
+    
+    @RequestMapping(value = "/updateCourierOrderStatuss",method=RequestMethod.POST, produces="application/json")
+    public @ResponseBody String updateCourierOrderStatus(@RequestBody CourierOrderDetModel courierOrderDetModel){
+    	Response res = CommonUtils.getResponseObject("Update Courier Order Details");
+    	res=orderService.updateCourierOrderStatus(courierOrderDetModel);
+		return CommonUtils.getJson(res);
+    }
+    
+    @RequestMapping(value = "/createPickupReq",method=RequestMethod.POST, produces="application/json")
+	public Response createPickupRequest(@RequestBody PickupReqModel pickupReqModel)	throws IOException{
+       return orderService.createPickupRequest(pickupReqModel);
+	}
+    
+    @RequestMapping(value = "/getPickupRequestDetails",method=RequestMethod.GET, produces="application/json")
+    public @ResponseBody String getPickupRequestDetails(@RequestParam(value="fromDateStr") String fromDateStr,@RequestParam(value="toDateStr") String toDateStr) throws ParseException{
+    	Response res = CommonUtils.getResponseObject("Get Pickup Request Details");
+    	
+    	/*--------------String To Date---------------*/
+    	/*  Convert from String to Date*/
+    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    	Date fromDate = format.parse(fromDateStr);
+    	Date toDate=format.parse(toDateStr);
+    	/*------------------------------------------*/
+    	
+    	List<PickupReqModel>  pickupReqList =orderService.getPickupReqDetails(fromDate, toDate);
+		if (pickupReqList.isEmpty() ) {
+			ErrorObject err = CommonUtils.getErrorResponse("No Records found", "No Records found");
+			res.setErrors(err);
+			res.setStatus(StatusCode.ERROR.name());
+		} else {
+			res.setData(pickupReqList);
+		}
+		
+		return CommonUtils.getJson(res);
+    	
+    }
 }

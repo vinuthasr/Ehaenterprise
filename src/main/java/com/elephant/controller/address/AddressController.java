@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.elephant.constant.StatusCode;
+import com.elephant.domain.state.State;
 import com.elephant.model.address.AddressModel;
 import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.address.AddressService;
+import com.elephant.service.state.StateService;
 import com.elephant.utils.CommonUtils;
 
 
@@ -36,6 +38,9 @@ public class AddressController {
 
 	@Autowired
 	AddressService addressService;
+	
+	@Autowired
+	StateService stateService;
 	
 	//@PreAuthorize("hasRole('ROLE_USER')" )
 	@RequestMapping(value = "/add", method = RequestMethod.POST, produces = "application/json")
@@ -230,6 +235,14 @@ public class AddressController {
 	}
 	*/
 
-	
+	@RequestMapping(value = "/getAllState", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody List<State> getAllState(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		logger.info("getAllState: Received request: " + request.getRequestURL().toString()
+				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+		List<State> stateList = stateService.getState();
+		
+		return  stateList;
+		
+	}
 	
 }

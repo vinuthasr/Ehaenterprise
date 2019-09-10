@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.elephant.model.address.AddressModel;
+import com.elephant.model.courier.CourierOrderDetModel;
+import com.elephant.model.courier.PickupReqModel;
 import com.elephant.model.order.OrderModel;
 import com.elephant.model.orderdetail.OrderDetailModel;
 import com.elephant.model.payment.PaymentModel;
@@ -45,5 +47,12 @@ public interface OrderService {
 	public Double getTotalEarnings();
 	
 	public List<Map<String, Object>> getSalesReport();
-
+	
+	public List<Map<String, Object>> getCourierOrderDetails(String status);
+	
+	public Response updateCourierOrderStatus(CourierOrderDetModel courierOrderDetModel);
+    
+	public Response createPickupRequest(PickupReqModel pickupReqModel);
+	
+	public List<PickupReqModel> getPickupReqDetails(Date fromDate,Date toDate);
 }

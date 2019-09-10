@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.elephant.constant.Constants;
 import com.elephant.service.customer.CustomerService;
+import com.elephant.service.state.StateService;
 
 @SpringBootApplication
 @EnableJpaRepositories
@@ -18,6 +19,9 @@ public class EhaEnterpriseApplication implements ApplicationRunner{
 	
 	@Autowired
 	CustomerService customerService;
+	
+	@Autowired
+	StateService stateService;
 
 	
 	public static void main(String[] args) {
@@ -32,6 +36,7 @@ public class EhaEnterpriseApplication implements ApplicationRunner{
 		customerService.addRole(Constants.ROLE_USER);
 		customerService.addAdmin("ehaadmin@gmail.com","12345678","Puneeth");		
 		
+		stateService.addState();
 	}
 
 }

@@ -5,6 +5,7 @@ public interface Constants {
 	public static String SESSION_KEY_HEADER = "X-SESSION-KEY";
 	public static String CASH_ON_DELIVERY ="CashOnDelivery";
 	public static String PAYPAL ="PayPal";
+	public static String PAYUMONEY ="PayUMoney";
 	public static String CANCEL_ORDER= "Cancel-Order";
 	public static String ORDER_CONFORMATION= "Order-Conformation";
 	public static String POST_URL="http://localhost:8080";
@@ -13,4 +14,9 @@ public interface Constants {
 	public final static String ROLE_ADMIN = "ROLE_ADMIN";
 	public final static String ROLE_USER = "ROLE_USER";
 	public final static String FROM_ADDRESS = "ehauiele@gmail.com";
+	
+	/* Production url : https://track.delhivery.com */
+	public final static String DELHIVERY_URL = "https://staging-express.delhivery.com/"; //Test url 
+	
+	public final static String DELHIVERY_TOKEN = "30b6080910c23701d1564b0bb18dde903e2d5c00";//Test Token
 }

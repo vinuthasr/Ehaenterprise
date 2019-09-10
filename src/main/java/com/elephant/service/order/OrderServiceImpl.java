@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -17,14 +18,23 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -42,13 +52,22 @@ import com.elephant.dao.uploadproduct.ProductRepository;
 import com.elephant.domain.address.AddressDomain;
 //import com.elephant.domain.cart.CartDomain;
 import com.elephant.domain.cartitem.CartItemDomain;
+import com.elephant.domain.courier.CourOrderDetDomain;
+import com.elephant.domain.courier.PickupRequestDomain;
 import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.domain.order.OrderDomain;
 import com.elephant.domain.orderdetail.OrderDetailDomain;
 import com.elephant.domain.uploadproduct.ProductDomain;
 import com.elephant.mapper.order.OrderMapper;
+import com.elephant.mapper.order.PickupReqMapper;
 import com.elephant.mapper.orderdetail.OrderDetailMapper;
 import com.elephant.model.address.AddressModel;
+import com.elephant.model.courier.CourierOrderDetModel;
+import com.elephant.model.courier.CourierOrderModel;
+import com.elephant.model.courier.CourierOrderResponse;
+import com.elephant.model.courier.PickupLocation;
+import com.elephant.model.courier.PickupReqModel;
+import com.elephant.model.courier.Shipments;
 import com.elephant.model.mail.Mail;
 import com.elephant.model.order.OrderModel;
 import com.elephant.model.orderdetail.OrderDetailModel;
@@ -61,6 +80,7 @@ import com.elephant.service.customer.EmailService;
 //import com.elephant.service.customer.CustomerServiceImpl.EmailAuth;
 //import com.elephant.service.invoice.InvoiceService;
 import com.elephant.utils.CommonUtils;
+import com.elephant.utils.DateUtility;
 import com.elephant.utils.SmtpMailSender;
 /*-----------------------pdf----------------------------*/
 import com.itextpdf.text.Document;
@@ -134,6 +154,8 @@ public class OrderServiceImpl implements OrderService {
 	@Autowired
 	CartItemDao cartItemDao; 
 	
+	@Autowired
+	PickupReqMapper pickupReqMapper;
 	
 	private MailSender mailSender;
     private SimpleMailMessage templateMessage;
@@ -173,7 +195,7 @@ public class OrderServiceImpl implements OrderService {
 		
 		
 		/*------------------------Checking weather paymentMode is COD/PayPal---------------------------------*/
-		System.out.println(paymentModel.getPaymentMode());
+
 		if(paymentModel.getPaymentMode().equals(Constants.CASH_ON_DELIVERY))
 		{
 		orderDomain.setPaymentMode(paymentModel.getPaymentMode());
@@ -181,7 +203,7 @@ public class OrderServiceImpl implements OrderService {
 		
 		
 		}
-		else if(paymentModel.getPaymentMode().equals(Constants.PAYPAL)) {
+		else if(paymentModel.getPaymentMode().equals(Constants.PAYPAL) || paymentModel.getPaymentMode().equals(Constants.PAYUMONEY)) {
 			orderDomain.setPaymentMode(paymentModel.getPaymentMode());
 			orderDomain.setTransactionId(paymentModel.getTransactionId());
 		}
@@ -226,17 +248,60 @@ public class OrderServiceImpl implements OrderService {
 		/*----------------------------Product In stock should decrease after order is conformed-------------*/
 		ProductDomain productDomain = null;
 		OrderDetailDomain orderDetailDomain = null;
-		for(CartItemDomain cartItemDomain: customerDomain.getCartItemDomain()) {
+		List<CartItemDomain> cartItemList = customerDomain.getCartItemDomain();
+		Shipments shipmentsList[] = new Shipments[cartItemList.size()];
+		String pattern = "yyyy-MM-dd HH:mm:ss";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		int count=0;
+		for(CartItemDomain cartItemDomain: cartItemList) {
 		
 			productDomain=cartItemDomain.getProduct();
 			orderDetailDomain=new OrderDetailDomain();
+			shipmentsList[count] = new Shipments();
 			
+			orderDetailDomain.setOrderdetailId(CommonUtils.generateRandomId());
 			orderDetailDomain.setProductSku(productDomain.getSku());
 			orderDetailDomain.setProductImagePath(productDomain.getMainImageUrl());
 			orderDetailDomain.setProductName(productDomain.getCollectionDesc());
 			orderDetailDomain.setProductQuantity(cartItemDomain.getQuantity());
 			orderDetailDomain.setProductAmount((productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity());
 			orderDetailDomain.setOrderDomain(orderDomain);
+			
+			//Shipments - start - Courier third party api
+			
+			shipmentsList[count].setReturn_name("EHAENTERPRISES SURFACE");
+			shipmentsList[count].setReturn_pin("560079");
+			shipmentsList[count].setReturn_city("Bangalore");
+			shipmentsList[count].setReturn_phone("8904648040");
+			shipmentsList[count].setReturn_add("No 23, Magadi Main Rd, Govindaraja Nagar Ward, Pete Channappa Industrial Estate, Kamakshipalya");
+			shipmentsList[count].setReturn_state("Karnataka");
+			shipmentsList[count].setReturn_country("India");
+			shipmentsList[count].setOrder(orderDetailDomain.getOrderdetailId());
+			shipmentsList[count].setPhone(String.valueOf(orderDomain.getCustomerMobileNumber()));
+			shipmentsList[count].setProducts_desc(orderDetailDomain.getProductName());
+			if(orderDomain.getPaymentMode().equalsIgnoreCase(Constants.CASH_ON_DELIVERY)) {
+				shipmentsList[count].setCod_amount(String.valueOf(orderDomain.getOrderPrice()));
+			} else {
+				shipmentsList[count].setCod_amount("0.0");
+			}
+			shipmentsList[count].setName(orderDomain.getCustomerName());
+			shipmentsList[count].setCountry(addressDomain.getCountry());
+			shipmentsList[count].setOrder_date(simpleDateFormat.format(new Date()));
+			shipmentsList[count].setTotal_amount(String.valueOf(orderDomain.getOrderPrice()));
+			shipmentsList[count].setAdd(addressDomain.getAddressline1()+" "+addressDomain.getAddressline2()+" " +addressDomain.getAddressline3());
+			shipmentsList[count].setPin(addressDomain.getPincode());
+			shipmentsList[count].setQuantity(String.valueOf(orderDetailDomain.getProductQuantity()));
+			
+			if(orderDomain.getPaymentMode().equalsIgnoreCase(Constants.CASH_ON_DELIVERY)) { 
+				shipmentsList[count].setPayment_mode("COD");
+			} else {
+				shipmentsList[count].setPayment_mode("Prepaid");  // Payment mode = Pickup  -> if it is created for reverse flow -> for return
+			}
+			shipmentsList[count].setState(addressDomain.getState());
+			shipmentsList[count].setCity(addressDomain.getCity());
+			shipmentsList[count].setClient("EHAENTERPRISES SURFACE");
+			
+			//Shipments - End
 			
 			//ProductDomain productDomain=productRepository.findByProductId(orderDetailDomain.getProductId());
 			if(productDomain.getInStock() < orderDetailDomain.getProductQuantity()) {
@@ -252,9 +317,13 @@ public class OrderServiceImpl implements OrderService {
 				productRepository.saveAndFlush(productDomain);
 				cartItemDao.deleteCartItem(cartItemDomain.getCartItemId());
 			}
+			
+			count++;
 		}
 		response.setMessage3("Cart Items are dumped into Order details");
+		
 		/*-------------------------------------------------------------------------------------------------*/
+		response = courierCreateOrderAPI(shipmentsList,orderDomain.getOrderNumber(),orderDomain.getCustomerEmail());  //Courier Third party api
 		
 		 Mail mail = new Mail();
          mail.setFrom("ehauiele@gmail.com");
@@ -277,12 +346,12 @@ public class OrderServiceImpl implements OrderService {
         helper.setSubject(mail.getSubject());
         helper.setFrom(mail.getFrom());
         emailSender.send(message);
-    	response.setMessage("Order Conformation Mail sent Successfull");
-    	System.out.println("Order Conformation Mailsent  successfull");
+    	response.setMessage("Order Confirmation Mail sent Successfull");
+    	System.out.println("Order Confirmation Mailsent  successfull");
 		return response;
 		}catch(MailSendException exce) {
 			//response.setStatus(StatusCode.ERROR.name());
-			response.setMessage("We are unable to send email due to gmail port issue. Please click on the below code to validate your email id");
+			response.setMessage("We are unable to send email due to gmail port issue. Please refer the order id: ");
 		}
 		catch(Exception ex) {
 			System.out.println("Exception in ordercreate status"+ex);
@@ -292,7 +361,84 @@ public class OrderServiceImpl implements OrderService {
 
 	}	
 	
+	
+	private Response courierCreateOrderAPI(Shipments[] shipmentsList,String orderNumber,String customerEmail) {
+		Response response=CommonUtils.getResponseObject("Create courier order");
+		final String uri = Constants.DELHIVERY_URL+"api/cmu/create.json";
+		String authToken = Constants.DELHIVERY_TOKEN;
+		RestTemplate restTemplate = new RestTemplate();
+		
+		try {
+			CourierOrderModel courierOrderModel = new CourierOrderModel();
+			courierOrderModel.setShipments(shipmentsList);
+			
+			PickupLocation pickupLocation = new PickupLocation();
+			pickupLocation.setAdd("No 23, Magadi Main Rd, Govindaraja Nagar Ward, Pete Channappa Industrial Estate, Kamakshipalya");
+			pickupLocation.setCity("Bengaluru");
+			pickupLocation.setPin("560079");
+			pickupLocation.setPhone("8904648040");
+			pickupLocation.setState("Karnataka");
+			pickupLocation.setCountry("India");
+			pickupLocation.setName("EHAENTERPRISES SURFACE");
+			
+			courierOrderModel.setPickup_location(pickupLocation);
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.add("Authorization", "Token " + authToken);
+			
+			String body = "format=json&data="+CommonUtils.getJson(courierOrderModel);
+			
+			HttpEntity<String> request = new HttpEntity<String>(body,headers);
 
+			ResponseEntity<CourierOrderResponse> result = restTemplate.postForEntity(uri, request, CourierOrderResponse.class);
+			
+			if(result.getBody().getSuccess().equalsIgnoreCase("false")) {
+				int packageCount = Integer.parseInt(result.getBody().getPackage_count());
+				
+				for (int i = 0; i < packageCount; i++) {
+					response.setMessage(result.getBody().getPackages()[i].getRemarks()[0]);
+				}
+			} else {
+				result.getBody().setCreatedDate(new Date());
+				result.getBody().setModifiedDate(new Date());
+				
+				saveCourierDetails(result.getBody(),orderNumber,customerEmail);
+			}
+			
+			
+		} catch (Exception e) {
+			System.out.println("Exception: " +e);
+		}
+		return response;
+	}
+
+	private void saveCourierDetails(CourierOrderResponse result,String orderNumber,String customerEmail) {
+		try {
+			CourOrderDetDomain courOrderDetDomain = null;
+			if(result != null) {
+				int packageCount = Integer.parseInt(result.getPackage_count());
+				for (int count = 0; count < packageCount; count++) {
+					courOrderDetDomain = new CourOrderDetDomain();
+					courOrderDetDomain.setCourierOrderId(CommonUtils.generateRandomId());
+					courOrderDetDomain.setCreatedDate(new Date());
+					courOrderDetDomain.setModifiedDate(new Date());
+					courOrderDetDomain.setOrderDetailId(result.getPackages()[count].getRefnum());
+					courOrderDetDomain.setOrderId(orderNumber);
+					courOrderDetDomain.setSortCode(result.getPackages()[count].getSort_code());
+					courOrderDetDomain.setStatus("Manifested");
+					courOrderDetDomain.setUploadWbn(result.getUpload_wbn());
+					courOrderDetDomain.setWayBill(result.getPackages()[count].getWaybill());
+					courOrderDetDomain.setCustomerEmail(customerEmail);
+					orderDao.saveCourierDetails(courOrderDetDomain);
+				}
+			}
+			
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+	}
+	
 	@Override
 	public List<OrderModel> getAllCustomerOrders(String email) {
 		try {
@@ -342,6 +488,11 @@ public class OrderServiceImpl implements OrderService {
 			response.setMessage("Order Cancellation is Successfull");
 			System.out.println("Order Cancellation is successfull");
 			/*-------------------------------------------------------------------------------------------------*/
+			
+			/** Cancel order in Delhivery Courier service */
+			
+			cancelCourierServiceOrder(orderDomain);
+			/*---------------------------------------------------------*/
 			
 			/*------------------------------Products In stock should automatically increase after Order Cancellation----*/
 			for(OrderDetailDomain orderDetailDomain:orderDomain.getOrderDetailDomain()) {
@@ -412,6 +563,46 @@ public class OrderServiceImpl implements OrderService {
 		
 	}
 
+	@SuppressWarnings("rawtypes")
+	private Response cancelCourierServiceOrder(OrderDomain orderDomain) {
+		Response response=CommonUtils.getResponseObject("Cancel Courier Service Order");
+		final String uri = Constants.DELHIVERY_URL+"api/p/edit";
+		String authToken = Constants.DELHIVERY_TOKEN;
+		RestTemplate restTemplate = new RestTemplate();
+		try {
+			List<OrderDetailDomain> orderDetailDomainList = orderDomain.getOrderDetailDomain();
+			String wayBillNo = null;
+			if(null != orderDetailDomainList) {
+				
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.add("Authorization", "Token " + authToken);
+				HttpEntity<Map> request = null;
+				ResponseEntity<String> result = null;
+				Map<String,String>  cancelOrderMap = new HashMap<String, String>();
+				for(OrderDetailDomain detailDomain:orderDetailDomainList) {
+					wayBillNo =  orderDao.getWayBillNoByDetId(detailDomain.getOrderdetailId());
+					cancelOrderMap.put("waybill", wayBillNo);
+					cancelOrderMap.put("cancellation", "true");
+					
+					request = new HttpEntity<Map>(cancelOrderMap,headers);	
+					result = restTemplate.postForEntity(uri, request, String.class);
+					
+					JSONObject jsonObject = new JSONObject(result.getBody());
+					String status = jsonObject.get("status").toString();
+					if(status.equalsIgnoreCase("true")) {
+						response.setMessage("Cancellation successfull");
+						response.setStatus(StatusCode.SUCCESS.name());
+					}
+				}
+			}
+			
+		}catch (Exception e) {
+			throw new RuntimeException("Exception: " +e);
+		}
+		return response;
+	}
+	
 	@Override
 	public List<OrderModel> getOrdersByDate(Date orderDate) {
 	
@@ -644,7 +835,163 @@ public class OrderServiceImpl implements OrderService {
 		// TODO Auto-generated method stub
 		return orderDao.getSalesReport();
 	}
+
+	@Override
+	public List<Map<String, Object>> getCourierOrderDetails(String status) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> courierOrderDetList = null;
+		if(null != status) {
+			courierOrderDetList = orderDao.getCourierOrderDetails(status);
+		} else {
+			throw new RuntimeException("Status cannot be empty");
+		}
+		return courierOrderDetList;
+	}
+
+	@Override
+	public Response updateCourierOrderStatus(CourierOrderDetModel courierOrderDetModel) {
+		// TODO Auto-generated method stub
+		Response response=CommonUtils.getResponseObject("Update order status");
+		String[] status = new String[2];
+		try {
+			if(null != courierOrderDetModel) {
+				String courierOrderId = courierOrderDetModel.getCourierOrderId();
+				if(null != courierOrderId) {
+					CourOrderDetDomain courOrderDetDomain = new CourOrderDetDomain();
+					courOrderDetDomain = orderDao.getCourOrderDetById(courierOrderId);
+					//To get order status and update in the database	
+					status = trackCourierOrderDetails(courOrderDetDomain);  
+					
+					if(null != status) {
+						if(status[1].equalsIgnoreCase("Seller cancelled the order")) {
+							courOrderDetDomain.setStatus("Cancelled");
+						} else {
+							courOrderDetDomain.setStatus(status[0]);
+						}
+						
+						courOrderDetDomain.setModifiedDate(new Date());
+						response = orderDao.updateCourierOrderStatus(courOrderDetDomain);
+					}
+				} else {
+					throw new RuntimeException("Enter courier order id");
+				}
+			} else {
+				throw new RuntimeException("Enter the details");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Exception " +e);
+		}
+		
+		return response;
+	}
 	
+	
+	private String[] trackCourierOrderDetails(CourOrderDetDomain courOrderDetDomain) {
+		final String uri = Constants.DELHIVERY_URL+"api/packages/json/";
+		String authToken = Constants.DELHIVERY_TOKEN;
+		String[] statusStr = new String[2];
+		
+		RestTemplate restTemplate = new RestTemplate();
+		try {
+			if(null != courOrderDetDomain) {
+				HttpHeaders headers = new HttpHeaders();
+				headers.set("Accept", "application/json");
+				
+				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
+				        .queryParam("token", authToken)
+				        .queryParam("waybill", courOrderDetDomain.getWayBill())
+				        .queryParam("verbose", 0);
+
+				HttpEntity<?> entity = new HttpEntity<>(headers);				
+				HttpEntity<String> result = restTemplate.exchange(
+				        builder.toUriString(), 
+				        HttpMethod.GET, 
+				        entity, 
+				        String.class);
+
+				JSONObject jsonObject = new JSONObject(result.getBody());
+				JSONArray shipmentDataArray = jsonObject.getJSONArray("ShipmentData");
+				JSONObject shipmentObject = shipmentDataArray.getJSONObject(0).getJSONObject("Shipment");
+				statusStr[0] = shipmentObject.getJSONObject("Status").getString("Status");
+				statusStr[1] = shipmentObject.getJSONObject("Status").getString("Instructions");
+				
+			}
+		}catch (Exception e) {
+			throw new RuntimeException("Exception " +e);
+		}
+		
+		return statusStr;
+	}
+
+	@Override
+	public Response createPickupRequest(PickupReqModel pickupReqModel) {
+		Response response=CommonUtils.getResponseObject("Create Pick up request");
+		
+		PickupRequestDomain pickupRequestDomain=new PickupRequestDomain();
+		BeanUtils.copyProperties(pickupReqModel, pickupRequestDomain);
+		pickupRequestDomain.setCreatedDate(new Date());
+		pickupRequestDomain.setModifiedDate(new Date());
+		
+		String pickupDate = DateUtility.getDateByStringFormat(pickupReqModel.getPickupDateDt(),DateUtility.DATE_FORMAT_YYYYMMDD);
+		pickupRequestDomain.setPickup_date(pickupDate);
+		
+		response  = createCourierPickupReq(pickupRequestDomain);  //To  save in third party url - Delhivery api
+		
+		return response;
+	}
+	
+	private Response createCourierPickupReq(PickupRequestDomain pickupRequestDomain) {
+		Response response=CommonUtils.getResponseObject("Create Courier Pick up request");
+		final String uri = Constants.DELHIVERY_URL+"fm/request/new/";
+		String authToken = Constants.DELHIVERY_TOKEN;
+		RestTemplate restTemplate = new RestTemplate();
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.add("Authorization", "Token " + authToken);
+			
+			HttpEntity<PickupRequestDomain> request = new HttpEntity<PickupRequestDomain>(pickupRequestDomain,headers);
+
+			ResponseEntity<String> result = restTemplate.postForEntity(uri, request, String.class);
+			JSONObject jsonObject = new JSONObject(result.getBody());
+			if(jsonObject.has("success")) {
+				if(jsonObject.get("success").toString().equalsIgnoreCase("false")) {
+					String message = jsonObject.getJSONObject("data").get("message").toString();
+					response.setStatus(StatusCode.ERROR.name());
+					response.setMessage(message);
+				}
+			} else {
+				int pickupId = Integer.parseInt(jsonObject.get("pickup_id").toString());
+				String incomingCenterName = jsonObject.get("incoming_center_name").toString();
+				pickupRequestDomain.setPickup_id(pickupId);
+				pickupRequestDomain.setIncoming_center_name(incomingCenterName);//To save in local db
+				response = orderDao.createPickupRequest(pickupRequestDomain);
+			}
+			
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return response;
+	}
+
+	@Override
+	public List<PickupReqModel> getPickupReqDetails(Date fromDate, Date toDate) {
+		List<PickupReqModel> pickupReqList = null;
+		try {
+			if(null != fromDate && null != toDate) {
+				List<PickupRequestDomain> pickupReqDomainList = orderDao.getPickupReqDetails(fromDate, toDate);
+				if(pickupReqDomainList != null) {
+					pickupReqList = pickupReqMapper.entityList(pickupReqDomainList);
+				}
+			} else {
+				throw new RuntimeException("Enter from date and to date");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		return pickupReqList;
+	}
 	
 	
 }
