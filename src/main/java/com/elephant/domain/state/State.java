@@ -35,9 +35,8 @@ public class State implements Serializable{
 	@Column(name="stateCode")
 	private String stateCode;
 	
-	
-//	@OneToMany(mappedBy="city", cascade=CascadeType.REMOVE, fetch=FetchType.LAZY )
-//	private List<CityDomain> cityDomain;
+	@OneToMany(mappedBy="stateDomain", cascade=CascadeType.ALL, fetch=FetchType.LAZY )
+	private List<CityDomain> cityDomain;
 	
 	public long getStateId() {
 		return stateId;
@@ -63,12 +62,12 @@ public class State implements Serializable{
 		this.stateCode = stateCode;
 	}
 
-//	public List<CityDomain> getCityDomain() {
-//		return cityDomain;
-//	}
-//
-//	public void setCityDomain(List<CityDomain> cityDomain) {
-//		this.cityDomain = cityDomain;
-//	}
+	public List<CityDomain> getCityDomain() {
+		return cityDomain;
+	}
+
+	public void setCityDomain(List<CityDomain> cityDomain) {
+		this.cityDomain = cityDomain;
+	}
 	
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.elephant.constant.Constants;
+import com.elephant.service.city.CityService;
 import com.elephant.service.customer.CustomerService;
 import com.elephant.service.state.StateService;
 
@@ -22,6 +23,9 @@ public class EhaEnterpriseApplication implements ApplicationRunner{
 	
 	@Autowired
 	StateService stateService;
+	
+	@Autowired
+	CityService cityService;
 
 	
 	public static void main(String[] args) {
@@ -37,6 +41,7 @@ public class EhaEnterpriseApplication implements ApplicationRunner{
 		customerService.addAdmin("ehaadmin@gmail.com","12345678","Puneeth");		
 		
 		stateService.addState();
+		cityService.addCity();
 	}
 
 }

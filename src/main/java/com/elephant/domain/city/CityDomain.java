@@ -30,9 +30,9 @@ public class CityDomain implements Serializable{
 	@Column(name="cityName")
 	private String cityName;
 	
-//	@ManyToOne
-//	@JoinColumn(name="stateId")
-//	private State stateDomain;
+	@ManyToOne
+	@JoinColumn(name="stateId")
+	private State stateDomain;
 
 	public long getCityId() {
 		return cityId;
@@ -50,11 +50,11 @@ public class CityDomain implements Serializable{
 		this.cityName = cityName;
 	}
 
-//	public State getStateDomain() {
-//		return stateDomain;
-//	}
-//
-//	public void setStateDomain(State stateDomain) {
-//		this.stateDomain = stateDomain;
-//	}
+	public State getStateDomain() {
+		return stateDomain;
+	}
+
+	public void setStateDomain(State stateDomain) {
+		this.stateDomain = stateDomain;
+	}
 }

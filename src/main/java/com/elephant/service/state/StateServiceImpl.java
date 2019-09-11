@@ -78,6 +78,9 @@ public class StateServiceImpl implements StateService{
 		List<State> stateList = null;
 		try {
 			stateList = stateRepository.findAll();
+			for(State state:stateList) {
+				state.setCityDomain(null);
+			}
 		}catch (Exception e) {
 			throw new RuntimeException(e);
 		}
