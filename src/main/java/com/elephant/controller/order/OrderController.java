@@ -248,7 +248,7 @@ public class OrderController {
     }
     
     
-    @RequestMapping(value = "/updateCourierOrderStatuss",method=RequestMethod.POST, produces="application/json")
+    @RequestMapping(value = "/updateCourierOrderStatus",method=RequestMethod.POST, produces="application/json")
     public @ResponseBody String updateCourierOrderStatus(@RequestBody CourierOrderDetModel courierOrderDetModel){
     	Response res = CommonUtils.getResponseObject("Update Courier Order Details");
     	res=orderService.updateCourierOrderStatus(courierOrderDetModel);
@@ -266,7 +266,7 @@ public class OrderController {
     	
     	/*--------------String To Date---------------*/
     	/*  Convert from String to Date*/
-    	DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    	DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
     	Date fromDate = format.parse(fromDateStr);
     	Date toDate=format.parse(toDateStr);
     	/*------------------------------------------*/

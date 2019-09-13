@@ -154,7 +154,7 @@ public class OrderDaoImpl implements OrderDao {
 	public List<Map<String, Object>> getCourierOrderDetails(String status) {
 		List<Map<String, Object>> courierOrderDetailsList = null;
 		try {
-			String sql = "SELECT courier.order_detail_id as Reference_No, courier.created_date as Order_Date,courier.status, \r\n" + 
+			String sql = "SELECT courier.courier_order_id,courier.order_detail_id as Reference_No, courier.created_date as Order_Date,courier.status, \r\n" + 
 					"courier.way_bill ,orderdet.product_name, orderdet.product_sku\r\n" + 
 					"from courier_order_details courier, orderdetail orderdet where courier.status = ?\r\n" + 
 					"and courier.order_detail_id = orderdet.orderdetail_id";
