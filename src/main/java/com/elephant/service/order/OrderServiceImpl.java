@@ -231,6 +231,7 @@ public class OrderServiceImpl implements OrderService {
 
 		OrderDomain orderDomain1=orderDaoRepository.save(orderDomain);
 		response.setMessage1("Order Creation is Successfull");
+		response.setMessage2("Order id: " +orderDomain1.getOrderId());
 		
 		/*-------------------------Clear Cart amount after order Confirmation-------------------------------*/
 		//cartDomain.setGrandtotal(0);
