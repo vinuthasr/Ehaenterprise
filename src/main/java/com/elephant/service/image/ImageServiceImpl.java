@@ -13,7 +13,6 @@ import com.elephant.dao.banner.BannerRepository;
 import com.elephant.dao.category.CategoryRepository;
 import com.elephant.dao.image.ImageDao;
 import com.elephant.dao.image.ImageDaoRepository;
-import com.elephant.dao.subimage.SubImageDaoRepository;
 import com.elephant.domain.banner.BannerDomain;
 import com.elephant.domain.category.Category;
 import com.elephant.domain.image.ImageDomain;
@@ -50,7 +49,7 @@ public class ImageServiceImpl implements ImageService {
 	@Transactional(rollbackFor = Exception.class)
 	public Response postImage(ImageModel imageModel)throws Exception{
 		Response response=CommonUtils.getResponseObject("Post Image");
-		String bannerArea = imageModel.getBannerModel().getBannerArea();
+		String bannerArea = imageModel.getBannerDomain().getBannerArea();
 		String categoryName = imageModel.getCategoryDomain().getCategoryName();
 		try {
 		ImageDomain imageDomain=new ImageDomain();
@@ -123,7 +122,11 @@ public class ImageServiceImpl implements ImageService {
 	public List<ImageModel> allImage() throws Exception {
 		try {
 		List<ImageDomain> image= imageDao.allImage();
-		return imageMapper.entityList(image);
+		List<ImageModel> imageModelList = imageMapper.entityList(image);
+		for(ImageModel model:imageModelList) {
+			model.getBannerDomain().setImage(null);
+		}
+		return imageModelList;
 		}
 		catch(Exception e) {
 			

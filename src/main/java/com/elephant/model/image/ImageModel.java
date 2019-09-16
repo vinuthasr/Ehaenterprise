@@ -28,7 +28,7 @@ public class ImageModel implements Serializable{
 	private int imageSequenceNo;
 	private Date createdDate;
 	private Date modifiedDate;
-	private BannerModel bannerModel;
+	private BannerModel bannerDomain;
 	private CategoryModel categoryDomain;
 	
 	
@@ -105,18 +105,12 @@ public class ImageModel implements Serializable{
 		this.modifiedDate = modifiedDate;
 	}
 	
-	public BannerModel getBannerModel() {
-		return bannerModel;
+	public BannerModel getBannerDomain() {
+		return bannerDomain;
 	}
-	public void setBannerModel(BannerModel bannerModel) {
-		this.bannerModel = bannerModel;
+	public void setBannerDomain(BannerModel bannerDomain) {
+		this.bannerDomain = bannerDomain;
 	}
-//	public Category getCategoryDomain() {
-//		return categoryDomain;
-//	}
-//	public void setCategoryDomain(Category categoryDomain) {
-//		this.categoryDomain = categoryDomain;
-//	}
 	public CategoryModel getCategoryDomain() {
 		return categoryDomain;
 	}
