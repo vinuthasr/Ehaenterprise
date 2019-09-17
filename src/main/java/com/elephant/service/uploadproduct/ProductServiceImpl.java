@@ -1007,11 +1007,15 @@ try {
 	@Override
 	public Resource getExcelForBulkProduct() throws Exception {
 		try {
-			String filePath = Paths.get(".").toAbsolutePath().toString() +"\\ExcelTemplate";
+			//String filePath = Paths.get(".").toAbsolutePath().toString() +"\\ExcelTemplate";
+			String filePath = "/home/ubuntu/Projects/" +"ExcelTemplate";
 			System.out.println(filePath);
-			Path file = Paths.get(filePath+"\\Template.xlsx");
+			//Path file = Paths.get(filePath+"\\Template.xlsx");
+			Path file = Paths.get(filePath+"/Template.xlsx");
 			
-			File fileNew = new File(filePath+"\\Template.xlsx");
+			//File fileNew = new File(filePath+"\\Template.xlsx");
+			File fileNew = new File(filePath+"/Template.xlsx");
+			
 			boolean exists = fileNew.exists();
 			if(!exists) {
 				new File(filePath).mkdirs();

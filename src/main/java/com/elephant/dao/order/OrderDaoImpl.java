@@ -109,7 +109,7 @@ public class OrderDaoImpl implements OrderDao {
 	public Double getTotalEarnings() {
 		double totalEarnings = 0;
 		try {
-			String sql = "SELECT sum(order_price) FROM e_commerce.orders where order_status != 'Cancel-Order'";
+			String sql = "SELECT COALESCE(sum(order_price),0)  as order_price FROM e_commerce.orders where order_status != 'Cancel-Order'";
 			totalEarnings = jdbcTemplate.queryForObject(sql,Double.class);
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEarnings", e);
