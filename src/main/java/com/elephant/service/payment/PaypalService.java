@@ -176,7 +176,7 @@ public class PaypalService {
 		 double total =0.0;
 		 String productInfo = null;
 		 for(CartItemDomain cartItem:cartItemDomainList) {
-				total = total + (cartItem.getProduct().getPrice() *cartItem.getQuantity());
+				total = total + (cartItem.getProduct().getCp() *cartItem.getQuantity());
 				productInfo = cartItem.getProduct().getProductName();
 		 }
 		 
