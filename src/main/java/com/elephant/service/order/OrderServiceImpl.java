@@ -327,7 +327,7 @@ public class OrderServiceImpl implements OrderService {
 		response = courierCreateOrderAPI(shipmentsList,orderDomain.getOrderNumber(),orderDomain.getCustomerEmail());  //Courier Third party api
 		
 		 Mail mail = new Mail();
-         mail.setFrom("ehauiele@gmail.com");
+         mail.setFrom(Constants.FROM_ADDRESS);
          mail.setTo(orderDomain.getCustomerEmail());
          mail.setSubject("Sending Email with Thymeleaf HTML Template Example");
    

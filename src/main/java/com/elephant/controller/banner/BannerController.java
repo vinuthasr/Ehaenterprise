@@ -26,7 +26,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/v1/banner")
-@CrossOrigin(origins= {"http://13.235.82.62","http://localhost:4200"})
+@CrossOrigin(origins= {"http://13.235.82.62","http://35.154.165.127:4200","http://localhost:4200"})
 public class BannerController {
 
 	private static final Logger logger = LoggerFactory.getLogger(BannerController.class);

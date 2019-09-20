@@ -33,7 +33,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/v1/address")
-@CrossOrigin(origins= {"http://13.235.82.62","http://localhost:4200"})
+@CrossOrigin(origins= {"http://13.235.82.62","http://35.154.165.127:4200","http://localhost:4200"})
 public class AddressController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AddressController.class);

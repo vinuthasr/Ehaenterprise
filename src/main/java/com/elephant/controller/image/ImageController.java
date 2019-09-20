@@ -29,7 +29,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/v1/control")
-@CrossOrigin(origins= {"http://13.235.82.62","http://localhost:4200"})
+@CrossOrigin(origins= {"http://13.235.82.62","http://35.154.165.127:4200","http://localhost:4200"})
 public class ImageController {
 	
 	public static final Logger logger =LoggerFactory.getLogger(ImageController.class);

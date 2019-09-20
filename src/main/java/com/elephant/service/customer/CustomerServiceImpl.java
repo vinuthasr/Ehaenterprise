@@ -2,7 +2,9 @@ package com.elephant.service.customer;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
@@ -11,8 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
@@ -24,6 +29,7 @@ import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.domain.roles.Role;
 import com.elephant.mapper.customer.CustomerMapper;
 import com.elephant.model.customer.CustomerModel;
+import com.elephant.model.mail.Mail;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
 import com.elephant.utils.SmtpMailSender;
@@ -56,7 +62,8 @@ public class CustomerServiceImpl implements CustomerService {
 	@Autowired
 	private RoleRepository roleRepository;
 
-
+    @Autowired
+    private SpringTemplateEngine templateEngine;
 	
 	
 	     //========================add customer=============================//
@@ -86,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
 					customer.setPassword(hashedPassword );
 					
 					//Mail
-					/*Mail mail = new Mail();
+					Mail mail = new Mail();
 					mail.setFrom(Constants.FROM_ADDRESS);
 			        mail.setTo(customer.getEmail());
 			        mail.setSubject("Hello  "+customer.getCustomerName());
@@ -106,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService {
 			        String html = templateEngine.process("registration-form", context);
 			        
 				    smtpMailSender.sendMail(mail, html);
-				    System.out.println("mail send successfully"); */
+				    System.out.println("mail send successfully"); 
 				    
 				    response = customerDao.addCustomer(customer);
 				    
@@ -127,6 +134,10 @@ public class CustomerServiceImpl implements CustomerService {
 		 	response.setStatus(StatusCode.ERROR.name());
 		 	response.setMessage("Mail could'nt be sent due to Mail server connection failed");
        } */
+		catch(MailSendException exce) {
+			//response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Registration successful. But we are unable to send email due to gmail port issue.");
+		}
 	    catch(Exception e) {
 			response.setStatus(StatusCode.ERROR.name());
 		 	response.setMessage("Exception: " +e);

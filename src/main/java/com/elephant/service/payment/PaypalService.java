@@ -177,7 +177,11 @@ public class PaypalService {
 		 String productInfo = null;
 		 for(CartItemDomain cartItem:cartItemDomainList) {
 				total = total + (cartItem.getProduct().getCp() *cartItem.getQuantity());
-				productInfo = cartItem.getProduct().getProductName();
+				if(cartItem.getProduct().getProductName() == null) {
+					productInfo = "test";
+				} else {
+					productInfo = cartItem.getProduct().getProductName();
+				}
 		 }
 		 
 		 PaymentDetail paymentDetail= new PaymentDetail();
