@@ -173,6 +173,10 @@ public class ImageServiceImpl implements ImageService {
 		try {
 			BannerDomain bannerDomain=bannerRepository.findByBannerArea(bannerArea);
 			List<ImageDomain> image= bannerDomain.getImageDomain();
+			for(ImageDomain imageDomain:image) {
+				imageDomain.getBanner().setImageDomain(null);
+				imageDomain.getCategoryDomain().setProduct(null);
+			}
 			return imageMapper.entityList(image);
 			}
 			catch(Exception e) {

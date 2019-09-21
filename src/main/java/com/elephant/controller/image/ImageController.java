@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
 import com.elephant.domain.image.ImageDomain;
 import com.elephant.model.banner.BannerModel;
@@ -29,7 +30,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/v1/control")
-@CrossOrigin(origins= {"http://13.235.82.62","http://35.154.165.127:4200","http://localhost:4200"})
+@CrossOrigin(origins= {Constants.ADMIN_URL,Constants.CUSTOMER_URL,Constants.LOCALHOST_URL})
 public class ImageController {
 	
 	public static final Logger logger =LoggerFactory.getLogger(ImageController.class);

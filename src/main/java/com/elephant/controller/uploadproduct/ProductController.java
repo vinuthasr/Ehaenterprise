@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.uploadproduct.ProductDao;
 import com.elephant.model.uploadproduct.BulkProductModel;
@@ -40,7 +41,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins= {"http://13.235.82.62","http://35.154.165.127:4200","http://localhost:4200"})
+@CrossOrigin(origins= {Constants.ADMIN_URL,Constants.CUSTOMER_URL,Constants.LOCALHOST_URL})
 public class ProductController {
 	private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 	

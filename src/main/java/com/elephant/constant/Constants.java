@@ -19,4 +19,8 @@ public interface Constants {
 	public final static String DELHIVERY_URL = "https://staging-express.delhivery.com/"; //Test url 
 	
 	public final static String DELHIVERY_TOKEN = "30b6080910c23701d1564b0bb18dde903e2d5c00";//Test Token
+	
+	public final static String ADMIN_URL = "http://13.235.82.62:4200";
+	public final static String CUSTOMER_URL = "http://35.154.165.127:4200";
+	public final static String LOCALHOST_URL = "http://localhost:4200";
 }

@@ -93,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
 					customer.setPassword(hashedPassword );
 					
 					//Mail
-					Mail mail = new Mail();
+					/*Mail mail = new Mail();
 					mail.setFrom(Constants.FROM_ADDRESS);
 			        mail.setTo(customer.getEmail());
 			        mail.setSubject("Hello  "+customer.getCustomerName());
@@ -113,7 +113,7 @@ public class CustomerServiceImpl implements CustomerService {
 			        String html = templateEngine.process("registration-form", context);
 			        
 				    smtpMailSender.sendMail(mail, html);
-				    System.out.println("mail send successfully"); 
+				    System.out.println("mail send successfully"); */
 				    
 				    response = customerDao.addCustomer(customer);
 				    
@@ -136,6 +136,7 @@ public class CustomerServiceImpl implements CustomerService {
        } */
 		catch(MailSendException exce) {
 			//response.setStatus(StatusCode.ERROR.name());
+			System.out.println("Mail exception: " +exce);
 			response.setMessage("Registration successful. But we are unable to send email due to gmail port issue.");
 		}
 	    catch(Exception e) {

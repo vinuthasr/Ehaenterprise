@@ -40,7 +40,7 @@ public class SmtpMailSender {
 		        helper.setText(body, true);
 		        helper.setSubject(mail.getSubject());
 		        helper.setFrom(mail.getFrom());
-
+		        
 		        javaMailSender.send(message);
 	    }
 }
