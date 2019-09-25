@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.naming.AuthenticationException;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
@@ -91,9 +92,10 @@ public class CustomerServiceImpl implements CustomerService {
 					String hashedPassword = passwordEncoder.encode(customerModel.getPassword());
 				
 					customer.setPassword(hashedPassword );
+					response = customerDao.addCustomer(customer);
 					
 					//Mail
-					/*Mail mail = new Mail();
+					Mail mail = new Mail();
 					mail.setFrom(Constants.FROM_ADDRESS);
 			        mail.setTo(customer.getEmail());
 			        mail.setSubject("Hello  "+customer.getCustomerName());
@@ -113,9 +115,9 @@ public class CustomerServiceImpl implements CustomerService {
 			        String html = templateEngine.process("registration-form", context);
 			        
 				    smtpMailSender.sendMail(mail, html);
-				    System.out.println("mail send successfully"); */
+				    System.out.println("mail send successfully"); 
 				    
-				    response = customerDao.addCustomer(customer);
+				    
 				    
 					response.setMessage("Registration successful. Please validate the email id which sent on your email");
 					
@@ -126,18 +128,15 @@ public class CustomerServiceImpl implements CustomerService {
 			}
 	            
 		 } 
-	   /*catch (MailSendException ex) {
-		 	response.setStatus(StatusCode.ERROR.name());
-		 	response.setMessage("Mail could'nt be sent due to Mail server connection failed");
-       }
-	   catch (MessagingException ex) {
-		 	response.setStatus(StatusCode.ERROR.name());
-		 	response.setMessage("Mail could'nt be sent due to Mail server connection failed");
-       } */
+	
+	   catch (AuthenticationException ex) {
+		 	//response.setStatus(StatusCode.ERROR.name());
+		   response.setMessage("Registration successful. But we are unable to send email due to Mail server connection failed"+ex);
+       } 
+		
 		catch(MailSendException exce) {
 			//response.setStatus(StatusCode.ERROR.name());
-			System.out.println("Mail exception: " +exce);
-			response.setMessage("Registration successful. But we are unable to send email due to gmail port issue.");
+			response.setMessage("Registration successful. But we are unable to send email due to Mail server connection failed"+exce);
 		}
 	    catch(Exception e) {
 			response.setStatus(StatusCode.ERROR.name());
