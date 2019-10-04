@@ -3,6 +3,7 @@ package com.elephant.controller.uploadproduct;
 
 
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,7 +13,10 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -642,6 +646,20 @@ public class ProductController {
 		return ResponseEntity.ok().
 				header( "filename", file.getFilename())
 				.body(file);
+	}
+	
+	//Export to excel for product list
+	@RequestMapping(value = "/excel/Product.xlsx/{categoryId}", method = RequestMethod.GET)
+	public ResponseEntity<InputStreamResource> productExportToExcel(@PathVariable ("categoryId") String categoryId) {
+		ByteArrayInputStream   in = null;
+		try {
+			in = uploadproductservice.prdExportToExcel(categoryId);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok()
+	        .header("Content-disposition", "attachment; filename=Product.xlsx") // add headers if any
+	        .body(new InputStreamResource(in));
 	}
 	
 }

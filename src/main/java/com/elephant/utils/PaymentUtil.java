@@ -4,6 +4,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
+import com.elephant.constant.Constants;
 import com.elephant.model.payment.PaymentDetail;
 
 public class PaymentUtil {
@@ -11,9 +12,9 @@ public class PaymentUtil {
 
     private static final String paymentSalt = "Dc2AaaA81p";
 
-    private static final String sUrl = "http://localhost:8080/v1/paymentresponse";
+    private static final String sUrl = Constants.BACKEND_URL+"/v1/paymentresponse";
 
-    private static final String fUrl = "http://localhost:8080/v1/paymentresponse";
+    private static final String fUrl = Constants.BACKEND_URL+"/v1/paymentresponse";
     
     public static PaymentDetail populatePaymentDetail(PaymentDetail paymentDetail){
         String hashString = "";

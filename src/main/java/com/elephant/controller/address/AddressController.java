@@ -56,7 +56,6 @@ public class AddressController {
 		logger.info("addUser: Received request URL: " + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		logger.info("addUser: Received request: " + CommonUtils.getJson(""));
-		System.out.println(pr.getName());
 		
 		
 	    return addressService.addAddress(model,pr.getName());

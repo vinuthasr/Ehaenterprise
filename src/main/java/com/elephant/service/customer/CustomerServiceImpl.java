@@ -92,7 +92,7 @@ public class CustomerServiceImpl implements CustomerService {
 					String hashedPassword = passwordEncoder.encode(customerModel.getPassword());
 				
 					customer.setPassword(hashedPassword );
-					response = customerDao.addCustomer(customer);
+					
 					
 					//Mail
 					Mail mail = new Mail();
@@ -104,9 +104,8 @@ public class CustomerServiceImpl implements CustomerService {
 			        model.put("name", customer.getCustomerName());
 			        model.put("email", customer.getEmail());
 			        model.put("code", customer.getValitateCode());
-				        
-				    model.put("signature",request.getServerPort()+"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
-				    System.out.println(request.getServerPort()+"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
+				    //request.getServerName()+":"+request.getServerPort()  Constants.BACKEND_URL
+				    model.put("signature",Constants.BACKEND_URL +"/v1/confirm?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
 				    mail.setModel(model);
 				    
 				    Context context = new Context();
@@ -117,7 +116,7 @@ public class CustomerServiceImpl implements CustomerService {
 				    smtpMailSender.sendMail(mail, html);
 				    System.out.println("mail send successfully"); 
 				    
-				    
+				    response = customerDao.addCustomer(customer);
 				    
 					response.setMessage("Registration successful. Please validate the email id which sent on your email");
 					
@@ -130,13 +129,13 @@ public class CustomerServiceImpl implements CustomerService {
 		 } 
 	
 	   catch (AuthenticationException ex) {
-		 	//response.setStatus(StatusCode.ERROR.name());
-		   response.setMessage("Registration successful. But we are unable to send email due to Mail server connection failed"+ex);
+		   response.setStatus(StatusCode.ERROR.name());
+		   response.setMessage("Exception: "+ex);
        } 
 		
 		catch(MailSendException exce) {
-			//response.setStatus(StatusCode.ERROR.name());
-			response.setMessage("Registration successful. But we are unable to send email due to Mail server connection failed"+exce);
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Exception: " +exce);
 		}
 	    catch(Exception e) {
 			response.setStatus(StatusCode.ERROR.name());
@@ -359,14 +358,14 @@ public class CustomerServiceImpl implements CustomerService {
 				customerDao.resetpassword(email,pass);
 				
 				//Mail
-				/*Mail mail = new Mail();
+				Mail mail = new Mail();
 			    mail.setFrom(Constants.FROM_ADDRESS);
 			    mail.setTo(customer.getEmail());
 			    mail.setSubject("Password Reset Confirmation");
 
 			    Map<String, Object> model = new HashMap<String, Object>();
 			    model.put("name", customer.getCustomerName());
-		        model.put("signature", Constants.POST_URL+"/v1/resettoken?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
+		        model.put("signature", Constants.BACKEND_URL+"/v1/resettoken?email="+customer.getEmail()+"&validate="+customer.getValitateCode());
 		        mail.setModel(model);
 			        
 			    // helper.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
@@ -374,7 +373,7 @@ public class CustomerServiceImpl implements CustomerService {
 			    Context context = new Context();
 			    context.setVariables(mail.getModel());
 			    String html = templateEngine.process("ResetPassword", context);
-			    smtpMailSender.sendMail(mail, html); */
+			    smtpMailSender.sendMail(mail, html); 
 
 				String status=StatusCode.SUCCESS.name();
 				
@@ -447,6 +446,7 @@ public class CustomerServiceImpl implements CustomerService {
 		    roles.add(userRole);
 		    cd.setRoles(roles);
 			cd.setEmail(email);
+			cd.setActive(true);
 			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 			String hashedPassword = passwordEncoder.encode(password);
 			cd.setPassword(hashedPassword);

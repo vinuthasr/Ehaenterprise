@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 //import org.springframework.web.servlet.ModelAndView;
 
 import com.elephant.dao.customer.CustomerRepository;
+import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.service.customer.CustomerService;
 
 
@@ -36,8 +37,9 @@ public class CustomerController1 {
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		System.out.println(validate);
 		
-		if(cr.findByEmail(email).isActive()==true) {
-		if((cr.findByEmail(email).getValitateCode().equals(validate))) {
+		CustomerDomain customerDomain = cr.findByEmail(email);
+		if(customerDomain.isActive()==false) {
+		if((customerDomain.getValitateCode().equals(validate))) {
 		
 		
 		customerService.getConfirm(validate,email);
@@ -51,6 +53,7 @@ public class CustomerController1 {
 		return "email-template3";
 	
 	}
+	
 	@RequestMapping(value="/resettoken",method=RequestMethod.GET)
 	public  String getResettoken(Model model, @RequestParam("email") String email,@RequestParam("validate") String validate,HttpServletRequest request) throws Exception {
 		logger.info("getConfirm: Received request: " + request.getRequestURL().toString()

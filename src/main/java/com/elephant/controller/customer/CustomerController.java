@@ -214,7 +214,11 @@ public class CustomerController {
 			ErrorObject err = CommonUtils.getErrorResponse("Reset password failed", "Reset password failed");
 			res.setErrors(err);
 			res.setStatus(StatusCode.ERROR.name());
+		} else {
+			res.setStatus(StatusCode.SUCCESS.name());
+			res.setMessage1("Password reset link has been sent to your mail Id. Link will expire within one hour");
 		}
+		
 		logger.info("resetPassword: Sent response");
 		return CommonUtils.getJson(res);
 	}
@@ -227,7 +231,7 @@ public class CustomerController {
 			   CustomerDomain customerDomain = cr.findByEmail(loginRequest.getEmail());
 			   boolean isValidPwd = customerService.checkPassword(customerDomain,loginRequest.getPassword());
 			   if(customerDomain != null && isValidPwd) {
-				   if(customerDomain.isActive()==false) {
+				   if(customerDomain.isActive()==true) {
 				        Authentication authentication = authenticationManager.authenticate(
 				                new UsernamePasswordAuthenticationToken(
 				                        loginRequest.getEmail(),

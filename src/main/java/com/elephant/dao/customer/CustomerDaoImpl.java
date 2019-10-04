@@ -223,7 +223,7 @@ private static final Logger logger = LoggerFactory.getLogger(CustomerDaoImpl.cla
 	public void resetpassword(String email, String pass) {
 		try {
 			cr.findByEmail(email).setValitateCode(pass);
-			cr.findByEmail(email).setExpiryDate(5);
+			cr.findByEmail(email).setExpiryDate(60);
 			
 			entityManager.flush();
 		}catch (Exception e) {

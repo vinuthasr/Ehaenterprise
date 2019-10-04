@@ -1,5 +1,6 @@
 package com.elephant.utils;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -35,7 +36,8 @@ public class SmtpMailSender {
 		    	MimeMessageHelper helper = new MimeMessageHelper(message,
 		                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
 		                StandardCharsets.UTF_8.name());
-		    	helper.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
+		    	helper.addAttachment("logo.png",new ClassPathResource("logo.png"));
+		    			//new ClassPathResource(Paths.get(".").toAbsolutePath().toString()+"/logo.png"));
 		        helper.setTo(mail.getTo());
 		        helper.setText(body, true);
 		        helper.setSubject(mail.getSubject());

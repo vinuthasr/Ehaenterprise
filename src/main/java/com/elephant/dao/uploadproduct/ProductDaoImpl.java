@@ -475,11 +475,17 @@ public class ProductDaoImpl implements ProductDao {
 public Response deleteProduct(String productId, boolean isActive) throws Exception {
 	Response response = CommonUtils.getResponseObject("Product Deleted");
 	try {
-		ProductDomain domain = getProductById(productId);
-		domain.setActive(isActive);
+		ProductDomain domain = getAllProductByID(productId);
+		if(domain != null) {
+			domain.setActive(isActive);
+			entitymanager.flush();
+			response.setStatus(StatusCode.SUCCESS.name());
+			response.setMessage("Product updated successfully");
+		}  else {
+			response.setStatus(StatusCode.ERROR.name());
+			response.setMessage("Product id does not exist");
+		}
 		
-		entitymanager.flush();
-		response.setStatus(StatusCode.SUCCESS.name());
 	} catch (Exception e) {
 		logger.info("Exception in deleteProduct", e);
 		response.setStatus(StatusCode.ERROR.name());
@@ -487,7 +493,20 @@ public Response deleteProduct(String productId, boolean isActive) throws Excepti
 	}
 	return response;
 	}
-			
+	
+
+/* To get product details whether it is active / inactive */
+private ProductDomain getAllProductByID(String productId) {
+	try {
+		String hql = "FROM ProductDomain where productId=?1";
+		return (ProductDomain) entitymanager.createQuery(hql).setParameter(1, productId).getSingleResult();
+	} catch (EmptyResultDataAccessException e) {
+		return null;
+	} catch (Exception e) {
+		logger.error("Exception in getproduct", e);
+		return null;
+	}
+}
 	/*----------------------------------Get Product By Id-------------------------------------*/
 
 @Override
@@ -868,12 +887,13 @@ public List<ProductDomain> getByNewProducts() throws Exception {
 @SuppressWarnings("unchecked")
 @Override
 public List<ProductDomain> getProductBycategoryId(String categoryId) throws Exception {
+	List<ProductDomain> productDomainList = null;
 	try {
 		//String hql ="select upload from UploadProductDomain upload, Category category where category.categoryId =:cat and category.isActive=true";
 		//String hql ="select upload from ProductDomain upload inner join upload.category c where c.categoryId =:cat and category.isActive=true";
 		
 		String hql ="select u FROM ProductDomain u inner join u.category c where c.categoryId=:cat and c.isActive=true ";
-		return (List<ProductDomain>) entitymanager.createQuery(hql).setParameter("cat", categoryId).getResultList();
+		productDomainList =  entitymanager.createQuery(hql).setParameter("cat", categoryId).getResultList();
 		  // return List<ProductDomain> pd=  productRepository.findByCategoryId(categoryId);
 	} catch (EmptyResultDataAccessException e) {
 		return null;
@@ -881,7 +901,7 @@ public List<ProductDomain> getProductBycategoryId(String categoryId) throws Exce
 		logger.error("Exception in getProductBycategoryId", e);
 		return null;
 	}
-	
+	return productDomainList;
 }
 
 

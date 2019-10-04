@@ -22,5 +22,6 @@ public interface Constants {
 	
 	public final static String ADMIN_URL = "http://13.235.82.62:4200";
 	public final static String CUSTOMER_URL = "http://35.154.165.127:4200";
+	public final static String BACKEND_URL = "http://13.233.57.179:8080";  //http://13.233.57.179:8080 http://localhost:8080
 	public final static String LOCALHOST_URL = "http://localhost:4200";
 }

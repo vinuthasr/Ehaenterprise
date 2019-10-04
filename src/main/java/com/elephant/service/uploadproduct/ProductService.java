@@ -1,7 +1,9 @@
 package com.elephant.service.uploadproduct;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -82,5 +84,6 @@ public interface ProductService {
 	public List<ProductModel> getProductByCatagory1(ProductModel1 pm1);
     
     public Resource getExcelForBulkProduct() throws Exception;
-
+    
+    public ByteArrayInputStream prdExportToExcel(String categoryId) throws Exception;
 }

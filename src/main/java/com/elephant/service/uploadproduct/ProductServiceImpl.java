@@ -1,5 +1,7 @@
 package com.elephant.service.uploadproduct;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,6 +17,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -1021,7 +1026,6 @@ try {
 				new File(filePath).mkdirs();
 				createExcelTemplate(fileNew);
 			}
-			System.out.println(file);
 			Resource resource = new UrlResource(file.toUri());
 			if (resource.exists() || resource.isReadable()) {
 				return resource;
@@ -1034,7 +1038,109 @@ try {
 		}
 	}
 
-	
+	@SuppressWarnings("null")
+	@Override
+	public ByteArrayInputStream prdExportToExcel(String categoryId) throws Exception {
+		List<ProductModel> productModelList = null;
+		String[] columnshead = {"Category_Name","SKU","Stock","Price","Discount","Blouse Color","Border","Border Type","Collection Desc","Colors","Fabric Purity","Header Desc","Saree Length","Material Type","Occassion","Pattern","Zari Type","Blouse Length","Product Name","Main ImageUrl"};
+		try {
+			if(null != categoryId) {
+				productModelList = getProductBycategoryId(categoryId);
+				if(productModelList.size() > 0) {
+					//Blank workbook
+			        XSSFWorkbook workbook = new XSSFWorkbook();
+			        
+			        ByteArrayOutputStream out = new ByteArrayOutputStream();
+			        CreationHelper createHelper = workbook.getCreationHelper();
+			        
+			        //Create a blank sheet
+			        XSSFSheet sheet = workbook.createSheet("Product Data");
+			        
+			        Font headerFont = workbook.createFont();
+			        headerFont.setBold(true);
+			        headerFont.setFontHeightInPoints((short) 11);
+			        headerFont.setColor(IndexedColors.BLACK.getIndex());
+			        headerFont.setFontName("Arial");
+			        
+			        CellStyle headerCellStyle = workbook.createCellStyle();
+			        headerCellStyle.setFont(headerFont);
+			        
+			        Row headerRow = sheet.createRow(0);
+			       
+			        for(int i = 0; i < columnshead.length; i++) {
+			            Cell cell = headerRow.createCell(i);
+			            cell.setCellValue(columnshead[i]);
+			            cell.setCellStyle(headerCellStyle);
+			        }
+			        
+			        for(int i = 0; i < columnshead.length; i++) {
+			            sheet.autoSizeColumn(i);
+			        }
+			        
+			        Row row = null;
+			        Cell rowCell = null;
+
+			        for(int count=0;count<productModelList.size();count++) {
+			        	row = sheet.createRow(count+1);
+			        	for(int j=0;j<columnshead.length;j++) {
+			        		rowCell = row.createCell(j);
+			        		switch(j+1) {
+			        			case 1: rowCell.setCellValue(productModelList.get(count).getCategoryName());
+			        					break;
+			        			case 2: rowCell.setCellValue(productModelList.get(count).getSku());
+			        					break;
+			        			case 3: rowCell.setCellValue(productModelList.get(count).getInStock());
+			        					break;
+			        			case 4: rowCell.setCellValue(productModelList.get(count).getPrice());
+			        					break;			 
+			        			case 5: rowCell.setCellValue(productModelList.get(count).getDiscount());
+			        					break;
+			        			case 6: rowCell.setCellValue(productModelList.get(count).getBlouseColor());
+			        					break;
+			        			case 7: rowCell.setCellValue(productModelList.get(count).getBorder());
+			        					break;
+			        			case 8: rowCell.setCellValue(productModelList.get(count).getBorderType());
+			        					break;
+			        			case 9: rowCell.setCellValue(productModelList.get(count).getCollectionDesc());
+			        					break;
+			        			case 10: rowCell.setCellValue(productModelList.get(count).getColors());
+			        					 break;
+			        			case 11: rowCell.setCellValue(productModelList.get(count).getFabricPurity());
+			        					 break;
+			        			case 12: rowCell.setCellValue(productModelList.get(count).getHeaderDesc());
+			        			         break;
+			        			case 13: rowCell.setCellValue(productModelList.get(count).getLength());
+			        					 break;
+			        			case 14: rowCell.setCellValue(productModelList.get(count).getMaterialType());
+			        					 break;
+			        			case 15: rowCell.setCellValue(productModelList.get(count).getOccassion());
+			        					 break;
+			        			case 16: rowCell.setCellValue(productModelList.get(count).getPattern());
+			        			  		 break;
+			        			case 17: rowCell.setCellValue(productModelList.get(count).getZariType());
+			        					 break;
+			        			case 18: rowCell.setCellValue(productModelList.get(count).getBlouseLength());
+			        					 break;
+			        			case 19: rowCell.setCellValue(productModelList.get(count).getProductName());
+			        			         break;
+			        			case 20: rowCell.setCellValue(productModelList.get(count).getMainImageUrl());
+			        					 break;
+			        			         
+			        		}
+			        	}
+			        }
+			        
+			        workbook.write(out);
+			        return new ByteArrayInputStream(out.toByteArray());
+			        		
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
+
 	
 }
 	
