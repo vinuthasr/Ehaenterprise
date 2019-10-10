@@ -38,7 +38,7 @@ import com.elephant.utils.CommonUtils;
 
 @RestController
 @RequestMapping(value="/v1/Orders")
-@CrossOrigin(origins= {Constants.ADMIN_URL,Constants.CUSTOMER_URL,Constants.LOCALHOST_URL})
+@CrossOrigin(origins= {Constants.ADMIN_URL,Constants.CUSTOMER_URL,Constants.LOCALHOST_URL,"https://sandboxsecure.payu.in/_payment"},allowedHeaders="*")
 public class OrderController {
 	
 	@Autowired
@@ -46,7 +46,8 @@ public class OrderController {
 	
 	
 	@RequestMapping(value = "/ordercreate/{email}/{addressId}/{paymentMode}",method=RequestMethod.POST, produces="application/json")
-	@CrossOrigin(origins="https://sheltered-fortress-53647.herokuapp.com,https://sandboxsecure.payu.in/_payment",allowedHeaders="*")
+	//@CrossOrigin(origins="https://sheltered-fortress-53647.herokuapp.com",allowedHeaders="*")
+	@CrossOrigin(origins="https://sandboxsecure.payu.in/_payment",allowedHeaders="*")
     //public Response createOrder(@RequestParam(value="email")String email, @PathVariable(value="addressId")long addressId ,@RequestParam(value="paymentMode") String paymentMode) throws IOException{
 	public Response createOrder(@RequestBody PaymentModel paymentModel)	throws IOException{
        return orderService.createOrder(paymentModel);

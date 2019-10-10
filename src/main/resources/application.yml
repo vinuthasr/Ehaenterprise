@@ -13,5 +13,6 @@ spring:
           auth: true
           starttls:
             enable: true
+          ssl.trust: smtp.gmail.com
     protocol: smtp
     test-connection: false

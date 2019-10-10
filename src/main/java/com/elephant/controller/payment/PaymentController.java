@@ -40,7 +40,7 @@ import com.paypal.base.rest.PayPalRESTException;
 @RestController
 @RequestMapping("/v1")
 //@CrossOrigin(origins= {"https://eha-admin-v1.herokuapp.com","http://localhost:4200","https://eha-user-app.herokuapp.com","http://media.payumoney.com"})
-@CrossOrigin(origins= {"*"}, maxAge = 4800, allowCredentials = "false" )
+@CrossOrigin(origins= {"*"}, maxAge = 4800, allowCredentials = "false", allowedHeaders="*")
 public class PaymentController {
 	private static final Logger logger = LoggerFactory.getLogger(PaymentController.class);
 	//public static final String PAYPAL_SUCCESS_URL = "v1/pay/success";

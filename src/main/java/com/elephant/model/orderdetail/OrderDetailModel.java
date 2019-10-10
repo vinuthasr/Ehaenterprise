@@ -10,7 +10,7 @@ public class OrderDetailModel implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1104181134290149460L;
-	private long orderdetailId;
+	private String orderdetailId;
 	private long productId;
 	private String productSku;	
 	private String productImagePath;
@@ -38,10 +38,11 @@ public class OrderDetailModel implements Serializable {
 	public void setOrderModel(OrderModel orderModel) {
 		this.orderModel = orderModel;
 	}
-	public long getOrderdetailId() {
+	
+	public String getOrderdetailId() {
 		return orderdetailId;
 	}
-	public void setOrderdetailId(long orderdetailId) {
+	public void setOrderdetailId(String orderdetailId) {
 		this.orderdetailId = orderdetailId;
 	}
 	public long getProductId() {

@@ -22,7 +22,7 @@
             
              <div th:if="${success}">
                                 <div class="alert alert-info">
-                                    <h6 style="background-color:#e6ffec ; color: red;">You've successfully requested a new password reset!</h6>
+                                    <h6 style="background-color:#e6ffec ; color: red;">You've successfully changed a new password</h6>
                                 </div>
                             </div>
                                <div th:if="${error}">
@@ -48,7 +48,7 @@
                 </fieldset>
             </form><br>
             <p>
-                <a href="index.html" th:href="@{/index.html}" class="button">Back to home page</a>
+                <a href="http://35.154.165.127:4200/" th:href="@{http://35.154.165.127:4200/}" class="button">Back to home page</a>
             </p>
         </div>
     </body>
