@@ -2,29 +2,23 @@ package com.elephant.service.cartitem;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.elephant.constant.StatusCode;
-//import com.elephant.dao.cart.CartDaoRepository;
 import com.elephant.dao.cartitem.CartItemDaoRepository;
 import com.elephant.dao.customer.CustomerDao;
 import com.elephant.dao.customer.CustomerRepository;
 import com.elephant.dao.uploadproduct.ProductRepository;
-//import com.elephant.domain.cart.CartDomain;
 import com.elephant.domain.cartitem.CartItemDomain;
 import com.elephant.domain.customer.CustomerDomain;
 import com.elephant.domain.uploadproduct.ProductDomain;
 import com.elephant.mapper.cartitem.CartItemMapper;
 //import com.elephant.model.cart.CartModel;
 import com.elephant.model.cartitem.CartItemModel;
-import com.elephant.model.customer.CustomerModel;
-import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.customer.CustomerService;
 import com.elephant.utils.CommonUtils;
@@ -207,8 +201,8 @@ public class CartItemsServiceImpl implements CartItemsService{
 	@Override
 	public List<CartItemModel> getAllCartItem() {
 		try {
-			List<CartItemDomain> cartItemDomain = cartItemDaoRepository.findAll();
-			return cartItemMapper.entityList(cartItemDomain);
+			List<CartItemDomain> cartItemDomainList = cartItemDaoRepository.findAll();
+			return cartItemMapper.entityList(cartItemDomainList);
 		} catch (Exception ex) {
 			System.out.println("Exception getCustomers:");
 		}
@@ -219,8 +213,8 @@ public class CartItemsServiceImpl implements CartItemsService{
 	public List<CartItemModel> getCartItemsByCustomer(String email) {
 		try {
 		CustomerDomain customerDomain=customerDaoRepository.findByEmail(email);
-		List<CartItemDomain> cartItemDomain=customerDomain.getCartItemDomain();
-		return cartItemMapper.entityList(cartItemDomain) ;
+		List<CartItemDomain> cartItemDomainList=customerDomain.getCartItemDomain();
+		return cartItemMapper.entityList(cartItemDomainList) ;
 		}catch(Exception ex) {
 			System.out.println(ex);
 		}

@@ -285,4 +285,28 @@ public class OrderController {
 		return CommonUtils.getJson(res);
     	
     }
+    
+    @RequestMapping(value = "/getOrderDetails/{fromDateString}/{toDateString}",method=RequestMethod.GET, produces="application/json")
+   	public String getOrderDetails(@RequestParam(value="fromDateString")String fromDateString, @RequestParam(value="toDateString")String toDateString) throws ParseException{
+   		
+       	/*--------------String To Date---------------*/
+       	/*  Convert from String to Date*/
+//       	DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+//       	Date fromDate = format.parse(fromDateString);
+//       	Date toDate=format.parse(toDateString);
+       	/*------------------------------------------*/
+       	
+    	Response res = CommonUtils.getResponseObject("Get order details");
+    	List<Map<String, Object>> orderDetails=orderService.getOrderDetails(fromDateString,toDateString);
+		if (orderDetails.isEmpty() ) {
+			ErrorObject err = CommonUtils.getErrorResponse("No Records found", "No Records found");
+			res.setErrors(err);
+			res.setStatus(StatusCode.ERROR.name());
+		} else {
+			res.setData(orderDetails);
+		}
+		
+		return CommonUtils.getJson(res);
+   	} 
+    
 }

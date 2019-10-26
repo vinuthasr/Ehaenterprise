@@ -1,5 +1,6 @@
 package com.elephant.service.customer;
 
+import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public interface CustomerService {
 
 	public void getConfirm(String valitate, String email);
 
-	public String resetPassword(CustomerModel customerModel);
+	public String resetPassword(String email);
 
 	public void resetPass(String email, String pass);
 
@@ -55,6 +56,8 @@ public interface CustomerService {
     public Integer noOfNewCustomers();
     
     public Integer noOfActiveCustomers();
+    
+    public ByteArrayInputStream customerExportToExcel();
 
 }
   

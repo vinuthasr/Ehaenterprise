@@ -233,6 +233,23 @@ public class OrderDaoImpl implements OrderDao {
 		}
 		return pickupReqDomainList;
 	}
-	
+
+
+	@Override
+	public List<Map<String, Object>> getOrderDetails(String fromDate, String toDate) {
+		List<Map<String, Object>> orderDetailList = null;
+		try {
+			String sql = "SELECT o.order_id, o.customer_email, o.customer_mobile_number,o.customer_name, DATE_FORMAT(o.order_date,\"%d/%m/%Y\") as Order_Date,"
+					+ " o.order_number, \r\n" + 
+					"o.order_status,o.payment_mode,od.product_amount, od.product_name, od.product_sku\r\n" + 
+					"from orders o, orderdetail od where o.order_id = od.order_id and \r\n" + 
+					"o.order_date between '" +fromDate+ "' and '"+ toDate+"'";
+			orderDetailList =jdbcTemplate.queryForList(sql);
+			
+		} catch (Exception e) {
+			logger.error("Exception in orderdetaillist", e);
+		}
+		return orderDetailList;
+	}
 	
 }

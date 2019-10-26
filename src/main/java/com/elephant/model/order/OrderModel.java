@@ -1,6 +1,7 @@
 package com.elephant.model.order;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class OrderModel implements Serializable {
 	 */
 	private static final long serialVersionUID = 8419806169469663605L;
 	private long orderId;
-    private Date orderDate;
+    private String orderDate;
 	private String orderNumber;
     private double orderPrice;
 	private String customerName;
@@ -103,11 +104,12 @@ public class OrderModel implements Serializable {
 	public void setOrderId(long orderId) {
 		this.orderId = orderId;
 	}
-	public Date getOrderDate() {
+	public String getOrderDate() {
 		return orderDate;
 	}
 	public void setOrderDate(Date orderDate) {
-		this.orderDate = orderDate;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		this.orderDate = dateFormat.format(orderDate);
 	}
 	public double getOrderPrice() {
 		return orderPrice;

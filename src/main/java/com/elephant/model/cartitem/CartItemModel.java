@@ -9,11 +9,18 @@ import com.elephant.model.uploadproduct.ProductModel;
 
 public class CartItemModel {
 
-	
+	private long cartItemId;
 	private String Sku;
 	private int quantity;
-	private ProductDomain product;
+	private ProductModel product;
 	
+	
+	public long getCartItemId() {
+		return cartItemId;
+	}
+	public void setCartItemId(long cartItemId) {
+		this.cartItemId = cartItemId;
+	}
 	public String getSku() {
 		return Sku;
 	}
@@ -26,12 +33,11 @@ public class CartItemModel {
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
-	public ProductDomain getProduct() {
+	public ProductModel getProduct() {
 		return product;
 	}
-	public void setProduct(ProductDomain product) {
+	public void setProduct(ProductModel product) {
 		this.product = product;
 	}
-	
 	
 }

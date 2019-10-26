@@ -55,4 +55,6 @@ public interface OrderService {
 	public Response createPickupRequest(PickupReqModel pickupReqModel);
 	
 	public List<PickupReqModel> getPickupReqDetails(Date fromDate,Date toDate);
+	
+	public List<Map<String, Object>> getOrderDetails(String fromDate, String toDate); 
 }

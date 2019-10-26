@@ -341,14 +341,14 @@ public class OrderServiceImpl implements OrderService {
         context.setVariable("name",kkk);
         //context.setVariable("size",kkk.size());
         String html = templateEngine.process("order", context);
-        System.out.println(html);
+       // System.out.println(html);
         helper.setTo(mail.getTo());
         helper.setText(html, true);
         helper.setSubject(mail.getSubject());
         helper.setFrom(mail.getFrom());
         emailSender.send(message);
     	response.setMessage("Order Confirmation Mail sent Successfull");
-    	System.out.println("Order Confirmation Mailsent  successfull");
+    	//System.out.println("Order Confirmation Mailsent  successfull");
 		return response;
 		}catch(MailSendException exce) {
 			//response.setStatus(StatusCode.ERROR.name());
@@ -993,6 +993,22 @@ public class OrderServiceImpl implements OrderService {
 		}
 		return pickupReqList;
 	}
+
+	@Override
+	public List<Map<String, Object>> getOrderDetails(String fromDate, String toDate) {
+		// TODO Auto-generated method stub
+		List<Map<String, Object>> orderDetailList = null;
+		if(null != fromDate && null != toDate) {
+			orderDetailList = orderDao.getOrderDetails(fromDate,toDate);
+			for(Map<String, Object> orderList:orderDetailList) {
+				System.out.println(orderList.get("order_date"));
+			}
+		} else {
+			throw new RuntimeException("Enter from date and to date");
+		}
+		return orderDetailList;
+	}
+	
 	
 	
 }

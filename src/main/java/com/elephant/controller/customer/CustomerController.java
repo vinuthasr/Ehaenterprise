@@ -1,5 +1,6 @@
  package com.elephant.controller.customer;
 
+import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -202,13 +205,13 @@ public class CustomerController {
 		return CommonUtils.getJson(res);
 	}
 	
-	@RequestMapping(value = "/customer/resetPassword", method = RequestMethod.PUT, produces = "application/json")
-	public @ResponseBody String resetPassword(@RequestBody CustomerModel customerModel, HttpServletRequest request,
+	@RequestMapping(value = "/customer/resetPassword/{email}", method = RequestMethod.PUT, produces = "application/json")
+	public @ResponseBody String resetPassword(@RequestParam(value="email")String email, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
 		logger.info("resetPassword: Received request URL: " + request.getRequestURL().toString()
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
-		logger.info("resetPassword :Received request: " + CommonUtils.getJson(customerModel));
-		String status = customerService.resetPassword(customerModel);
+		logger.info("resetPassword :Received request: " + CommonUtils.getJson(email));
+		String status = customerService.resetPassword(email);
 		Response res = CommonUtils.getResponseObject("Reset password");
 		if (status.equalsIgnoreCase(StatusCode.ERROR.name())) {
 			ErrorObject err = CommonUtils.getErrorResponse("Reset password failed", "Reset password failed");
@@ -245,6 +248,7 @@ public class CustomerController {
 				        loginMap.put("jwt", new JwtResponse(jwt).getAccessToken());
 				        loginMap.put("userName", customerDomain.getCustomerName());
 				        loginMap.put("email", customerDomain.getEmail());
+				        loginMap.put("role", customerDomain.getRoles().get(0).getName());
 			        }
 		            else 
 		            {
@@ -289,6 +293,20 @@ public class CustomerController {
 			logger.info("getCustomerByEmail: Sent response");
 			return CommonUtils.getJson(res);
 		}
+	 
+	//Export to excel for customer list
+	@RequestMapping(value = "/excel/Customer.xlsx", method = RequestMethod.GET)
+	public ResponseEntity<InputStreamResource> customerExportToExcel() {
+		ByteArrayInputStream   in = null;
+		try {
+			in = customerService.customerExportToExcel();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.ok()
+	        .header("Content-disposition", "attachment; filename=Customer.xlsx") // add headers if any
+	        .body(new InputStreamResource(in));
+	}
 	
 }
 

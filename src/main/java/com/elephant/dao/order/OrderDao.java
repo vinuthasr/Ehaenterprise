@@ -27,4 +27,5 @@ public interface OrderDao {
 	public String getWayBillNoByDetId(String orderDetailId);
 	public Response createPickupRequest(PickupRequestDomain pickupRequestDomain);
 	public List<PickupRequestDomain> getPickupReqDetails(Date fromDate,Date toDate);
+	public List<Map<String, Object>> getOrderDetails(String fromDate, String toDate);
 }

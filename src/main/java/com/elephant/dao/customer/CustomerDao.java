@@ -28,7 +28,7 @@ public interface CustomerDao {
 
 	public CustomerDomain auteneticate(CustomerDomain customer);
 
-	public CustomerDomain isUserExist(CustomerDomain customerDomain);
+	public CustomerDomain isUserExist(String email);
 
 	public void resetpassword(String email, String password) ;
 

@@ -207,10 +207,10 @@ private static final Logger logger = LoggerFactory.getLogger(CustomerDaoImpl.cla
 
 
 	@Override
-	public CustomerDomain isUserExist(CustomerDomain customerDomain) {
+	public CustomerDomain isUserExist(String email) {
 			try {
 				String hql = "FROM CustomerDomain where email=?1 ";
-				return (CustomerDomain) entityManager.createQuery(hql).setParameter(1, customerDomain.getEmail()).getSingleResult();
+				return (CustomerDomain) entityManager.createQuery(hql).setParameter(1, email).getSingleResult();
 			} catch (Exception e) {
 				logger.error("Exception in isUserExist", e);
 			}

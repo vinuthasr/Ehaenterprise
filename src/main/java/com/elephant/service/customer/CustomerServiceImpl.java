@@ -1,5 +1,7 @@
 package com.elephant.service.customer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,6 +12,13 @@ import javax.naming.AuthenticationException;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -346,14 +355,12 @@ public class CustomerServiceImpl implements CustomerService {
 		
 	
 	@Override
-	public String resetPassword(CustomerModel customerModel) {
+	public String resetPassword(String email) {
 		try 
 		{
 			CustomerDomain customer = new CustomerDomain();
-			BeanUtils.copyProperties(customerModel, customer);
-			customer = customerDao.isUserExist(customer);
+			customer = customerDao.isUserExist(email);
 			if (customer != null) {
-				String email=customer.getEmail();
 				String pass=CommonUtils.generateRandomId();
 				customerDao.resetpassword(email,pass);
 				
@@ -493,23 +500,83 @@ public class CustomerServiceImpl implements CustomerService {
 		return customerModel;
 	}
 
-
-
-
 	@Override
 	public Integer noOfNewCustomers() {
 		// TODO Auto-generated method stub
 		return customerDao.getNoOfNewCustomers();
 	}
 
-
-
-
 	@Override
 	public Integer noOfActiveCustomers() {
 		// TODO Auto-generated method stub
 		return customerDao.getNoOfActiveCustomers();
 	}
-	
+
+	@Override
+	public ByteArrayInputStream customerExportToExcel() {
+		List<CustomerModel> customerModelList = null;
+		String[] columnshead = {"Customer Name","Email","Gender","Mobile Number","Active/Inactive"};
+		try {
+			customerModelList = getcustomerByrollId(2);
+			
+			//Blank workbook
+	        XSSFWorkbook workbook = new XSSFWorkbook();
+	        
+	        ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        
+	        //Create a blank sheet
+	        XSSFSheet sheet = workbook.createSheet("Customer Data");
+	        
+	        Font headerFont = workbook.createFont();
+	        headerFont.setBold(true);
+	        headerFont.setFontHeightInPoints((short) 11);
+	        headerFont.setColor(IndexedColors.BLACK.getIndex());
+	        headerFont.setFontName("Arial");
+	        
+	        CellStyle headerCellStyle = workbook.createCellStyle();
+	        headerCellStyle.setFont(headerFont);
+	        
+	        Row headerRow = sheet.createRow(0);
+	       
+	        for(int i = 0; i < columnshead.length; i++) {
+	            Cell cell = headerRow.createCell(i);
+	            cell.setCellValue(columnshead[i]);
+	            cell.setCellStyle(headerCellStyle);
+	        }
+	        
+	        for(int i = 0; i < columnshead.length; i++) {
+	            sheet.autoSizeColumn(i);
+	        }
+	        
+	        Row row = null;
+	        Cell rowCell = null;
+
+	        for(int count=0;count<customerModelList.size();count++) {
+	        	row = sheet.createRow(count+1);
+	        	for(int j=0;j<columnshead.length;j++) {
+	        		rowCell = row.createCell(j);
+	        		switch(j+1) {
+	        			case 1: rowCell.setCellValue(customerModelList.get(count).getCustomerName());
+	        					break;
+	        			case 2: rowCell.setCellValue(customerModelList.get(count).getEmail());
+								break;
+	        			case 3: rowCell.setCellValue(customerModelList.get(count).getGender());
+								break;
+	        			case 4: rowCell.setCellValue(customerModelList.get(count).getMobileNumber());
+								break;
+	        			case 5: rowCell.setCellValue(customerModelList.get(count).isActive());
+								break;
+	        		}
+	        	}
+	        }
+	        
+	        workbook.write(out);
+	        workbook.close();
+	        return new ByteArrayInputStream(out.toByteArray());
+		}catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
+	}
 	
 }

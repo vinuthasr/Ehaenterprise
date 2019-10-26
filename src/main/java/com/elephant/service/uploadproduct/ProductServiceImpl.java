@@ -17,7 +17,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,8 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -339,6 +336,9 @@ public class ProductServiceImpl implements ProductService{
 							subImageList.add(subImageDomain);
 					}
 				}
+				
+				double cp=(uploadProduct.getPrice()-((uploadProduct.getDiscount()*uploadProduct.getPrice())/100));
+				uploadProduct.setCp(cp);
 				uploadproductdao.save(uploadProduct);
 				subImageDomain = null;
 				for(SubImageDomain subImage:subImageList) {
@@ -1038,7 +1038,7 @@ try {
 		}
 	}
 
-	@SuppressWarnings("null")
+
 	@Override
 	public ByteArrayInputStream prdExportToExcel(String categoryId) throws Exception {
 		List<ProductModel> productModelList = null;
@@ -1046,12 +1046,11 @@ try {
 		try {
 			if(null != categoryId) {
 				productModelList = getProductBycategoryId(categoryId);
-				if(productModelList.size() > 0) {
-					//Blank workbook
+					
+				//Blank workbook
 			        XSSFWorkbook workbook = new XSSFWorkbook();
 			        
 			        ByteArrayOutputStream out = new ByteArrayOutputStream();
-			        CreationHelper createHelper = workbook.getCreationHelper();
 			        
 			        //Create a blank sheet
 			        XSSFSheet sheet = workbook.createSheet("Product Data");
@@ -1131,9 +1130,10 @@ try {
 			        }
 			        
 			        workbook.write(out);
+			        workbook.close();
 			        return new ByteArrayInputStream(out.toByteArray());
 			        		
-				}
+				
 			}
 		} catch (Exception e) {
 			System.out.println(e);
