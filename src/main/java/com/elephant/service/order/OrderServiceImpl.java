@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,6 @@ import com.elephant.dao.order.OrderDaoRepository;
 import com.elephant.dao.orderdetail.OrderDetailRepository;
 import com.elephant.dao.uploadproduct.ProductRepository;
 import com.elephant.domain.address.AddressDomain;
-//import com.elephant.domain.cart.CartDomain;
 import com.elephant.domain.cartitem.CartItemDomain;
 import com.elephant.domain.courier.CourOrderDetDomain;
 import com.elephant.domain.courier.PickupRequestDomain;
@@ -173,173 +173,177 @@ public class OrderServiceImpl implements OrderService {
 		Response response=CommonUtils.getResponseObject("Order creation");
 		
 		try {
-		//OrderModel orderModel=new OrderModel();
-		OrderDomain orderDomain =new OrderDomain();
-		//BeanUtils.copyProperties(orderModel, orderDomain);
-		/*---------------Get Customer by EmailId--------------------*/
-		CustomerDomain customerDomain =customerRepository.findByEmail(paymentModel.getEmail());
-		/*---------------Get Cart by Customer----------------------*/
-		//CartDomain cartDomain=customerDomain.getCartDomain();
-		/*---------------Get Address by Customer-------------------*/
-		AddressDomain addressDomain=addressDaoRepository.findByAddressId(paymentModel.getAddressId());
-		
-		
-		if((customerDomain ==null) ||  ((customerDomain.getCartItemDomain())==null) || (addressDomain ==null) ) {
-			response.setStatus(StatusCode.ERROR.name());
-			response.setMessage4("customer / cart/ cart item /address should not be null");
-			return response;
-			//throw new IOException("customer / cart/ cart item /address should not be null");
+			//OrderModel orderModel=new OrderModel();
+			OrderDomain orderDomain =new OrderDomain();
+			//BeanUtils.copyProperties(orderModel, orderDomain);
+			/*---------------Get Customer by EmailId--------------------*/
+			CustomerDomain customerDomain =customerRepository.findByEmail(paymentModel.getEmail());
+			/*---------------Get Cart by Customer----------------------*/
+			//CartDomain cartDomain=customerDomain.getCartDomain();
+			/*---------------Get Address by Customer-------------------*/
+			AddressDomain addressDomain=addressDaoRepository.findByAddressId(paymentModel.getAddressId());
 			
-		}
-		
-		
-		
-		/*------------------------Checking weather paymentMode is COD/PayPal---------------------------------*/
-
-		if(paymentModel.getPaymentMode().equals(Constants.CASH_ON_DELIVERY))
-		{
-		orderDomain.setPaymentMode(paymentModel.getPaymentMode());
-		orderDomain.setTransactionId(CommonUtils.generateRandomId());
-		
-		
-		}
-		else if(paymentModel.getPaymentMode().equals(Constants.PAYPAL) || paymentModel.getPaymentMode().equals(Constants.PAYUMONEY)) {
-			orderDomain.setPaymentMode(paymentModel.getPaymentMode());
-			orderDomain.setTransactionId(paymentModel.getTransactionId());
-		}
-		else 
-		{
-			throw new IOException("Spelling of COD/PayPal is wrong  Or Payment Mode is Wrong");
-		}
-		/*---------------------------------------------------------------------------------------------------*/
-		orderDomain.setAddressDomain(addressDomain);
-		orderDomain.setCustomerDomain(customerDomain);
-		orderDomain.setOrderNumber(CommonUtils.generateRandomId());
-		
-		List<CartItemDomain> listCartItemDomain=customerDomain.getCartItemDomain();
-		double grandtotal=0;
-		for(CartItemDomain cartItemDomain:listCartItemDomain) {
-			ProductDomain productDomain=cartItemDomain.getProduct();
-			grandtotal+= (productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity();
-		}
-		orderDomain.setOrderPrice(grandtotal);
-		orderDomain.setOrderStatus(Constants.ORDER_CONFORMATION);
-		orderDomain.setOrderDate(new Date());
-		orderDomain.setCustomerName(customerDomain.getCustomerName());
-		orderDomain.setCustomerEmail(customerDomain.getEmail());
-		orderDomain.setCustomerMobileNumber(customerDomain.getMobileNumber());
-
-		OrderDomain orderDomain1=orderDaoRepository.save(orderDomain);
-		response.setMessage1("Order Creation is Successfull");
-		response.setMessage2("Order id: " +orderDomain1.getOrderId());
-		
-		/*-------------------------Clear Cart amount after order Confirmation-------------------------------*/
-		//cartDomain.setGrandtotal(0);
-		//cartDaoRepository.save(cartDomain);
-		/*--------------------------------------------------------------------------------------------------*/
-		
-		/* ------------------------------Invoice Creating to Customer---------------------------------------
-		invoiceService.generateInvoice(orderDomain);
-		response.setMessage2("Invoice Creation is Successfull");
-		System.out.println("Invoice is Generated");
-		--------------------------------------------------------------------------------------------------*/
-		
-		/* -----------------------------dump cartItem to Order detail---------------------------------------*/ 
-		/*------------------------------------------&&------------------------------------------------------*/
-		/*----------------------------Product In stock should decrease after order is conformed-------------*/
-		ProductDomain productDomain = null;
-		OrderDetailDomain orderDetailDomain = null;
-		List<CartItemDomain> cartItemList = customerDomain.getCartItemDomain();
-		Shipments shipmentsList[] = new Shipments[cartItemList.size()];
-		String pattern = "yyyy-MM-dd HH:mm:ss";
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-		int count=0;
-		for(CartItemDomain cartItemDomain: cartItemList) {
-		
-			productDomain=cartItemDomain.getProduct();
-			orderDetailDomain=new OrderDetailDomain();
-			shipmentsList[count] = new Shipments();
 			
-			orderDetailDomain.setOrderdetailId(CommonUtils.generateRandomId());
-			orderDetailDomain.setProductSku(productDomain.getSku());
-			orderDetailDomain.setProductImagePath(productDomain.getMainImageUrl());
-			orderDetailDomain.setProductName(productDomain.getCollectionDesc());
-			orderDetailDomain.setProductQuantity(cartItemDomain.getQuantity());
-			orderDetailDomain.setProductAmount((productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity());
-			orderDetailDomain.setOrderDomain(orderDomain);
-			
-			//Shipments - start - Courier third party api
-			
-			shipmentsList[count].setReturn_name("EHAENTERPRISES SURFACE");
-			shipmentsList[count].setReturn_pin("560079");
-			shipmentsList[count].setReturn_city("Bangalore");
-			shipmentsList[count].setReturn_phone("8904648040");
-			shipmentsList[count].setReturn_add("No 23, Magadi Main Rd, Govindaraja Nagar Ward, Pete Channappa Industrial Estate, Kamakshipalya");
-			shipmentsList[count].setReturn_state("Karnataka");
-			shipmentsList[count].setReturn_country("India");
-			shipmentsList[count].setOrder(orderDetailDomain.getOrderdetailId());
-			shipmentsList[count].setPhone(String.valueOf(orderDomain.getCustomerMobileNumber()));
-			shipmentsList[count].setProducts_desc(orderDetailDomain.getProductName());
-			if(orderDomain.getPaymentMode().equalsIgnoreCase(Constants.CASH_ON_DELIVERY)) {
-				shipmentsList[count].setCod_amount(String.valueOf(orderDomain.getOrderPrice()));
-			} else {
-				shipmentsList[count].setCod_amount("0.0");
-			}
-			shipmentsList[count].setName(orderDomain.getCustomerName());
-			shipmentsList[count].setCountry(addressDomain.getCountry());
-			shipmentsList[count].setOrder_date(simpleDateFormat.format(new Date()));
-			shipmentsList[count].setTotal_amount(String.valueOf(orderDomain.getOrderPrice()));
-			shipmentsList[count].setAdd(addressDomain.getAddressline1()+" "+addressDomain.getAddressline2()+" " +addressDomain.getAddressline3());
-			shipmentsList[count].setPin(addressDomain.getPincode());
-			shipmentsList[count].setQuantity(String.valueOf(orderDetailDomain.getProductQuantity()));
-			
-			if(orderDomain.getPaymentMode().equalsIgnoreCase(Constants.CASH_ON_DELIVERY)) { 
-				shipmentsList[count].setPayment_mode("COD");
-			} else {
-				shipmentsList[count].setPayment_mode("Prepaid");  // Payment mode = Pickup  -> if it is created for reverse flow -> for return
-			}
-			shipmentsList[count].setState(addressDomain.getState());
-			shipmentsList[count].setCity(addressDomain.getCity());
-			shipmentsList[count].setClient("EHAENTERPRISES SURFACE");
-			
-			//Shipments - End
-			
-			//ProductDomain productDomain=productRepository.findByProductId(orderDetailDomain.getProductId());
-			if(productDomain.getInStock() < orderDetailDomain.getProductQuantity()) {
-				response.setStatus(StatusCode.ERROR.toString());
-				response.setMessage3(productDomain.getSku() +" stock is not available");
+			if((customerDomain ==null) ||  ((customerDomain.getCartItemDomain())==null) || (addressDomain ==null) ) {
+				response.setStatus(StatusCode.ERROR.name());
+				response.setMessage4("customer / cart/ cart item /address should not be null");
 				return response;
-			} else {
-				orderDetailRepository.save(orderDetailDomain);
-				productDomain.setInStock(productDomain.getInStock()-orderDetailDomain.getProductQuantity());
-				if(productDomain.getInStock() == 0) {
-					productDomain.setActive(false);
-				}
-				productRepository.saveAndFlush(productDomain);
-				cartItemDao.deleteCartItem(cartItemDomain.getCartItemId());
+				//throw new IOException("customer / cart/ cart item /address should not be null");
+				
 			}
 			
-			count++;
-		}
-		response.setMessage3("Cart Items are dumped into Order details");
+			
+			
+			/*------------------------Checking weather paymentMode is COD/PayPal---------------------------------*/
+
+			if(paymentModel.getPaymentMode().equals(Constants.CASH_ON_DELIVERY))
+			{
+				orderDomain.setPaymentMode(paymentModel.getPaymentMode());
+				orderDomain.setTransactionId(CommonUtils.generateRandomId());
+			}
+			else if(paymentModel.getPaymentMode().equals(Constants.PAYPAL) || paymentModel.getPaymentMode().equals(Constants.PAYUMONEY)) {
+				orderDomain.setPaymentMode(paymentModel.getPaymentMode());
+				orderDomain.setTransactionId(paymentModel.getTransactionId());
+			}
+			else 
+			{
+				throw new IOException("Spelling of COD/PayPal is wrong  Or Payment Mode is Wrong");
+			}
+			/*---------------------------------------------------------------------------------------------------*/
+			orderDomain.setAddressDomain(addressDomain);
+			orderDomain.setCustomerDomain(customerDomain);
+			orderDomain.setOrderNumber(CommonUtils.generateRandomId());
+			
+			List<CartItemDomain> listCartItemDomain=customerDomain.getCartItemDomain();
+			double grandtotal=0;
+			for(CartItemDomain cartItemDomain:listCartItemDomain) {
+				ProductDomain productDomain=cartItemDomain.getProduct();
+				grandtotal+= (productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity();
+			}
+			orderDomain.setOrderPrice(grandtotal);
+			orderDomain.setOrderStatus(Constants.ORDER_CONFORMATION);
+			orderDomain.setOrderDate(new Date());
+			orderDomain.setCustomerName(customerDomain.getCustomerName());
+			orderDomain.setCustomerEmail(customerDomain.getEmail());
+			orderDomain.setCustomerMobileNumber(customerDomain.getMobileNumber());
+
+			orderDaoRepository.save(orderDomain);
+			response.setMessage1("Order Creation is Successfull");
+			response.setMessage2("Order id: " +orderDomain.getOrderNumber());
+			
+			/*-------------------------Clear Cart amount after order Confirmation-------------------------------*/
+			//cartDomain.setGrandtotal(0);
+			//cartDaoRepository.save(cartDomain);
+			/*--------------------------------------------------------------------------------------------------*/
+			
+			/* ------------------------------Invoice Creating to Customer---------------------------------------
+			invoiceService.generateInvoice(orderDomain);
+			response.setMessage2("Invoice Creation is Successfull");
+			System.out.println("Invoice is Generated");
+			--------------------------------------------------------------------------------------------------*/
+			
+			/* -----------------------------dump cartItem to Order detail---------------------------------------*/ 
+			/*------------------------------------------&&------------------------------------------------------*/
+			/*----------------------------Product In stock should decrease after order is conformed-------------*/
+			ProductDomain productDomain = null;
+			OrderDetailDomain orderDetailDomain = null;
+			List<OrderDetailDomain> orderDetailList = new ArrayList<OrderDetailDomain>();
+			List<CartItemDomain> cartItemList = customerDomain.getCartItemDomain();
+			Shipments shipmentsList[] = new Shipments[cartItemList.size()];
+			String pattern = "yyyy-MM-dd HH:mm:ss";
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+			int count=0;
+			for(CartItemDomain cartItemDomain: cartItemList) {
+			
+				productDomain=cartItemDomain.getProduct();
+				orderDetailDomain=new OrderDetailDomain();
+				shipmentsList[count] = new Shipments();
+				
+				orderDetailDomain.setOrderdetailId(CommonUtils.generateRandomId());
+				orderDetailDomain.setProductSku(productDomain.getSku());
+				orderDetailDomain.setProductImagePath(productDomain.getMainImageUrl());
+				orderDetailDomain.setProductName(productDomain.getCollectionDesc());
+				orderDetailDomain.setProductQuantity(cartItemDomain.getQuantity());
+				orderDetailDomain.setProductAmount((productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity());
+				orderDetailDomain.setOrderDomain(orderDomain);
+				
+				//Shipments - start - Courier third party api
+				
+				shipmentsList[count].setReturn_name("EHAENTERPRISES SURFACE");
+				shipmentsList[count].setReturn_pin("560079");
+				shipmentsList[count].setReturn_city("Bangalore");
+				shipmentsList[count].setReturn_phone("8904648040");
+				shipmentsList[count].setReturn_add("No 23, Magadi Main Rd, Govindaraja Nagar Ward, Pete Channappa Industrial Estate, Kamakshipalya");
+				shipmentsList[count].setReturn_state("Karnataka");
+				shipmentsList[count].setReturn_country("India");
+				shipmentsList[count].setOrder(orderDetailDomain.getOrderdetailId());
+				shipmentsList[count].setPhone(String.valueOf(orderDomain.getCustomerMobileNumber()));
+				shipmentsList[count].setProducts_desc(orderDetailDomain.getProductName());
+				if(orderDomain.getPaymentMode().equalsIgnoreCase(Constants.CASH_ON_DELIVERY)) {
+					shipmentsList[count].setCod_amount(String.valueOf(orderDomain.getOrderPrice()));
+				} else {
+					shipmentsList[count].setCod_amount("0.0");
+				}
+				shipmentsList[count].setName(orderDomain.getCustomerName());
+				shipmentsList[count].setCountry(addressDomain.getCountry());
+				shipmentsList[count].setOrder_date(simpleDateFormat.format(new Date()));
+				shipmentsList[count].setTotal_amount(String.valueOf(orderDomain.getOrderPrice()));
+				shipmentsList[count].setAdd(addressDomain.getAddressline1()+" "+addressDomain.getAddressline2()+" " +addressDomain.getAddressline3());
+				shipmentsList[count].setPin(addressDomain.getPincode());
+				shipmentsList[count].setQuantity(String.valueOf(orderDetailDomain.getProductQuantity()));
+				
+				if(orderDomain.getPaymentMode().equalsIgnoreCase(Constants.CASH_ON_DELIVERY)) { 
+					shipmentsList[count].setPayment_mode("COD");
+				} else {
+					shipmentsList[count].setPayment_mode("Prepaid");  // Payment mode = Pickup  -> if it is created for reverse flow -> for return
+				}
+				shipmentsList[count].setState(addressDomain.getState());
+				shipmentsList[count].setCity(addressDomain.getCity());
+				shipmentsList[count].setClient("EHAENTERPRISES SURFACE");
+				
+				//Shipments - End
+				
+				//ProductDomain productDomain=productRepository.findByProductId(orderDetailDomain.getProductId());
+				if(productDomain.getInStock() < orderDetailDomain.getProductQuantity()) {
+					response.setStatus(StatusCode.ERROR.toString());
+					response.setMessage3(productDomain.getSku() +" stock is not available");
+					return response;
+				} else {
+					orderDetailRepository.save(orderDetailDomain);
+					productDomain.setInStock(productDomain.getInStock()-orderDetailDomain.getProductQuantity());
+					if(productDomain.getInStock() == 0) {
+						productDomain.setActive(false);
+					}
+					productRepository.saveAndFlush(productDomain);
+					cartItemDao.deleteCartItem(cartItemDomain.getCartItemId());
+					orderDetailList.add(orderDetailDomain);
+				}
+				
+				count++;
+			}
+			response.setMessage3("Cart Items are dumped into Order details");
 		
 		/*-------------------------------------------------------------------------------------------------*/
-		response = courierCreateOrderAPI(shipmentsList,orderDomain.getOrderNumber(),orderDomain.getCustomerEmail());  //Courier Third party api
+		response = courierCreateOrderAPI(shipmentsList,orderDomain.getOrderNumber(),orderDomain.getCustomerEmail());  //Courier Third party api 
 		
-		 Mail mail = new Mail();
-         mail.setFrom(Constants.FROM_ADDRESS);
-         mail.setTo(orderDomain.getCustomerEmail());
-         mail.setSubject("Sending Email with Thymeleaf HTML Template Example");
-   
-        List<OrderDetailDomain> kkk=orderDaoRepository.findByOrderId(orderDomain1.getOrderId()).getOrderDetailDomain();
-      
+		Mail mail = new Mail();
+		mail.setFrom(Constants.FROM_ADDRESS);
+		mail.setTo(orderDomain.getCustomerEmail());
+		mail.setSubject("Eha order confirmation");
+        long orderId = orderDomain.getOrderId();
+        System.out.println("order id "+orderId);
+     
+        AddressDomain address = orderDomain.getAddressDomain();
+        
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
         Context context = new Context();
-        context.setVariable("name",kkk);
-        //context.setVariable("size",kkk.size());
+        context.setVariable("name",orderDetailList);
+        context.setVariable("customerName", orderDomain.getCustomerName());
+        context.setVariable("address", address);
+        context.setVariable("total",orderDomain.getOrderPrice());
         String html = templateEngine.process("order", context);
        // System.out.println(html);
         helper.setTo(mail.getTo());

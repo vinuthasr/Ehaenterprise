@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.elephant.constant.Constants;
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.customer.CustomerRepository;
-import com.elephant.dao.customer.CustomerRepository;
 import com.elephant.model.cartitem.CartItemModel;
-import com.elephant.model.customer.CustomerModel;
 import com.elephant.response.ErrorObject;
 import com.elephant.response.Response;
 import com.elephant.service.cartitem.CartItemsService;
@@ -98,4 +95,11 @@ public class CartItemController {
 		 return CommonUtils.getJson(res);
 		 
 	 }
+	 
+	@RequestMapping(value="/addToCart" , method = RequestMethod.POST,produces="application/json")
+	public Response addToCart(@RequestBody CartItemModel cartItemModel,  Principal currentUser) {
+		return cartItemsService.addItemToCart(cartItemModel,currentUser);
+		
+	}
+		
 }

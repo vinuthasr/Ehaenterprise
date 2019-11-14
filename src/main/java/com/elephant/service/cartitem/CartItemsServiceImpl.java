@@ -66,89 +66,22 @@ public class CartItemsServiceImpl implements CartItemsService{
       Response response=CommonUtils.getResponseObject("Save Cart Item");
 		
 		try {
-		List<CartItemDomain> listCartItemDomain=customerDaoRepository.findByEmail(cu.getName()).getCartItemDomain();		
-		for(CartItemModel cartItemModel:cartItemModelList) {
-    		
-			    		//ProductDomain productDomain=productRepository.findBySku(cartItemDummyModel.getSku());
-			    		if(listCartItemDomain.isEmpty()) {
-			    			
-			    			if(cartItemModel.getQuantity()<=productRepository.findBySku(cartItemModel.getSku()).getInStock()) {
-			    				
-			    				CartItemDomain cartItemDomain=new CartItemDomain();
-			    				cartItemDomain.setQuantity(cartItemModel.getQuantity());
-			    				cartItemDomain.setProduct(productRepository.findBySku(cartItemModel.getSku()));
-			    				cartItemDomain.setCustomerDomain(customerDaoRepository.findByEmail(cu.getName()));
-			    				cartItemsDaoRepository.save(cartItemDomain);
-			    				listCartItemDomain.add(cartItemDomain);
-			    				//response.getObject().add("save item is succefull for: "+cartItemDummyModel.getSku());			    				
-			    				logger.info("save item is success: for "+cartItemModel.getSku());
-			    			}
-			    			
-			    			else {
-			    				response.setStatus(StatusCode.ERROR.name());
-			    		        response.setMessage("quantity is more:");
-			    			}
-			    			
-			    		}
-			    		    		
-			    		//<-----------------If the Cart Items contains same products-------------------------------------------------------------------------->
-			    		//int count=0;
-			    		boolean count=false; 
-			            for(CartItemDomain cartItemDomainFromUser:listCartItemDomain){
-			    		
-						    		if(cartItemDomainFromUser.getProduct().getSku().equals(cartItemModel.getSku())    ) {
-						    			count=true;
-						    			if(((cartItemModel.getQuantity() + cartItemDomainFromUser.getQuantity())  <= cartItemDomainFromUser.getProduct().getInStock() )) {
-						    				if(cartItemModel.getQuantity() <= cartItemDomainFromUser.getProduct().getInStock()) {
-						    					cartItemDomainFromUser.setQuantity(cartItemModel.getQuantity());
-						    					cartItemDaoRepository.save(cartItemDomainFromUser);
-						    					//response.getObject().add("quantity changed successfully for:"+cartItemDummyModel.getSku());
-						    					logger.info("quantity changed successfully for:"+cartItemModel.getSku());      					
-						    					continue;
-						    				}else {
-						    					//response.getObject().add("quantity is more for:"+cartItemDummyModel.getSku());
-						    					logger.info("quantity is more for:"+cartItemModel.getSku());
-						    					response.setStatus(StatusCode.ERROR.name());
-							    		        response.setMessage("quantity is more for: " +cartItemModel.getSku());
-						    				    					
-						    				}
-						    			}
-			    
-			               }
-			    		
-			            }
-    		
-                    //<--------------------------------------------------------------------------------------------------------------------------------->//
-					////////////////////////////////////////////////////////////////////////////////////////////////////
-			            
-			        if(count==false) {
-					CartItemDomain cartItemDomain =new CartItemDomain();
-					
-					ProductDomain productDomain=productRepository.findBySku(cartItemModel.getSku());
-					CustomerDomain userDomain=customerDaoRepository.findByEmail(cu.getName());
-					int productQuantity=cartItemModel.getQuantity();
-					
-					if(productDomain==null | userDomain==null |productQuantity==0 ) {						
-					//response.getObject().add("user / product / quantity (is/or/should not be) null");
-					//response.setStatus(StatusCode.ERROR.name());
-					//response.setMessage1("user / product / quantity (is/or/should not be) null");
-					//return response;
-					}
-					
-					cartItemDomain.setQuantity(cartItemModel.getQuantity());
-					cartItemDomain.setProduct(productRepository.findBySku(cartItemModel.getSku()));
-					cartItemDomain.setCustomerDomain(customerDaoRepository.findByEmail(cu.getName()));
-					cartItemDaoRepository.save(cartItemDomain);
-					listCartItemDomain.add(cartItemDomain);
-					//response.getObject().add("save item is succefull for: "+cartItemDummyModel.getSku());			    				
-    				logger.info("save item is success: for "+cartItemModel.getSku());			
-    				response.setStatus(StatusCode.SUCCESS.name());
-    		        response.setMessage("save item is success: for "+cartItemModel.getSku());
-			        }			        
-			        
-    	}///end of cartdummymodel for loop 
-		//return response;
-
+				CartItemDomain cartItemDomain = null;
+				for(CartItemModel cartItemModel:cartItemModelList) {
+					cartItemDomain=cartItemsDaoRepository.getOne(cartItemModel.getCartItemId());
+    				if(cartItemModel.getQuantity() <= cartItemDomain.getProduct().getInStock()) {
+	    				cartItemDomain.setQuantity(cartItemModel.getQuantity());
+	    				cartItemsDaoRepository.save(cartItemDomain);
+	    				
+	    				response.setStatus(StatusCode.SUCCESS.name());
+	    				response.setMessage("Quantity updated successfully");
+    				}else {
+    					logger.info("quantity is more for:"+cartItemModel.getSku());
+    					response.setStatus(StatusCode.ERROR.name());
+	    		        response.setMessage("quantity is more for: " +cartItemModel.getSku());
+    				    					
+    				}
+				}
 		}catch(Exception ex) {
 			System.out.println("Exception in save cartItem"+ex);
 		}
@@ -219,6 +152,54 @@ public class CartItemsServiceImpl implements CartItemsService{
 			System.out.println(ex);
 		}
 		return null;
+	}
+
+	@Override
+	public Response addItemToCart(CartItemModel cartItemModel, Principal currentUser) {
+		Response response = CommonUtils.getResponseObject("Add Item to Cart");
+		boolean isExist = false;
+		try {
+			if(cartItemModel != null) {
+				ProductDomain productDomain=productRepository.findBySku(cartItemModel.getSku());
+				CustomerDomain customerDomain = customerDaoRepository.findByEmail(currentUser.getName());
+				if(productDomain != null) {
+					List<CartItemDomain> listCartItemDomain=customerDomain.getCartItemDomain();
+					for(CartItemDomain cartItemDomain:listCartItemDomain) {
+						if(cartItemDomain.getProduct().getSku().equalsIgnoreCase(productDomain.getSku())) {
+							response.setStatus(StatusCode.ERROR.name());
+		    				response.setMessage("Product "+productDomain.getSku()+" is already added in the cart ");
+		    				isExist = true;
+		    				break;
+						}
+					}
+					
+					if(!isExist) {
+						CartItemDomain cartItemDomain = null;
+						if(productDomain.getInStock() > 1) {
+							cartItemDomain=new CartItemDomain();
+							cartItemDomain.setQuantity(cartItemModel.getQuantity());
+		    				cartItemDomain.setProduct(productDomain);
+		    				cartItemDomain.setCustomerDomain(customerDomain);
+		    				cartItemsDaoRepository.save(cartItemDomain);
+		    				
+		    				response.setStatus(StatusCode.SUCCESS.name());
+		    				response.setMessage("Cart Item is success");
+						} else {
+							response.setStatus(StatusCode.ERROR.name());
+		    				response.setMessage("Quantity is more for product "+productDomain.getSku());
+						}
+					}
+				} else  {
+					response.setStatus(StatusCode.ERROR.name());
+    				response.setMessage("Product does not exist");
+				}
+					
+				
+			}	
+		}catch(Exception ex) {
+			throw new RuntimeException("Exception "+ex);
+		}
+		return response;
 	}
 	
 }

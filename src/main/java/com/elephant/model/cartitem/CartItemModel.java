@@ -2,8 +2,6 @@ package com.elephant.model.cartitem;
 
 
 
-import com.elephant.domain.uploadproduct.ProductDomain;
-import com.elephant.model.customer.CustomerModel;
 //import com.elephant.model.cart.CartModel;
 import com.elephant.model.uploadproduct.ProductModel;
 

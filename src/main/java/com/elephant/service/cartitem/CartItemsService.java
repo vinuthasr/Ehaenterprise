@@ -5,7 +5,6 @@ import java.util.List;
 
 //import com.elephant.domain.cart.CartDomain;
 import com.elephant.model.cartitem.CartItemModel;
-import com.elephant.model.customer.CustomerModel;
 import com.elephant.response.Response;
 
 public interface CartItemsService {
@@ -21,5 +20,7 @@ public interface CartItemsService {
 	public List<CartItemModel> getCartItemsByCustomer(String email);
 
 	//CartDomain getShoppingCartById(long CartId);
+	
+	public Response addItemToCart(CartItemModel cartItemModel, Principal currentUser);
 
 }
