@@ -1,6 +1,9 @@
 package com.elephant.model.orderdetail;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import javax.persistence.Column;
 
 import com.elephant.model.order.OrderModel;
 
@@ -18,6 +21,8 @@ public class OrderDetailModel implements Serializable {
 	private String productQuantity;
 	private double productAmount;
 	private OrderModel orderModel;
+	private String status;
+	private Date statusDate;
 	
 	public String getProductSku() {
 		return productSku;
@@ -69,6 +74,17 @@ public class OrderDetailModel implements Serializable {
 	public void setProductAmount(double productAmount) {
 		this.productAmount = productAmount;
 	}
-	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public Date getStatusDate() {
+		return statusDate;
+	}
+	public void setStatusDate(Date statusDate) {
+		this.statusDate = statusDate;
+	}
 	
 }

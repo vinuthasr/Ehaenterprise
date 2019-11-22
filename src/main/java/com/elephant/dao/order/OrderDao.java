@@ -7,6 +7,7 @@ import java.util.Map;
 import com.elephant.domain.courier.CourOrderDetDomain;
 import com.elephant.domain.courier.PickupRequestDomain;
 import com.elephant.domain.order.OrderDomain;
+import com.elephant.domain.orderdetail.OrderDetailDomain;
 import com.elephant.response.Response;
 
 public interface OrderDao {
@@ -28,4 +29,5 @@ public interface OrderDao {
 	public Response createPickupRequest(PickupRequestDomain pickupRequestDomain);
 	public List<PickupRequestDomain> getPickupReqDetails(Date fromDate,Date toDate);
 	public List<Map<String, Object>> getOrderDetails(String fromDate, String toDate);
+	public OrderDetailDomain getOrderDetailsById(String orderDetailId);
 }

@@ -17,9 +17,11 @@ import org.springframework.stereotype.Repository;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.dao.category.CategoryDaoImpl;
+import com.elephant.dao.orderdetail.OrderDetailRepository;
 import com.elephant.domain.courier.CourOrderDetDomain;
 import com.elephant.domain.courier.PickupRequestDomain;
 import com.elephant.domain.order.OrderDomain;
+import com.elephant.domain.orderdetail.OrderDetailDomain;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
 
@@ -41,6 +43,9 @@ public class OrderDaoImpl implements OrderDao {
 	
 	@Autowired
 	PickupReqRepository pickupReqRepository;
+	
+	@Autowired
+	OrderDetailRepository orderDetailRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CategoryDaoImpl.class);
 	
@@ -172,6 +177,7 @@ public class OrderDaoImpl implements OrderDao {
 	public Response updateCourierOrderStatus(CourOrderDetDomain courOrderDetDomain) {
 		Response response= CommonUtils.getResponseObject("update courier order details");
 		try {
+			courOrderDetDomain.setModifiedDate(new Date());
 			entityManager.flush();
 			response.setStatus(StatusCode.SUCCESS.name());
 			response.setMessage("Status updated successfully");
@@ -251,5 +257,20 @@ public class OrderDaoImpl implements OrderDao {
 		}
 		return orderDetailList;
 	}
+
+
+	@Override
+	public OrderDetailDomain getOrderDetailsById(String orderDetailId) {
+		OrderDetailDomain orderDetailDomain = new OrderDetailDomain();
+		try {
+
+			orderDetailDomain =orderDetailRepository.getOrderDetailByOrderdetailId(orderDetailId);
+			
+		} catch (Exception e) {
+			logger.error("Exception in orderdetaillist", e);
+		}
+		return orderDetailDomain;
+	}
+	
 	
 }

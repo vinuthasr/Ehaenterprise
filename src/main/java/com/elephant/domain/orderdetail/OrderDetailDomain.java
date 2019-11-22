@@ -1,10 +1,15 @@
 package com.elephant.domain.orderdetail;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-import com.elephant.domain.courier.CourOrderDetDomain;
 import com.elephant.domain.order.OrderDomain;
 
 
@@ -39,6 +44,12 @@ public class OrderDetailDomain implements Serializable{
 	
 	@Column(name="productAmount")
 	private double productAmount;
+	
+	@Column(name="status")
+	private String status;
+	
+	@Column(name="statusDate")
+	private Date statusDate;
 	
 	@ManyToOne
 	@JoinColumn(name="orderId")
@@ -104,5 +115,16 @@ public class OrderDetailDomain implements Serializable{
 //	public void setCourOrderDetDomain(CourOrderDetDomain courOrderDetDomain) {
 //		this.courOrderDetDomain = courOrderDetDomain;
 //	}
-	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public Date getStatusDate() {
+		return statusDate;
+	}
+	public void setStatusDate(Date statusDate) {
+		this.statusDate = statusDate;
+	}
 }

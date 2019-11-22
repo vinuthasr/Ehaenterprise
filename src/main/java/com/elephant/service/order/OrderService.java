@@ -24,7 +24,7 @@ public interface OrderService {
 
 	public double totalOrdersAmountPerDay(Date orderDate);
 
-	public Response cancelOrder(long orderId);
+	public Response cancelOrder(String orderDetailId);
 
 	public List<OrderModel> getOrdersByDate(Date orderDate);
 

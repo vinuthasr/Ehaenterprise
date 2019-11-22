@@ -221,7 +221,7 @@ public class OrderServiceImpl implements OrderService {
 				grandtotal+= (productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity();
 			}
 			orderDomain.setOrderPrice(grandtotal);
-			orderDomain.setOrderStatus(Constants.ORDER_CONFORMATION);
+			orderDomain.setOrderStatus(Constants.ORDER_CONFIRMATION);
 			orderDomain.setOrderDate(new Date());
 			orderDomain.setCustomerName(customerDomain.getCustomerName());
 			orderDomain.setCustomerEmail(customerDomain.getEmail());
@@ -265,6 +265,8 @@ public class OrderServiceImpl implements OrderService {
 				orderDetailDomain.setProductName(productDomain.getCollectionDesc());
 				orderDetailDomain.setProductQuantity(cartItemDomain.getQuantity());
 				orderDetailDomain.setProductAmount((productDomain.getPrice()-((productDomain.getPrice()*productDomain.getDiscount()/100)))*cartItemDomain.getQuantity());
+				orderDetailDomain.setStatus(Constants.ORDER_CONFIRMATION);
+				orderDetailDomain.setStatusDate(new Date());
 				orderDetailDomain.setOrderDomain(orderDomain);
 				
 				//Shipments - start - Courier third party api
@@ -480,15 +482,26 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public Response cancelOrder(long orderId) {
+	public Response cancelOrder(String orderDetailId) {
 		Response response=CommonUtils.getResponseObject("Cancel Order");
 		
 		try {
+			 OrderDetailDomain orderDetailDomain=orderDao.getOrderDetailsById(orderDetailId);
+			
+			 
+			/*------------------------------Products In stock should automatically increase after Order Cancellation----*/
+				ProductDomain productDomain=productRepository.findBySku(orderDetailDomain.getProductSku());
+				productDomain.setInStock(productDomain.getInStock()+orderDetailDomain.getProductQuantity() );
+				
+				orderDetailDomain.setStatus("Canceled");
+				orderDetailDomain.setStatusDate(new Date());
+				productRepository.saveAndFlush(productDomain);
+				
+				orderDetailRepository.saveAndFlush(orderDetailDomain);
+			/*-------------------------------------------------------------------------------------------------*/			
+			
 			
 			/*-----------------------------------Cancellation of Order-----------------------------------------*/
-			OrderDomain orderDomain=orderDaoRepository.findByOrderId(orderId);
-			orderDomain.setOrderStatus(Constants.CANCEL_ORDER);
-			orderDaoRepository.saveAndFlush(orderDomain);
 			response.setStatus(StatusCode.SUCCESS.name());
 			response.setMessage("Order Cancellation is Successfull");
 			System.out.println("Order Cancellation is successfull");
@@ -496,63 +509,35 @@ public class OrderServiceImpl implements OrderService {
 			
 			/** Cancel order in Delhivery Courier service */
 			
-			cancelCourierServiceOrder(orderDomain);
+			cancelCourierServiceOrder(orderDetailDomain);
 			/*---------------------------------------------------------*/
 			
-			/*------------------------------Products In stock should automatically increase after Order Cancellation----*/
-			for(OrderDetailDomain orderDetailDomain:orderDomain.getOrderDetailDomain()) {
-				//ProductDomain productDomain=productRepository.findBySku(orderDetailDomain.getProductSku());
-				ProductDomain productDomain=productRepository.findBySku(orderDetailDomain.getProductSku());
-				productDomain.setInStock(productDomain.getInStock()+orderDetailDomain.getProductQuantity() );
-				productRepository.saveAndFlush(productDomain);
-			}
-			/*-------------------------------------------------------------------------------------------------*/			
-			
+		
 			
 			/*-----------------------------Email Cancel Order Confirm to Customer-------------------------------*/
 			//Setting up configurations for the email connection to the Google SMTP server using TLS
-	        Properties props = new Properties();
-	        props.put("mail.smtp.host", "true");
-	        props.put("mail.smtp.starttls.enable", "true");
-	        props.put("mail.smtp.host", "smtp.gmail.com");
-	        props.put("mail.smtp.port", "587");
-	        props.put("mail.smtp.auth", "true");
-	        //Establishing a session with required user details
-	        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-	            protected PasswordAuthentication getPasswordAuthentication() {
-	                return new PasswordAuthentication("shekhar.reddy2011@gmail.com", "venkataramireddy");
-	            }
-	        });
+			String timeStamp = new SimpleDateFormat("   dd/MM/yyy hh:mm:ss").format(new Date());
+			Mail mail = new Mail();
+			mail.setFrom(Constants.FROM_ADDRESS);
+			mail.setTo(orderDetailDomain.getOrderDomain().getCustomerEmail());
+			mail.setSubject("Eha Enterprises"+"\n\n"+"Order Cancellation " +"\n"+" Date:-"+ timeStamp);
+			
+			MimeMessage message = emailSender.createMimeMessage();
+	        MimeMessageHelper helper = new MimeMessageHelper(message,
+	                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+	                StandardCharsets.UTF_8.name());
+	        String text = "Dear "+orderDetailDomain.getOrderDomain().getCustomerDomain().getCustomerName()+ "\n\n"
+        			+ "Your Order is Cancelled for  Order Number :"+ orderDetailDomain.getOrderDomain().getOrderNumber()+ "\n\n"
+        			+ "Thank you"+ "\n\n"
+        			+ "Regards"+"\n"
+        			+ "Eha Enterprices";
+	        
+	        helper.setTo(mail.getTo());
+	        helper.setText(text, true);
+	        helper.setSubject(mail.getSubject());
+	        helper.setFrom(mail.getFrom());
+	        emailSender.send(message);
 
-	        
-	        
-	      //Creating a Message object to set the email content
-	        MimeMessage msg = new MimeMessage(session);
-	        //Storing the comma separated values to email addresses
-	        String to =orderDomain.getCustomerDomain().getEmail() ;
-	        /*Parsing the String with default delimiter as a comma by marking the boolean as true and storing the email
-	        addresses in an array of InternetAddress objects*/
-	        InternetAddress[] address = InternetAddress.parse(to, true);
-	        //Setting the recipients from the address variable
-	        msg.setRecipients(Message.RecipientType.TO, address);
-	        String timeStamp = new SimpleDateFormat("   dd/MM/yyy hh:mm:ss").format(new Date());
-	        msg.setSubject("Eha Enterprises"+"\n\n"+"Order Cancellation " +"\n"+" Date:-"+ timeStamp);
-	        msg.setSentDate(new Date());
-	        
-	        
-	        /*String htmlMsg="<h3>Im testing  a HTML email</h3>"
-	                +"<img src='https://giphy.com/gifs/artists-on-tumblr-ganesh-chaturthi-YVbFW9JoU5v1K'>";
-	        
-	        msg.setContent( htmlMsg, "text/html");*/
-	        msg.setText("Dear "+orderDomain.getCustomerDomain().getCustomerName()+ "\n\n"
-	        			+ "Your Order is Cancelled for  Order Number :"+ orderDomain.getOrderNumber()+ "\n\n"
-	        			+ "Thank you"+ "\n\n"
-	        			+ "Regards"+"\n"
-	        			+ "Eha Enterprices"
-	        			);
-	        
-	        msg.setHeader("XPriority", "1");
-	        Transport.send(msg);
 	 /*----------------------------------------------------------------------------------------------------------*/      
 	        System.out.println("Order Cancellation Mail has been sent successfully");
 			response.setMessage1(" Order Cancellation Mail has been sent successfully");
@@ -569,38 +554,33 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private Response cancelCourierServiceOrder(OrderDomain orderDomain) {
+	private Response cancelCourierServiceOrder(OrderDetailDomain orderDetailDomain) {
 		Response response=CommonUtils.getResponseObject("Cancel Courier Service Order");
 		final String uri = Constants.DELHIVERY_URL+"api/p/edit";
 		String authToken = Constants.DELHIVERY_TOKEN;
 		RestTemplate restTemplate = new RestTemplate();
 		try {
-			List<OrderDetailDomain> orderDetailDomainList = orderDomain.getOrderDetailDomain();
 			String wayBillNo = null;
-			if(null != orderDetailDomainList) {
 				
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_JSON);
-				headers.add("Authorization", "Token " + authToken);
-				HttpEntity<Map> request = null;
-				ResponseEntity<String> result = null;
-				Map<String,String>  cancelOrderMap = new HashMap<String, String>();
-				for(OrderDetailDomain detailDomain:orderDetailDomainList) {
-					wayBillNo =  orderDao.getWayBillNoByDetId(detailDomain.getOrderdetailId());
-					cancelOrderMap.put("waybill", wayBillNo);
-					cancelOrderMap.put("cancellation", "true");
-					
-					request = new HttpEntity<Map>(cancelOrderMap,headers);	
-					result = restTemplate.postForEntity(uri, request, String.class);
-					
-					JSONObject jsonObject = new JSONObject(result.getBody());
-					String status = jsonObject.get("status").toString();
-					if(status.equalsIgnoreCase("true")) {
-						response.setMessage("Cancellation successfull");
-						response.setStatus(StatusCode.SUCCESS.name());
-					}
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.add("Authorization", "Token " + authToken);
+			HttpEntity<Map> request = null;
+			ResponseEntity<String> result = null;
+			Map<String,String>  cancelOrderMap = new HashMap<String, String>();
+				wayBillNo =  orderDao.getWayBillNoByDetId(orderDetailDomain.getOrderdetailId());
+				cancelOrderMap.put("waybill", wayBillNo);
+				cancelOrderMap.put("cancellation", "true");
+				
+				request = new HttpEntity<Map>(cancelOrderMap,headers);	
+				result = restTemplate.postForEntity(uri, request, String.class);
+				
+				JSONObject jsonObject = new JSONObject(result.getBody());
+				String status = jsonObject.get("status").toString();
+				if(status.equalsIgnoreCase("true")) {
+					response.setMessage("Cancellation successfull");
+					response.setStatus(StatusCode.SUCCESS.name());
 				}
-			}
 			
 		}catch (Exception e) {
 			throw new RuntimeException("Exception: " +e);
@@ -701,7 +681,7 @@ public class OrderServiceImpl implements OrderService {
         //Establishing a session with required user details
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("shekhar.reddy2011@gmail.com", "venkataramireddy");
+                return new PasswordAuthentication("ehauiele@gmail.com", "EHA123456");
             }
         });
 
@@ -857,10 +837,12 @@ public class OrderServiceImpl implements OrderService {
 	public Response updateCourierOrderStatus(CourierOrderDetModel courierOrderDetModel) {
 		// TODO Auto-generated method stub
 		Response response=CommonUtils.getResponseObject("Update order status");
+		SimpleDateFormat formatter = new SimpleDateFormat(DateUtility.DATE_FORMAT_YYYY_MM_DD);
 		String[] status = new String[2];
 		try {
 			if(null != courierOrderDetModel) {
 				String courierOrderId = courierOrderDetModel.getCourierOrderId();
+				OrderDetailDomain orderDetailDomain = new OrderDetailDomain();
 				if(null != courierOrderId) {
 					CourOrderDetDomain courOrderDetDomain = new CourOrderDetDomain();
 					courOrderDetDomain = orderDao.getCourOrderDetById(courierOrderId);
@@ -875,6 +857,17 @@ public class OrderServiceImpl implements OrderService {
 						}
 						
 						courOrderDetDomain.setModifiedDate(new Date());
+						
+						/*  Update in order detail  */
+						orderDetailDomain = orderDao.getOrderDetailsById(courOrderDetDomain.getOrderDetailId());
+						orderDetailDomain.setStatus(status[0]);	
+						String statusDate[] = status[2].split("T");
+						orderDetailDomain.setStatusDate(formatter.parse(statusDate[0]));
+						orderDetailRepository.saveAndFlush(orderDetailDomain);
+						//orderModel.
+						
+						/*  Update in order detail  */
+						
 						response = orderDao.updateCourierOrderStatus(courOrderDetDomain);
 					}
 				} else {
@@ -890,11 +883,11 @@ public class OrderServiceImpl implements OrderService {
 		return response;
 	}
 	
-	
+
 	private String[] trackCourierOrderDetails(CourOrderDetDomain courOrderDetDomain) {
 		final String uri = Constants.DELHIVERY_URL+"api/packages/json/";
 		String authToken = Constants.DELHIVERY_TOKEN;
-		String[] statusStr = new String[2];
+		String[] statusStr = new String[3];
 		
 		RestTemplate restTemplate = new RestTemplate();
 		try {
@@ -919,7 +912,7 @@ public class OrderServiceImpl implements OrderService {
 				JSONObject shipmentObject = shipmentDataArray.getJSONObject(0).getJSONObject("Shipment");
 				statusStr[0] = shipmentObject.getJSONObject("Status").getString("Status");
 				statusStr[1] = shipmentObject.getJSONObject("Status").getString("Instructions");
-				
+				statusStr[2] = shipmentObject.getJSONObject("Status").getString("StatusDateTime");
 			}
 		}catch (Exception e) {
 			throw new RuntimeException("Exception " +e);

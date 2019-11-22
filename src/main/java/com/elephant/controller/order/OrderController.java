@@ -126,9 +126,9 @@ public class OrderController {
 	} 
     
     
-    @RequestMapping(value = "/cancelOrder/{orderId}",method=RequestMethod.POST, produces="application/json")
-    public Response cancelOrder(@RequestParam(value="orderId")long orderId){
-		return orderService.cancelOrder(orderId);
+    @RequestMapping(value = "/cancelOrder/{orderDetailId}",method=RequestMethod.POST, produces="application/json")
+    public Response cancelOrder(@RequestParam(value="orderDetailId")String orderDetailId){
+		return orderService.cancelOrder(orderDetailId);
 	}
 	
     @RequestMapping(value = "/getOrdersByDate/{orderDateString}",method=RequestMethod.GET, produces="application/json")

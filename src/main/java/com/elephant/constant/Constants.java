@@ -7,7 +7,7 @@ public interface Constants {
 	public static String PAYPAL ="PayPal";
 	public static String PAYUMONEY ="PayUMoney";
 	public static String CANCEL_ORDER= "Cancel-Order";
-	public static String ORDER_CONFORMATION= "Order-Conformation";
+	public static String ORDER_CONFIRMATION= "Order-Confirmation";
 	public static String POST_URL="http://localhost:8080";
 	public final static String BANNER_SLIDER_AREA = "Slider Area";
 	public final static String CURRENCY = "USD";
