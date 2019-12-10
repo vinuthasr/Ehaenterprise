@@ -150,4 +150,6 @@ public interface ProductDao {
 	
 	public Response saveBulkProduct(BulkProduct bulkProduct)throws Exception;
 	
+	public Float[] getProductDiscounts();
+	
 }

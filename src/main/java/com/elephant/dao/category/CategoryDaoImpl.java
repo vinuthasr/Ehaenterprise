@@ -2,7 +2,7 @@ package com.elephant.dao.category;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -17,12 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.elephant.constant.StatusCode;
 import com.elephant.domain.category.Category;
-import com.elephant.domain.uploadproduct.ProductDomain;
-import com.elephant.model.category.CategoryModel;
 import com.elephant.response.Response;
 import com.elephant.utils.CommonUtils;
 import com.elephant.utils.DateUtility;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 
 @Repository
@@ -92,6 +89,7 @@ public class CategoryDaoImpl implements CategoryDao {
 			cat.setDescription(category.getDescription());
 			cat.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 			
+			cat.setCategoryMenuDomain(category.getCategoryMenuDomain());
 						
 			entityManager.flush();
 			response.setStatus(StatusCode.SUCCESS.name());
@@ -232,5 +230,19 @@ public class CategoryDaoImpl implements CategoryDao {
 		}
 	}
 
+	@Override
+	public List<Map<String, Object>> getCategoriesByMenus(String menuName) {
+		List<Map<String, Object>> categoryList = null;
+		try {
+			String sql = "SELECT categ.category_id,categ.category_name from category categ, \r\n" + 
+					"category_menu categ_menus\r\n" + 
+					"where categ.category_menu_id = categ_menus.category_menu_id and categ_menus.menu_name = '"+menuName+"'";
+			categoryList = jdbcTemplate.queryForList(sql);
+			
+		} catch (Exception e) {
+			logger.error("Exception in getCategoriesByMenus", e);
+		}
+		return categoryList;
+	}
 		
 }

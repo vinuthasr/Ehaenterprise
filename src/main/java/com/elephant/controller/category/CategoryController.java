@@ -2,6 +2,7 @@ package com.elephant.controller.category;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,7 +11,6 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -190,6 +190,26 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryController.
 				res.setData(model); 
 			}
 			logger.info("Category: Sent response");
+			return CommonUtils.getJson(res);
+		}
+		
+		//------------------------------Get Categories  By menu--------------------------------------
+		@RequestMapping(value = "/categorybymenuname/{menuName}", method = RequestMethod.GET, produces = "application/json")
+		public @ResponseBody String getCategoriesByMenus(@PathVariable("menuName") String menuName, HttpServletRequest request,
+				HttpServletResponse response) throws Exception {
+			logger.info("getCategoriesByMenus: Received request: " + request.getRequestURL().toString()
+					+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+			List<Map<String, Object>> categoryList= categoryService.getCategoriesByMenus(menuName);
+			Response res = CommonUtils.getResponseObject("List of Categories by menu name");
+			if (categoryList==null) {
+				ErrorObject err = CommonUtils.getErrorResponse("Categories not Found", "Categories not Found");
+				res.setErrors(err);
+				res.setStatus(StatusCode.ERROR.name());
+				res.setMessage("Categories not found");
+			} else {
+				res.setData(categoryList);
+			}
+			logger.info("getCategoriesByMenus: Sent response");
 			return CommonUtils.getJson(res);
 		}
 }

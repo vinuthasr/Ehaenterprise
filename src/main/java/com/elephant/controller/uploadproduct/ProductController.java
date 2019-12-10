@@ -660,5 +660,13 @@ public class ProductController {
 	        .body(new InputStreamResource(in));
 	}
 	
+	@RequestMapping(value = "/product/discount", method = RequestMethod.GET, produces = "application/json")
+	public @ResponseBody String productDiscounts( HttpServletRequest request,HttpServletResponse response) throws Exception {
+		logger.info("productDiscounts: Received request URL:" + request.getRequestURL().toString()
+				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+		
+	    return  CommonUtils.getJson(uploadproductservice.getProductsDiscounts());
+	
+	}
 }
 

@@ -1,6 +1,8 @@
 package com.elephant.model.category;
 
 import java.io.Serializable;
+
+import com.elephant.model.categorymenu.CategoryMenuModel;
 public class CategoryModel implements Serializable{
 
 	/**
@@ -16,6 +18,8 @@ public class CategoryModel implements Serializable{
 	private String startingDateAndTime;
 	private String endingDateAndTime;
 	private boolean isActive;
+	
+	private CategoryMenuModel  categoryMenuDomain;
 	
 	public String getStartingDateAndTime() {
 		return startingDateAndTime;
@@ -66,7 +70,11 @@ public class CategoryModel implements Serializable{
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	
+	public CategoryMenuModel getCategoryMenuDomain() {
+		return categoryMenuDomain;
+	}
+	public void setCategoryMenuDomain(CategoryMenuModel categoryMenuDomain) {
+		this.categoryMenuDomain = categoryMenuDomain;
+	}
 	
 }

@@ -2,8 +2,7 @@ package com.elephant.service.category;
 
 import java.util.Date;
 import java.util.List;
-
-import javax.persistence.EntityManager;
+import java.util.Map;
 
 import org.springframework.ui.Model;
 
@@ -32,7 +31,7 @@ public interface CategoryService {
 
 	//public List<CategoryModel> allCategoryBtw()throws Exception;
 
-CategoryModel allCategoryBtw(Date endingDateAndTime) throws Exception;
+	CategoryModel allCategoryBtw(Date endingDateAndTime) throws Exception;
 
-	
+	List<Map<String, Object>> getCategoriesByMenus(String menuName);
 }

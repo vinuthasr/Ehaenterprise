@@ -2,6 +2,7 @@ package com.elephant.service.category;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import com.elephant.dao.category.CategoryDao;
 import com.elephant.dao.category.CategoryRepository;
 import com.elephant.dao.uploadproduct.ProductDao;
 import com.elephant.domain.category.Category;
+import com.elephant.domain.categorymenu.CategoryMenuDomain;
 import com.elephant.domain.uploadproduct.ProductDomain;
 import com.elephant.mapper.category.CategoryMapper;
 import com.elephant.mapper.uploadproduct.ProductMapper;
@@ -74,6 +76,10 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 		            update.setModifiedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 	                update.setCreatedDate(DateUtility.getDateByStringFormat(new Date(), DateUtility.DATE_FORMAT_DD_MMM_YYYY_HHMMSS));
 	                update.setActive(true);
+	                
+	                CategoryMenuDomain categoryMenuDomain = new CategoryMenuDomain();
+	                categoryMenuDomain.setCategoryMenuId(model.getCategoryMenuDomain().getCategoryMenuId());
+	                update.setCategoryMenuDomain(categoryMenuDomain);
 	              /* try {
 	            	   if(new Date().before(new Date(model.getStartingDateAndTime()))) {
 	            		   if(new Date(model.getEndingDateAndTime()) != null)
@@ -156,6 +162,11 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 		try{
 			Category category=new Category();
 			BeanUtils.copyProperties(model, category);
+			
+			CategoryMenuDomain categoryMenuDomain = new CategoryMenuDomain();
+            categoryMenuDomain.setCategoryMenuId(model.getCategoryMenuDomain().getCategoryMenuId());
+            category.setCategoryMenuDomain(categoryMenuDomain);
+			
 			Response res=categoryDao.updateCategory(category);
 			return res;
 			}
@@ -246,6 +257,20 @@ private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl
 		}
 		return null;
 	}
+
+
+	@Override
+	public List<Map<String, Object>> getCategoriesByMenus(String menuName) {
+		List<Map<String, Object>> categoryModelList=null;
+		try {
+			 categoryModelList = categoryDao.getCategoriesByMenus(menuName);
+			//BeanUtils.copyProperties(categoryList, categoryModelList);
+		} catch (Exception e) {
+			logger.info("Exception in getCategoriesByMenus:"+ e.getMessage());
+		}
+		return categoryModelList;
+	}
+	
 } 
 
 	

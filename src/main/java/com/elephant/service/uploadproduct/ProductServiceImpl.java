@@ -1141,6 +1141,12 @@ try {
 		return null;
 	}
 
+	@Override
+	public Float[] getProductsDiscounts() {
+		Float[] discount = uploadproductdao.getProductDiscounts();
+		return discount;
+	}
+
 	
 }
 	

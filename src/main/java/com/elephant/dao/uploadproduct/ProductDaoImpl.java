@@ -1,5 +1,6 @@
 package com.elephant.dao.uploadproduct;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -964,6 +965,19 @@ public Response deleteproductByCategoryId(String categoryId, boolean isActive) t
 
 
 
-
+	@Override
+	public Float[] getProductDiscounts() {
+		Float[] discount=null;
+		try {
+			List<Float> disc = new ArrayList<Float>();
+			String sql = "select distinct discount from e_commerce.uploadproduct";
+			disc = jdbcTemplate.queryForList(sql,Float.class);
+			discount = new Float[disc.size()];
+			discount = disc.toArray(discount);
+		} catch (Exception e) {
+			logger.error("Exception in getProductDiscounts", e);
+		}
+		return discount;
+	}
 
 }

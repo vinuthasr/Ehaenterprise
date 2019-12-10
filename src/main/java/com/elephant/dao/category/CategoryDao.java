@@ -2,9 +2,9 @@ package com.elephant.dao.category;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.elephant.domain.category.Category;
-import com.elephant.model.category.CategoryModel;
 import com.elephant.response.Response;
 
 public interface CategoryDao {
@@ -26,7 +26,7 @@ public interface CategoryDao {
 	public List<Category> allCategoryBtw(Date endingDateAndTime)throws Exception;
 
 
-
+	List<Map<String, Object>> getCategoriesByMenus(String menuName); 
 
 
 }

@@ -1,10 +1,8 @@
 package com.elephant.domain.category;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,21 +10,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.springframework.stereotype.Indexed;
-
+import com.elephant.domain.categorymenu.CategoryMenuDomain;
 import com.elephant.domain.uploadproduct.ProductDomain;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 
 @Entity
@@ -94,6 +83,11 @@ public class Category implements Serializable{
 	}*/
 	private Set<ProductDomain> product = new HashSet<ProductDomain>();
 	
+	@ManyToOne
+	@JoinColumn(name="category_Menu_Id")
+	private CategoryMenuDomain  categoryMenuDomain;
+
+	
 	public Set<ProductDomain> getProduct() {
 		return product;
 	}
@@ -137,7 +131,13 @@ public class Category implements Serializable{
 		this.isActive = isActive;
 		return product;
 	}
-	
+
+	public CategoryMenuDomain getCategoryMenuDomain() {
+		return categoryMenuDomain;
+	}
+	public void setCategoryMenuDomain(CategoryMenuDomain categoryMenuDomain) {
+		this.categoryMenuDomain = categoryMenuDomain;
+	}
 	public Category(){}
 	
 }

@@ -86,4 +86,6 @@ public interface ProductService {
     public Resource getExcelForBulkProduct() throws Exception;
     
     public ByteArrayInputStream prdExportToExcel(String categoryId) throws Exception;
+    
+    public Float[] getProductsDiscounts();
 }
