@@ -83,6 +83,20 @@ public class CategoryMenuServiceImpl implements CategoryMenuService{
 		return null;
 	}
 
+
+	@Override
+	public Response updateCategoryMenu(CategoryMenuModel categoryMenuModel) {
+		try {
+			CategoryMenuDomain categoryMenuDomain = new CategoryMenuDomain();
+			BeanUtils.copyProperties(categoryMenuModel, categoryMenuDomain);
+			Response response = categoryMenuDao.updateCategoryMenu(categoryMenuDomain);
+			return response;
+		} catch (Exception ex) {
+			logger.info("Exception Service:" + ex.getMessage());
+		}
+		return null;
+	}
+
 	
 
 }

@@ -152,4 +152,6 @@ public interface ProductDao {
 	
 	public Float[] getProductDiscounts();
 	
+	public List<ProductDomain> getProductByName(String productName);
+	
 }

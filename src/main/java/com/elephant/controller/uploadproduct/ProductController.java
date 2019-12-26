@@ -666,7 +666,25 @@ public class ProductController {
 				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
 		
 	    return  CommonUtils.getJson(uploadproductservice.getProductsDiscounts());
-	
 	}
+	
+
+	@RequestMapping(value="/productbySearch/{productName}",method=RequestMethod.GET,produces="application/json")
+	public @ResponseBody String  getProductByName(@PathVariable ("productName") String productName,HttpServletRequest request,HttpServletResponse responce)throws Exception{
+		logger.info("getProductByName: Received request: " + request.getRequestURL().toString()
+				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+		List<ProductModel> productModel = uploadproductservice.getProductsByName(productName);
+		Response res = CommonUtils.getResponseObject("List of product by product name");
+		if (productModel == null) {
+			ErrorObject err = CommonUtils.getErrorResponse("products not found", "products not found");
+			res.setErrors(err);
+			res.setStatus(StatusCode.ERROR.name());
+			res.setMessage("products not found");
+		} else {
+			res.setData(productModel);
+		}
+		logger.info("getProductByName: Sent response");
+		return CommonUtils.getJson(res);
+	} 
 }
 

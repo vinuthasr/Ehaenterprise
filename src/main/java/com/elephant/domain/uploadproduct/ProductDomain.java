@@ -108,18 +108,25 @@ public class ProductDomain implements Serializable {
 	private String mainImageUrl;
 	//@Convert(converter = ImageListConverter.class)
 	
-	@Column(name ="headerDesc" )
-	private String headerDesc;
+	@Column(name ="headerDesc1" )
+	private String headerDesc1;
+	
+	@Column(name ="headerDesc2" )
+	private String headerDesc2;
+	
+	@Column(name ="headerDesc3" )
+	private String headerDesc3;
+	
+	@Column(name ="headerDesc4" )
+	private String headerDesc4;
+	
+	@Column(name ="headerDesc5" )
+	private String headerDesc5;
 	
 	@Column(name ="productName" )
 	private String productName;
 	
-	public String getHeaderDesc() {
-		return headerDesc;
-	}
-	public void setHeaderDesc(String headerDesc) {
-		this.headerDesc = headerDesc;
-	}
+	
 	public Long getInStock() {
 		return inStock;
 	}
@@ -288,6 +295,36 @@ public class ProductDomain implements Serializable {
 	}
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+	public String getHeaderDesc1() {
+		return headerDesc1;
+	}
+	public void setHeaderDesc1(String headerDesc1) {
+		this.headerDesc1 = headerDesc1;
+	}
+	public String getHeaderDesc2() {
+		return headerDesc2;
+	}
+	public void setHeaderDesc2(String headerDesc2) {
+		this.headerDesc2 = headerDesc2;
+	}
+	public String getHeaderDesc3() {
+		return headerDesc3;
+	}
+	public void setHeaderDesc3(String headerDesc3) {
+		this.headerDesc3 = headerDesc3;
+	}
+	public String getHeaderDesc4() {
+		return headerDesc4;
+	}
+	public void setHeaderDesc4(String headerDesc4) {
+		this.headerDesc4 = headerDesc4;
+	}
+	public String getHeaderDesc5() {
+		return headerDesc5;
+	}
+	public void setHeaderDesc5(String headerDesc5) {
+		this.headerDesc5 = headerDesc5;
 	}
 	
 }

@@ -46,6 +46,16 @@ public class CategoryMenuController {
 		return res;
 	}
 	
+	@RequestMapping(value = "/categorymenus/update", method = RequestMethod.PUT, produces = "application/json")
+	public Response updateCategoryMenu(@RequestBody CategoryMenuModel categoryMenuModel, HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		logger.info("updateCategoryMenu: Received request URL: " + request.getRequestURL().toString()
+				+ ((request.getQueryString() == null) ? "" : "?" + request.getQueryString().toString()));
+		logger.info("updateCategoryMenu: Received request: " + CommonUtils.getJson(categoryMenuModel));
+		return categoryMenuService.updateCategoryMenu(categoryMenuModel);
+	}
+
+	
 	//----------------------------Get All Category Menu----------------------------------
 	@RequestMapping(value="/categorymenus/all", method=RequestMethod.GET, produces="application/json")
 	public @ResponseBody String allCategorymenus(HttpServletRequest request, HttpServletResponse response)throws Exception{
@@ -65,6 +75,8 @@ public class CategoryMenuController {
 		logger.info("allCategorymenus: Sent response");
 		return CommonUtils.getJson(res);
 	}
+	
+	
 	
 	
 }

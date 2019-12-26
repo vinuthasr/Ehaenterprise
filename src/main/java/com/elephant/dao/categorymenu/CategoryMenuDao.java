@@ -11,4 +11,6 @@ public interface CategoryMenuDao {
 	Response addCategoryMenu(CategoryMenuDomain categoryMenuDomain);
 	
 	public List<CategoryMenuDomain> allCategoryMenu()throws Exception;
+	
+	Response updateCategoryMenu(CategoryMenuDomain categoryMenuDomain);
 }

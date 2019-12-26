@@ -34,10 +34,14 @@ public class ProductModel implements Serializable {
 	private Double blouseLength;
     private String occassion;
     private String mainImageUrl;
-    private String headerDesc;
     private String categoryName;
     private String productName;
-    
+	private String headerDesc1;
+	private String headerDesc2;
+	private String headerDesc3;
+	private String headerDesc4;
+	private String headerDesc5;
+	
     private List<SubImageModel> subImageList;
     
    // @Convert(converter = ImageListConverter.class)
@@ -197,12 +201,6 @@ public class ProductModel implements Serializable {
 	public void setSubImageList(List<SubImageModel> subImageList) {
 		this.subImageList = subImageList;
 	}
-	public String getHeaderDesc() {
-		return headerDesc;
-	}
-	public void setHeaderDesc(String headerDesc) {
-		this.headerDesc = headerDesc;
-	}
 	public String getCategoryName() {
 		return categoryName;
 	}
@@ -215,7 +213,37 @@ public class ProductModel implements Serializable {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-
+	public String getHeaderDesc1() {
+		return headerDesc1;
+	}
+	public void setHeaderDesc1(String headerDesc1) {
+		this.headerDesc1 = headerDesc1;
+	}
+	public String getHeaderDesc2() {
+		return headerDesc2;
+	}
+	public void setHeaderDesc2(String headerDesc2) {
+		this.headerDesc2 = headerDesc2;
+	}
+	public String getHeaderDesc3() {
+		return headerDesc3;
+	}
+	public void setHeaderDesc3(String headerDesc3) {
+		this.headerDesc3 = headerDesc3;
+	}
+	public String getHeaderDesc4() {
+		return headerDesc4;
+	}
+	public void setHeaderDesc4(String headerDesc4) {
+		this.headerDesc4 = headerDesc4;
+	}
+	public String getHeaderDesc5() {
+		return headerDesc5;
+	}
+	public void setHeaderDesc5(String headerDesc5) {
+		this.headerDesc5 = headerDesc5;
+	}
+	
 }
 	
 	

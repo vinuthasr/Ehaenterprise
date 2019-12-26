@@ -1,5 +1,6 @@
 package com.elephant.dao.categorymenu;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -59,8 +60,7 @@ public class CategoryMenuDaoImpl implements CategoryMenuDao{
 		}
 		return response;
 	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	
 	@Override
 	public List<CategoryMenuDomain> allCategoryMenu() throws Exception {
 		try {
@@ -75,5 +75,23 @@ public class CategoryMenuDaoImpl implements CategoryMenuDao{
 		}
 	}
 
+	@Override
+	public Response updateCategoryMenu(CategoryMenuDomain categoryMenuDomain) {
+		Response response = CommonUtils.getResponseObject("Update Category menu item");	
+		try {
+			String sql = "UPDATE category_menu SET menu_name=?,description=?, modified_date = ? WHERE category_menu_id=?";
+			int res = jdbcTemplate.update(sql, categoryMenuDomain.getMenuName(), categoryMenuDomain.getDescription(), new Date(),categoryMenuDomain.getCategoryMenuId());
+			if (res == 1) {
+				response.setStatus(StatusCode.SUCCESS.name());
+			} else {
+				response.setStatus(StatusCode.ERROR.name());
+			}
+		} catch (Exception e) {
+			logger.error("Exception in updateCategoryMenu", e);
+			response.setStatus(StatusCode.ERROR.name());
+			response.setErrors(e.getMessage());
+		}
+		return response;
+	}
 	
 }

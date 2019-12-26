@@ -314,17 +314,33 @@ public class ProductServiceImpl implements ProductService{
 							
 						case 17:
 							row.getCell(j).setCellType(CellType.STRING);
-							uploadProduct.setHeaderDesc(row.getCell(j).getStringCellValue());break;
-																	
+							uploadProduct.setHeaderDesc1(row.getCell(j).getStringCellValue());break;
+							
 						case 18:
 							row.getCell(j).setCellType(CellType.STRING);
-							uploadProduct.setOccassion(row.getCell(j).getStringCellValue());break;
+							uploadProduct.setHeaderDesc2(row.getCell(j).getStringCellValue());break;
 							
 						case 19:
 							row.getCell(j).setCellType(CellType.STRING);
-							uploadProduct.setProductName(row.getCell(j).getStringCellValue());break;
+						    uploadProduct.setHeaderDesc3(row.getCell(j).getStringCellValue());break;
 							
 						case 20:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setHeaderDesc4(row.getCell(j).getStringCellValue());break;
+							
+						case 21:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setHeaderDesc5(row.getCell(j).getStringCellValue());break;
+																	
+						case 22:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setOccassion(row.getCell(j).getStringCellValue());break;
+							
+						case 23:
+							row.getCell(j).setCellType(CellType.STRING);
+							uploadProduct.setProductName(row.getCell(j).getStringCellValue());break;
+							
+						case 24:
 							row.getCell(j).setCellType(CellType.STRING);
 							uploadProduct.setMainImageUrl(row.getCell(j).getStringCellValue());break;	
 							
@@ -974,7 +990,9 @@ try {
 
 	public void createExcelTemplate(File file) {
 		try {
-			String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric Purity","Border","Border Type","Zari Type","Material Type","Price", "Discount","Blouse Color","Blouse Length","Saree Colors","Collection Desc","Header Desc","Occassion","Product Name","Main ImageUrl","Sub Image1"};
+			String[] columnshead = {"Category_Name","SKU","In Stock","Saree Length","Pattern","Fabric Purity","Border","Border Type","Zari Type","Material Type","Price", 
+					"Discount","Blouse Color","Blouse Length","Saree Colors","Collection Desc","Header Desc1","Header Desc2","Header Desc3","Header Desc4","Header Desc5",
+					"Occassion","Product Name","Main ImageUrl","Sub Image1"};
 			Workbook workbook = new XSSFWorkbook();
 			XSSFSheet  sheet = (XSSFSheet) workbook.createSheet("Product_Upload_Template");
 			 
@@ -1042,7 +1060,9 @@ try {
 	@Override
 	public ByteArrayInputStream prdExportToExcel(String categoryId) throws Exception {
 		List<ProductModel> productModelList = null;
-		String[] columnshead = {"Category_Name","SKU","Stock","Price","Discount","Blouse Color","Border","Border Type","Collection Desc","Colors","Fabric Purity","Header Desc","Saree Length","Material Type","Occassion","Pattern","Zari Type","Blouse Length","Product Name","Main ImageUrl"};
+		String[] columnshead = {"Category_Name","SKU","Stock","Price","Discount","Blouse Color","Border","Border Type","Collection Desc","Colors","Fabric Purity",
+				"Header Desc1","Header Desc2","Header Desc3","Header Desc4","Header Desc5","Saree Length","Material Type","Occassion","Pattern","Zari Type",
+				"Blouse Length","Product Name","Main ImageUrl"};
 		try {
 			if(null != categoryId) {
 				productModelList = getProductBycategoryId(categoryId);
@@ -1106,23 +1126,31 @@ try {
 			        					 break;
 			        			case 11: rowCell.setCellValue(productModelList.get(count).getFabricPurity());
 			        					 break;
-			        			case 12: rowCell.setCellValue(productModelList.get(count).getHeaderDesc());
+			        			case 12: rowCell.setCellValue(productModelList.get(count).getHeaderDesc1());
 			        			         break;
-			        			case 13: rowCell.setCellValue(productModelList.get(count).getLength());
+			        			case 13: rowCell.setCellValue(productModelList.get(count).getHeaderDesc2());
 			        					 break;
-			        			case 14: rowCell.setCellValue(productModelList.get(count).getMaterialType());
+			        			case 14: rowCell.setCellValue(productModelList.get(count).getHeaderDesc3());
+	        			         		 break;
+			        			case 15: rowCell.setCellValue(productModelList.get(count).getHeaderDesc4());
+	        			         		 break;
+			        			case 16: rowCell.setCellValue(productModelList.get(count).getHeaderDesc5());
+	        			         	     break;
+			        			case 17: rowCell.setCellValue(productModelList.get(count).getLength());
 			        					 break;
-			        			case 15: rowCell.setCellValue(productModelList.get(count).getOccassion());
+			        			case 18: rowCell.setCellValue(productModelList.get(count).getMaterialType());
 			        					 break;
-			        			case 16: rowCell.setCellValue(productModelList.get(count).getPattern());
+			        			case 19: rowCell.setCellValue(productModelList.get(count).getOccassion());
+			        					 break;
+			        			case 20: rowCell.setCellValue(productModelList.get(count).getPattern());
 			        			  		 break;
-			        			case 17: rowCell.setCellValue(productModelList.get(count).getZariType());
+			        			case 21: rowCell.setCellValue(productModelList.get(count).getZariType());
 			        					 break;
-			        			case 18: rowCell.setCellValue(productModelList.get(count).getBlouseLength());
+			        			case 22: rowCell.setCellValue(productModelList.get(count).getBlouseLength());
 			        					 break;
-			        			case 19: rowCell.setCellValue(productModelList.get(count).getProductName());
+			        			case 23: rowCell.setCellValue(productModelList.get(count).getProductName());
 			        			         break;
-			        			case 20: rowCell.setCellValue(productModelList.get(count).getMainImageUrl());
+			        			case 24: rowCell.setCellValue(productModelList.get(count).getMainImageUrl());
 			        					 break;
 			        			         
 			        		}
@@ -1146,6 +1174,20 @@ try {
 		Float[] discount = uploadproductdao.getProductDiscounts();
 		return discount;
 	}
+
+	@Override
+	public List<ProductModel> getProductsByName(String productName) throws Exception {
+		try {
+			List<ProductDomain> up = uploadproductdao.getProductByName(productName);
+			return uploadproductmapper.entityList(up);
+			} catch (Exception e) {
+				logger.info("Exception getProductsByName:"+e);
+				return null;
+			}
+	}
+
+	
+	
 
 	
 }

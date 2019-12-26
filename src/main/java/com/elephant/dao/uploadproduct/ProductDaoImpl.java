@@ -432,7 +432,11 @@ public class ProductDaoImpl implements ProductDao {
 			up.setLength(update.getLength());
 			up.setBlouseColor(update.getBlouseColor());
 			up.setBlouseLength(update.getBlouseLength());
-			up.setHeaderDesc(update.getHeaderDesc());
+			up.setHeaderDesc1(update.getHeaderDesc1());
+			up.setHeaderDesc2(update.getHeaderDesc2());
+			up.setHeaderDesc3(update.getHeaderDesc3());
+			up.setHeaderDesc4(update.getHeaderDesc4());
+			up.setHeaderDesc5(update.getHeaderDesc5());
 			up.setProductName(update.getProductName());
 			up.setMainImageUrl(update.getMainImageUrl());
 			up.setCp(update.getCp());
@@ -978,6 +982,26 @@ public Response deleteproductByCategoryId(String categoryId, boolean isActive) t
 			logger.error("Exception in getProductDiscounts", e);
 		}
 		return discount;
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ProductDomain> getProductByName(String productName) {
+		List<ProductDomain> productDomainList = null;
+		try {
+			String hql ="select u FROM ProductDomain u where u.productName like '%"+productName+"%'" ;
+			productDomainList =  entitymanager.createQuery(hql).getResultList();
+		} catch (EmptyResultDataAccessException e) {
+			System.out.println(e);
+			return null;
+		} catch (HibernateException e) {
+			logger.error("Exception in getProductByName: " +e);
+			System.out.println("Exception:" +e);
+			return null;
+		}
+		return productDomainList;
 	}
 
 }
